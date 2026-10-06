@@ -1,0 +1,22 @@
+{
+  "name": "tlv-parking",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "data": "node --experimental-strip-types pipeline/build.ts",
+    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "engines": {
+    "node": ">=22.15"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "^2.3.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@hebcal/core": "^6.11.1",
+    "wrangler": "^4.147.0"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "TLV Parking",
+    "version": "1.0.0",
+    "description": "Tel Aviv-Yafo parking lots with estimated prices for a time window. Times are Asia/Jerusalem. Prices are estimates; the sign at the gate prevails. Coverage: Ahuzot HaHof municipal lots, Central Park and Green Parking."
+  },
+  "servers": [{ "url": "/" }],
+  "paths": {
+    "/api/search": {
+      "get": {
+        "operationId": "searchParking",
+        "summary": "Parking lots near a place, ranked by estimated price for the time window",
+        "parameters": [
+          { "name": "near", "in": "query", "schema": { "type": "string" }, "description": "Place or address, Hebrew or English, e.g. 'Dizengoff Center' or 'דיזנגוף 50'" },
+          { "name": "lat", "in": "query", "schema": { "type": "number" } },
+          { "name": "lng", "in": "query", "schema": { "type": "number" } },
+          { "name": "start", "in": "query", "schema": { "type": "string" }, "description": "Entry time, local, e.g. 2026-10-10T14:00. Default: now." },
+          { "name": "weekday", "in": "query", "schema": { "type": "string", "enum": ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] }, "description": "Next such day, with `time`" },
+          { "name": "time", "in": "query", "schema": { "type": "string" }, "description": "HH:MM" },
+          { "name": "duration", "in": "query", "schema": { "type": "integer", "default": 120 }, "description": "Minutes" },
+          { "name": "max_walk", "in": "query", "schema": { "type": "integer", "default": 800 }, "description": "Meters, straight line" },
+          { "name": "resident", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = Tel Aviv resident" },
+          { "name": "apps", "in": "query", "schema": { "type": "string" }, "description": "Comma list: pango,cello,moovit,centralpark (centralpark = Central Park in-app price)" },
+          { "name": "transit", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = will ride a TLV bus the same day" },
+          { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["price", "distance"] } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "resolved_location, query, results[] (price_ils null = price on sign), caveats[]" } }
+      }
+    },
+    "/api/lots/{id}": {
+      "get": {
+        "operationId": "getLot",
+        "summary": "One lot: tariffs, original Hebrew tariff text, hours, offers, live status, quote, links",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "e.g. ahuzot-94" },
+          { "name": "start", "in": "query", "schema": { "type": "string" } },
+          { "name": "duration", "in": "query", "schema": { "type": "integer", "default": 120 } },
+          { "name": "resident", "in": "query", "schema": { "type": "integer", "enum": [0, 1] } }
+        ],
+        "responses": { "200": { "description": "Lot details" }, "404": { "description": "No such lot" } }
+      }
+    },
+    "/api/places": {
+      "get": {
+        "operationId": "resolvePlace",
+        "summary": "Place or address to coordinates (ambiguous names return several)",
+        "parameters": [{ "name": "q", "in": "query", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "candidates[]" } }
+      }
+    },
+    "/api/offers": {
+      "get": { "operationId": "listOffers", "summary": "Special parking deals and their conditions", "responses": { "200": { "description": "offers[]" } } }
+    }
+  }
+}

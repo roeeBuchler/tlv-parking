@@ -1,0 +1,7 @@
+node_modules/
+.wrangler/
+.dev.vars*
+.env*
+
+# research harvest (Google Maps / easy.co.il scrapers and their outputs): local only, keep out of the public repo
+research/harvest/

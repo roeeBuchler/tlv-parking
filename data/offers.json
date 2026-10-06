@@ -1,0 +1,16 @@
+[
+  {
+    "id": "reading-transit-free",
+    "title": {
+      "he": "חניה חינם 24 שעות ברידינג למשלמים בפנגו/סלו שנוסעים באוטובוס בת\"א באותו יום (א'-ה')",
+      "en": "Free 24h at Reading if you start parking with Pango or Cello and pay a Tel Aviv bus ride with the same app the same day (Sun-Thu)"
+    },
+    "lot_ids": ["ahuzot-41", "ahuzot-126"],
+    "days": ["sun", "mon", "tue", "wed", "thu"],
+    "apps": ["pango", "cello"],
+    "transit": true,
+    "free_hours": 24,
+    "source_url": "https://www.tel-aviv.gov.il/Residents/Transportation/Pages/reading.aspx",
+    "verified_at": "2026-10-04"
+  }
+]

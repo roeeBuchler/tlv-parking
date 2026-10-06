@@ -1,0 +1,22 @@
+# TLV Parking
+
+> Tel Aviv-Yafo parking lots with the estimated price for a specific time window (Shabbat/holiday tariffs, TLV-resident discounts and special deals applied), live occupancy, and map links. Read-only, no auth.
+
+Coverage: the 88 Ahuzot HaHof (municipal) lots, 35 Central Park and 12 Green Parking lots. Other private lots are not in the data yet.
+Open municipal lots the city lists as free come back with `price_ils: 0` and `price_basis: "municipal_data_unverified"`: say it is unverified and to check the sign.
+Central Park lots have a cheaper in-app price: `gate_price_ils` and `app_price_ils`; pass `apps=centralpark` to rank by it.
+Prices are estimates from the operator's published tariff; the sign at the gate prevails. Times are Asia/Jerusalem.
+
+## MCP
+
+- Endpoint: `/mcp` (streamable HTTP, stateless, no sign-in). Tools: `search_parking`, `get_lot_details`, `list_offers`, `resolve_place`.
+
+## REST
+
+- [OpenAPI spec](/openapi.json)
+- `GET /api/search?near=Dizengoff%20Center&start=2026-10-10T14:00&duration=180`: lots ranked by price. Optional: `lat`,`lng` instead of `near`; `weekday=sat&time=14:00` instead of `start`; `max_walk` (m, default 800); `resident=1`; `apps=pango,cello,centralpark`; `transit=1`; `sort=distance`; `limit`.
+- `GET /api/lots/{id}?start=...&duration=...`: one lot with full tariff (original Hebrew text), hours, offers, live status and Waze/Google Maps links.
+- `GET /api/places?q=דיזנגוף 50`: place/address to coordinates (Hebrew works best for streets).
+- `GET /api/offers`: special deals and their conditions.
+
+Every result has a `map_url` that opens the lot on the map for the same time window.

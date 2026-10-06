@@ -1,0 +1,105 @@
+// MCP server: 4 read-only tools over the same search the website uses.
+import { McpServer } from "@modelcontextprotocol/server";
+import * as z from "zod/v4";
+import { search, lotDetails, offers, resolveStart, placeOut, CAVEATS } from "./search.ts";
+import { resolvePlace } from "./places.ts";
+import { dayOf } from "./engine.ts";
+
+const readOnly = { readOnlyHint: true, openWorldHint: false };
+const out = (data: unknown, summary: string) => ({
+  content: [{ type: "text" as const, text: `${summary}\n\n${JSON.stringify(data)}` }],
+  structuredContent: data as Record<string, unknown>,
+});
+const fail = (text: string) => ({ content: [{ type: "text" as const, text }], isError: true });
+const priceText = (q: { price_ils: number | null; price_basis: string }) =>
+  q.price_ils == null ? "price on sign" : q.price_basis === "municipal_data_unverified" ? "free? (unverified)" : `₪${q.price_ils}`;
+
+const when = {
+  start: z.string().optional().describe("Entry time, Asia/Jerusalem local, e.g. 2026-10-10T14:00. Omit for now."),
+  weekday: z.enum(["sun", "mon", "tue", "wed", "thu", "fri", "sat"]).optional().describe("Next such day (with `time`), instead of `start`."),
+  time: z.string().optional().describe("HH:MM, used with `weekday` (or alone for today/tomorrow)."),
+  duration_minutes: z.number().int().min(1).max(7 * 1440).default(120).describe("Stay length. If the user gave none, 120 is assumed: say so."),
+  tlv_resident: z.boolean().default(false).describe("Tel Aviv-Yafo resident (Ahuzot lots give 50-75% off)."),
+  apps: z.array(z.enum(["pango", "cello", "moovit", "centralpark"])).default([])
+    .describe("Parking/transit apps the user pays with. 'centralpark' = Central Park's own app (cheaper at its lots)."),
+  will_ride_public_transport: z.boolean().default(false).describe("User will ride a TLV bus the same day (unlocks park & ride deals)."),
+};
+
+export function createServer(origin: string) {
+  const server = new McpServer({ name: "tlv-parking", version: "1.0.0" }, {
+    instructions: "Tel Aviv parking lots with estimated prices for a specific time window. " + CAVEATS.join(" "),
+  });
+
+  server.registerTool("search_parking", {
+    title: "Search parking near a place",
+    description: "Find Tel Aviv parking lots near a place, ranked by the estimated price for the exact time window " +
+      "(Shabbat/holiday tariffs, resident discounts and special offers applied), with live occupancy and a map link. " +
+      "Give `near` (Hebrew or English place/address, e.g. 'Dizengoff Center', 'דיזנגוף 50') or lat/lng. " +
+      "Always tell the user which resolved_location was used, the assumed duration, and that the sign at the gate prevails. " +
+      "Mention potential_offers (deals the user could unlock) when present.",
+    inputSchema: z.object({
+      near: z.string().optional().describe("Place, landmark or street address in Tel Aviv-Yafo."),
+      lat: z.number().optional(), lng: z.number().optional(),
+      ...when,
+      max_walk_m: z.number().int().min(100).max(5000).default(800).describe("Max straight-line distance in meters."),
+      sort_by: z.enum(["price", "distance"]).default("price"),
+      limit: z.number().int().min(1).max(50).default(10),
+    }),
+    annotations: readOnly,
+  }, async (a) => {
+    let places = null;
+    if (a.lat == null || a.lng == null) {
+      if (!a.near) return fail("Give `near` or `lat`+`lng`.");
+      const p = placeOut(await resolvePlace(a.near));
+      if (!p.resolved) return fail(`Couldn't find "${a.near}" in Tel Aviv-Yafo. Try a Hebrew street name + number, or lat/lng.`);
+      places = p;
+    }
+    const at = places?.resolved ?? { lat: a.lat!, lng: a.lng! };
+    let start;
+    try { start = resolveStart(a.start, a.weekday, a.time); } catch (e) { return fail(String(e)); }
+    const r = await search({
+      lat: at.lat, lng: at.lng, start, minutes: a.duration_minutes, max_walk_m: a.max_walk_m, sort_by: a.sort_by, limit: a.limit,
+      resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, origin,
+    });
+    const data = { resolved_location: places?.resolved ?? at, alternatives: places?.alternatives ?? [], ...r };
+    const top = r.results.slice(0, 3).map((x) => `${x.name} ${priceText(x)} ${x.distance_m}m`).join("; ");
+    return out(data, `${r.count} lots within ${a.max_walk_m}m, ${r.query.start}→${r.query.end} (${r.query.day_type}). Top: ${top || "none"}`);
+  });
+
+  server.registerTool("get_lot_details", {
+    title: "Parking lot details",
+    description: "Full details for one lot id from search_parking: structured tariffs and the original Hebrew tariff text, " +
+      "opening hours, no-entry windows, offers, live status, a price quote for the given time, and Waze/Google Maps links.",
+    inputSchema: z.object({ id: z.string().describe("e.g. ahuzot-94"), ...when }),
+    annotations: readOnly,
+  }, async (a) => {
+    let start;
+    try { start = resolveStart(a.start, a.weekday, a.time); } catch (e) { return fail(String(e)); }
+    const d = await lotDetails(a.id, { start, minutes: a.duration_minutes, resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, origin });
+    if (!d) return fail(`No lot "${a.id}". Use ids from search_parking.`);
+    return out(d, `${d.name}, ${d.address}: ${priceText(d.quote)} for ${a.duration_minutes} min from ${d.quote.start}`);
+  });
+
+  server.registerTool("list_offers", {
+    title: "Special parking deals",
+    description: "Special Tel Aviv parking deals (e.g. free park & ride with a bus ride) and their conditions. Optional `start` to see if a deal's day applies.",
+    inputSchema: z.object({ start: z.string().optional().describe("Asia/Jerusalem local time, e.g. 2026-10-10T14:00") }),
+    annotations: readOnly,
+  }, async (a) => {
+    const day = a.start ? dayOf(resolveStart(a.start)) : null;
+    const list = offers.map((o) => ({ ...o, applies_that_day: day ? o.days.includes(day) : undefined }));
+    return out({ day_type: day, offers: list }, list.map((o) => o.title.en).join("\n"));
+  });
+
+  server.registerTool("resolve_place", {
+    title: "Resolve a Tel Aviv place",
+    description: "Turn a place name or address (Hebrew or English) into coordinates. Ambiguous names like 'Dizengoff' return several candidates.",
+    inputSchema: z.object({ query: z.string().min(2) }),
+    annotations: { readOnlyHint: true, openWorldHint: true },
+  }, async (a) => {
+    const p = await resolvePlace(a.query);
+    return out({ candidates: p }, p.length ? p.map((x) => x.label).join("; ") : "No match. Try Hebrew street name + house number.");
+  });
+
+  return server;
+}
