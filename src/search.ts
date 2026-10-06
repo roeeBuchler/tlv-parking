@@ -43,7 +43,7 @@ let liveCache: { at: number; data: Record<number, { status: string; updated: str
 export async function live() {
   if (liveCache && Date.now() - liveCache.at < 120_000) return liveCache.data;
   try {
-    const rows = await gisQuery(970, { where: "1=1", outFields: "code_achoza,status_chenyon,tr_status_chenyon" });
+    const rows = await gisQuery(970, { where: "1=1", outFields: "code_achoza,status_chenyon,tr_status_chenyon" }, 3000); // optional data: never stall a search
     const data = Object.fromEntries(rows.map((r) => [r.code_achoza, {
       status: STATUS[r.status_chenyon] ?? "unknown",
       updated: r.tr_status_chenyon ? fmtLocal(r.tr_status_chenyon) : "", // GIS stores local time as if UTC

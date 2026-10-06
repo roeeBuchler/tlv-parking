@@ -6,10 +6,10 @@ export type Place = { label: string; lat: number; lng: number; source: "landmark
 
 const norm = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 
-export async function gisQuery(layer: number, params: Record<string, string>): Promise<any[]> {
+export async function gisQuery(layer: number, params: Record<string, string>, timeoutMs = 8000): Promise<any[]> {
   const u = new URL(`${GIS}/${layer}/query`);
   for (const [k, v] of Object.entries({ f: "json", returnGeometry: "false", ...params })) u.searchParams.set(k, v);
-  const r = await fetch(u, { headers: { "user-agent": "tlv-parking (+https://github.com/roeeBuchler/tlv-parking)" } });
+  const r = await fetch(u, { headers: { "user-agent": "tlv-parking (+https://github.com/roeeBuchler/tlv-parking)" }, signal: AbortSignal.timeout(timeoutMs) });
   if (!r.ok) throw new Error(`GIS ${layer}: HTTP ${r.status}`);
   const j: any = await r.json();
   if (j.error) throw new Error(`GIS ${layer}: ${j.error.message}`);
