@@ -2,18 +2,21 @@
 import landmarks from "../data/places.json" with { type: "json" };
 
 export const GIS = "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer";
+export const UA = "tlv-parking-bot/1.0 (+https://github.com/roeeBuchler/tlv-parking)";
 export type Place = { label: string; lat: number; lng: number; source: "landmark" | "address" };
 
 const norm = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 
-export async function gisQuery(layer: number, params: Record<string, string>, timeoutMs = 8000): Promise<any[]> {
+// one retry by default: the city's server sometimes hangs a connection
+export async function gisQuery(layer: number, params: Record<string, string>, timeoutMs = 8000, retries = 1): Promise<any[]> {
   const u = new URL(`${GIS}/${layer}/query`);
   for (const [k, v] of Object.entries({ f: "json", returnGeometry: "false", ...params })) u.searchParams.set(k, v);
-  const r = await fetch(u, { headers: { "user-agent": "tlv-parking (+https://github.com/roeeBuchler/tlv-parking)" }, signal: AbortSignal.timeout(timeoutMs) });
+  const r = await fetch(u, { headers: { "user-agent": UA }, signal: AbortSignal.timeout(timeoutMs) }).catch((e) => { if (retries < 1) throw e; });
+  if (!r) return gisQuery(layer, params, timeoutMs, retries - 1);
   if (!r.ok) throw new Error(`GIS ${layer}: HTTP ${r.status}`);
   const j: any = await r.json();
   if (j.error) throw new Error(`GIS ${layer}: ${j.error.message}`);
-  return j.features.map((f: any) => f.attributes);
+  return j.features.map((f: any) => ({ ...f.attributes, ...f.geometry })); // geometry (x, y) only when asked for
 }
 
 // "דיזנגוף 50", "Dizengoff 50", "לסקוב 28 תל-אביב יפו"

@@ -38,7 +38,7 @@ export type Profile = { resident?: boolean; apps?: string[]; transit?: boolean }
 
 const holidays = holidaysJson as Record<string, "holiday" | "holiday_eve">;
 export const MIN = 60_000, HOUR = 60 * MIN, DAY = 24 * HOUR;
-const WEEK: Day[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+export const WEEK: Day[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 const hm = (s: string) => { const [h, m] = s.split(":").map(Number); return h * 60 + m; };
 
 export const parseLocal = (s: string) => Date.parse(s.slice(0, 16) + ":00Z"); // "2026-10-10T14:00"

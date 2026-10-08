@@ -1,9 +1,8 @@
 // Ahuzot tariff text (Hebrew) -> structured rules. Covers the templates seen on ahuzot.co.il;
 // anything it can't cover fails the coverage check in build.ts so a human looks at it.
-import type { Day, Rule } from "../src/engine.ts";
+import { WEEK, type Day, type Rule } from "../src/engine.ts";
 
 const LETTER: Record<string, number> = { "א": 0, "ב": 1, "ג": 2, "ד": 3, "ה": 4, "ו": 5, "ש": 6 };
-const WEEK: Day[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 export const ALL_DAYS: Day[] = [...WEEK, "holiday_eve", "holiday"];
 const pad = (t: string) => t.padStart(5, "0");
 
