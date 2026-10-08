@@ -1,14 +1,13 @@
 // Private operators. Central Park: structured price lists in their Next.js pages (gate + app price).
 // Green Parking: free-text price blocks that differ per lot, so the TLV lots are hand-encoded below and
 // the build flags any change in a lot's text, and any new lot.
-import type { Day, Lot, Rule } from "../src/engine.ts";
+import { setTimeout as sleep } from "node:timers/promises";
+import { WEEK, type Day, type Lot, type Rule } from "../src/engine.ts";
 
 type Get = (url: string) => Promise<string>;
-const WEEK: Day[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 const ALL = WEEK, SUN_THU: Day[] = WEEK.slice(0, 5), FRI_SAT: Day[] = ["fri", "sat"];
 const DAYNAME = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const HEB = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Next.js flight data (the page's server payload) as one string
 const flight = (h: string) =>
@@ -125,9 +124,9 @@ const GREEN: Record<number, G | null> = {
   2252: null, 2167: null, 2147: null, 2105: null, 1471: null, 1350: null, 1054: null, 418: null, 413: null, 406: null, 324: null, // other cities
 };
 
-const text = (h: string) => h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, " ").replace(/<br\s*\/?>|<\/(p|div|li|tr|h\d|span)>/g, "\n")
+export const text = (h: string) => h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, " ").replace(/<br\s*\/?>|<\/(p|div|li|tr|h\d|span)>/g, "\n")
   .replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&#8362;/g, "₪").replace(/&#8211;/g, "–").replace(/&quot;|&#8221;|&#8220;/g, '"')
-  .replace(/&#0?39;|&#8217;/g, "'").replace(/[ \t]+/g, " ");
+  .replace(/&#0?39;|&#8217;/g, "'").replace(/&amp;/g, "&").replace(/\s*\n\s*/g, "\n").replace(/[ \t]+/g, " ").trim();
 
 export async function green(get: Get, today: string, problems: string[]): Promise<Lot[]> {
   const api = JSON.parse(await get("https://www.greenparking.co.il/wp-json/wp/v2/parkings?per_page=100"));
@@ -143,6 +142,56 @@ export async function green(get: Get, today: string, problems: string[]): Promis
     if (a < 0 || b < 0 || now !== g.text) problems.push(`green-${p.id} ${g.name}: price text changed, re-encode it in pipeline/operators.ts:\n    ${now}`);
     const { text: t, ...lot } = g;
     lots.push({ id: `green-${p.id}`, operator: "green", ...lot, tariff_text: t.replaceAll(" / ", "\n"), source_url: decodeURIComponent(p.link), verified_at: today });
+  }
+  return lots;
+}
+
+// Single lots with a price list on their own site. `says` are phrases copied from the page; when one is gone the
+// build flags it and `tariffs` must be re-read. Coordinates: the lot's entry in the city license registry (GIS 556).
+const per_min = (days: Day[], from: string, to: string, rate: number, daily_max: number, tiers?: [number, number][]): Rule =>
+  ({ days, from, to, kind: "per_minute", rate, daily_max, ...(tiers && { tiers }) });
+const AZRIELI = "https://www.azrielimalls.co.il/malls/tel-aviv/useful-information";
+const WEEKEND: Day[] = ["fri", "sat", "holiday"];
+const SINGLE: (Omit<Lot, "verified_at"> & { says: string[] })[] = [
+  { id: "dizengoff-center", name: "חניון דיזנגוף סנטר", operator: "dizengoff-center", address: "דיזנגוף 61", lat: 32.07556, lng: 34.77448,
+    source_url: "https://www.dizengof-center.co.il/useful-info/parking",
+    says: ["תעריף יום (כניסה משעה 06:00)", "שעה ראשונה 24 ש\"ח שעה שניה 15 ש\"ח כל שעה נוספת 15 ש\"ח מחיר מקסימלי 85 ש\"ח",
+      "תעריף לילה בימי א-ה (כניסה משעה 18:00 יציאה עד 9:00) שעה ראשונה 24 ש\"ח שעה שניה 15 ש\"ח מחיר מקסימלי 35 ש\"ח",
+      "בימי שישי יחל תעריף לילה לכניסה החל בשעה 16:00", "בחישוב לפי דקות"],
+    // ponytail: the night cap ignores "exit by 09:00"; later exits are priced as one night
+    tariffs: [per_min(SUN_THU, "18:00", "06:00", 15, 35, [[60, 24]]), per_min(["fri"], "16:00", "06:00", 15, 35, [[60, 24]]),
+      per_min(SUN_THU, "06:00", "18:00", 15, 85, [[60, 24]]), per_min(["fri"], "06:00", "16:00", 15, 85, [[60, 24]]),
+      per_min(["sat"], "06:00", "06:00", 15, 85, [[60, 24]])] },
+  { id: "sarona-gindi", name: "חניון שרונה (גינדי)", operator: "sarona", address: "אלוף קלמן מגן 3", lat: 32.07134, lng: 34.7876,
+    source_url: "https://www.saronaparking.co.il/",
+    says: ["תעריף לדקה בין הדקות 1-30 ₪0.60", "החל מהדקה ה-31 ₪0.50", "חנייה יומית/אובדן כרטיס ₪115"],
+    tariffs: [per_min(ALL, "00:00", "00:00", 30, 115, [[30, 36]])] },
+  { id: "azrieli-center", name: "חניון מרכז עזריאלי", operator: "azrieli", address: "דרך מנחם בגין 132", lat: 32.07387, lng: 34.79107,
+    source_url: AZRIELI,
+    says: ["תעריף לכל דקה: 40 אגורות. תעריף מקסימום ליום שלם: 100 ₪. לנכנסים בשעות 17:00-24:00, 40 אגורות לדקה עד מקסימום 25 ₪. שישי /שבת /חג -40 אגורות לדקה עד מקסימום 25 ₪."],
+    tariffs: [per_min(WEEKEND, "00:00", "00:00", 24, 25), per_min(SUN_THU, "17:00", "00:00", 24, 25), per_min(SUN_THU, "00:00", "17:00", 24, 100)] },
+  { id: "azrieli-sarona", name: "חניון עזריאלי שרונה", operator: "azrieli", address: "דרך מנחם בגין 121", lat: 32.07204, lng: 34.78899,
+    source_url: AZRIELI,
+    says: ["תעריף לכל דקה: 50 אגורות יום שלם 100 ₪ לנכנסים בשעות 18:00-24:00 , 50 אגורות לדקה עד מקסימום 25 ₪ שישי/שבת/חג 50 אגורות לדקה עד מקסימום 25 ₪"],
+    tariffs: [per_min(WEEKEND, "00:00", "00:00", 30, 25), per_min(SUN_THU, "18:00", "00:00", 30, 25), per_min(SUN_THU, "00:00", "18:00", 30, 100)] },
+  { id: "azrieli-town", name: "חניון עזריאלי טאון", operator: "azrieli", address: "דרך מנחם בגין 146", lat: 32.07831, lng: 34.79393,
+    source_url: AZRIELI,
+    says: ["תעריף לכל דקה: 50 אגורות. תעריף מקסימלי ליום שלם: 100 ₪. שישי/שבת/חג עד השעה 24:00, 50 אגורות לדקה עד מקסימום 25 ₪"],
+    tariffs: [per_min(WEEKEND, "00:00", "00:00", 30, 25), per_min(SUN_THU, "00:00", "00:00", 30, 100)] },
+];
+
+// page text as one line; also unwraps the escaped JSON Azrieli embeds its mall data in
+const oneLine = (h: string) => h.replace(/\\+r\\+n|\\+n/g, " ").replace(/\\+"/g, '"').replace(/<[^>]+>/g, " ")
+  .replace(/&quot;/g, '"').replace(/&#8362;/g, "₪").replace(/&nbsp;/g, " ").replace(/\s+/g, " ");
+
+export async function single(get: Get, today: string, problems: string[]): Promise<Lot[]> {
+  const pages: Record<string, Promise<string>> = {};
+  const lots: Lot[] = [];
+  for (const { says, ...l } of SINGLE) {
+    const page = oneLine(await (pages[l.source_url] ??= get(l.source_url)));
+    const gone = says.filter((s) => !page.includes(s));
+    if (gone.length) problems.push(`${l.id}: price text changed, re-read ${l.source_url} and fix pipeline/operators.ts. Missing:\n    ${gone.join("\n    ")}`);
+    lots.push({ ...l, tariff_text: says.join("\n"), verified_at: today });
   }
   return lots;
 }

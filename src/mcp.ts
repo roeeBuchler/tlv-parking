@@ -1,9 +1,8 @@
-// MCP server: 4 read-only tools over the same search the website uses.
+// MCP server: 2 read-only tools over the same search the website uses.
 import { McpServer } from "@modelcontextprotocol/server";
 import * as z from "zod/v4";
-import { search, lotDetails, offers, resolveStart, placeOut, CAVEATS } from "./search.ts";
+import { search, lotDetails, resolveStart, placeOut, CAVEATS } from "./search.ts";
 import { resolvePlace } from "./places.ts";
-import { dayOf } from "./engine.ts";
 
 const readOnly = { readOnlyHint: true, openWorldHint: false };
 const out = (data: unknown, summary: string) => ({
@@ -78,27 +77,6 @@ export function createServer(origin: string) {
     const d = await lotDetails(a.id, { start, minutes: a.duration_minutes, resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, origin });
     if (!d) return fail(`No lot "${a.id}". Use ids from search_parking.`);
     return out(d, `${d.name}, ${d.address}: ${priceText(d.quote)} for ${a.duration_minutes} min from ${d.quote.start}`);
-  });
-
-  server.registerTool("list_offers", {
-    title: "Special parking deals",
-    description: "Special Tel Aviv parking deals (e.g. free park & ride with a bus ride) and their conditions. Optional `start` to see if a deal's day applies.",
-    inputSchema: z.object({ start: z.string().optional().describe("Asia/Jerusalem local time, e.g. 2026-10-10T14:00") }),
-    annotations: readOnly,
-  }, async (a) => {
-    const day = a.start ? dayOf(resolveStart(a.start)) : null;
-    const list = offers.map((o) => ({ ...o, applies_that_day: day ? o.days.includes(day) : undefined }));
-    return out({ day_type: day, offers: list }, list.map((o) => o.title.en).join("\n"));
-  });
-
-  server.registerTool("resolve_place", {
-    title: "Resolve a Tel Aviv place",
-    description: "Turn a place name or address (Hebrew or English) into coordinates. Ambiguous names like 'Dizengoff' return several candidates.",
-    inputSchema: z.object({ query: z.string().min(2) }),
-    annotations: { readOnlyHint: true, openWorldHint: true },
-  }, async (a) => {
-    const p = await resolvePlace(a.query);
-    return out({ candidates: p }, p.length ? p.map((x) => x.label).join("; ") : "No match. Try Hebrew street name + house number.");
   });
 
   return server;

@@ -1,14 +1,13 @@
 // The one ranking both the API/site and the MCP tools use.
 import lotsJson from "../data/lots.json" with { type: "json" };
 import offersJson from "../data/offers.json" with { type: "json" };
-import { quote, distanceM, parseLocal, fmtLocal, localNow, dayOf, DAY, type Lot, type Offer, type Profile } from "./engine.ts";
+import { WEEK, quote, distanceM, parseLocal, fmtLocal, localNow, dayOf, DAY, type Day, type Lot, type Offer, type Profile } from "./engine.ts";
 import { gisQuery, type Place } from "./places.ts";
 
 export const lots = lotsJson as unknown as Lot[];
 export const offers = offersJson as unknown as Offer[];
 export const REPO = "https://github.com/roeeBuchler/tlv-parking";
 
-const WEEKDAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 const n = (op: string) => lots.filter((l) => l.operator === op).length;
 export const CAVEATS = [
   "Prices are estimates from the operator's published tariff; the sign at the gate prevails.",
@@ -16,8 +15,9 @@ export const CAVEATS = [
   "price_ils null = the lot publishes no tariff ('as per the sign at the lot'); see notes.",
   "price_basis 'municipal_data_unverified' = an open municipal lot the city lists as free (price_ils 0); say it is unverified and to check the traffic sign.",
   "Central Park lots: price_ils is the gate price unless apps includes 'centralpark'; gate_price_ils and app_price_ils give both.",
-  `Coverage: ${n("ahuzot")} Ahuzot HaHof (municipal), ${n("centralpark")} Central Park and ${n("green")} Green Parking lots in Tel Aviv-Yafo. ` +
-    "Other private lots (Dizengoff Center, Azrieli…) are not in the data yet.",
+  `Coverage, Tel Aviv-Yafo: ${n("ahuzot")} Ahuzot HaHof (municipal), ${n("centralpark")} Central Park, ${n("green")} Green Parking and ` +
+    `${n("azrieli") + n("dizengoff-center") + n("sarona")} mall lots (Azrieli, Dizengoff Center, Sarona) with prices, plus ` +
+    `${n("registry") + n("osm")} more public lots with no published price (city license registry, OpenStreetMap): price_ils null.`,
 ];
 
 // start: "2026-10-10T14:00" (Jerusalem local) or with Z/offset; or weekday ("sat") + time ("14:00"); default now
@@ -31,7 +31,7 @@ export function resolveStart(start?: string, weekday?: string, time?: string): n
   if (!weekday && !time) return now;
   const today = now - (now % DAY), [h, m] = (time ?? "12:00").split(":").map(Number);
   let t = today + (h * 60 + (m || 0)) * 60_000;
-  const want = weekday ? WEEKDAYS.indexOf(weekday.slice(0, 3).toLowerCase()) : -1;
+  const want = weekday ? WEEK.indexOf(weekday.slice(0, 3).toLowerCase() as Day) : -1;
   while ((want >= 0 && new Date(t).getUTCDay() !== want) || t < now) t += DAY;
   return t;
 }
@@ -43,7 +43,7 @@ let liveCache: { at: number; data: Record<number, { status: string; updated: str
 export async function live() {
   if (liveCache && Date.now() - liveCache.at < 120_000) return liveCache.data;
   try {
-    const rows = await gisQuery(970, { where: "1=1", outFields: "code_achoza,status_chenyon,tr_status_chenyon" }, 3000); // optional data: never stall a search
+    const rows = await gisQuery(970, { where: "1=1", outFields: "code_achoza,status_chenyon,tr_status_chenyon" }, 3000, 0); // optional data: never stall a search
     const data = Object.fromEntries(rows.map((r) => [r.code_achoza, {
       status: STATUS[r.status_chenyon] ?? "unknown",
       updated: r.tr_status_chenyon ? fmtLocal(r.tr_status_chenyon) : "", // GIS stores local time as if UTC

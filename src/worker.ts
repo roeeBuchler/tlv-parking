@@ -1,7 +1,7 @@
 // One Worker: static site (./public, served before this runs), JSON API, and MCP at /mcp.
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import { createServer } from "./mcp.ts";
-import { search, lotDetails, offers, live, resolveStart, placeOut } from "./search.ts";
+import { search, lotDetails, resolveStart, placeOut } from "./search.ts";
 import { resolvePlace } from "./places.ts";
 
 const json = (data: unknown, status = 200) => Response.json(data, {
@@ -39,10 +39,6 @@ export default {
         }
         case url.pathname === "/api/places":
           return json({ candidates: await resolvePlace(p.get("q") ?? "") });
-        case url.pathname === "/api/offers":
-          return json({ offers });
-        case url.pathname === "/api/live":
-          return json(await live());
       }
     } catch (e) {
       return json({ error: String(e instanceof Error ? e.message : e) }, 400);

@@ -689,7 +689,7 @@
   "spaces": 82,
   "serves": "בית האצ\"ל, מתחם הדולפינריום, החוף המערבי",
   "hours_text": "24 שעות 7 ימים בשבוע",
-  "tariff_text": "שעתי תקף בימים א` - ש` \nבין השעות 07:00 בבוקר עד 21:00 \n24 ₪ לשעה\nהחיוב לפי משך דקות בפועל\nרכב הנכנס לפי תעריף שעתי החל מ-07:00 ישלם לפי תעריף שעתי ביציאה\nתעריף לכניסה חד פעמית 36 ₪\nתקף בימים א` - ש` בין השעות 21:00 עד 07:00 בבוקר שלמחרת.\n75% הנחה לתושבי תל-אביב יפו\nהשהייה בחניון עד 15 דקות ללא תשלום\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
+  "tariff_text": "שעתי תקף בימים א` - ש`\nבין השעות 07:00 בבוקר עד 21:00\n24 ₪ לשעה\nהחיוב לפי משך דקות בפועל\nרכב הנכנס לפי תעריף שעתי החל מ-07:00 ישלם לפי תעריף שעתי ביציאה\nתעריף לכניסה חד פעמית 36 ₪\nתקף בימים א` - ש` בין השעות 21:00 עד 07:00 בבוקר שלמחרת.\n75% הנחה לתושבי תל-אביב יפו\nהשהייה בחניון עד 15 דקות ללא תשלום\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
   "tariffs": [
    {
     "days": [
@@ -784,7 +784,7 @@
   "spaces": 319,
   "serves": "קניון דימול, מתחם הבורסה, סיטי טאואר",
   "hours_text": "24 שעות 7 ימים בשבוע",
-  "tariff_text": "תעריף לכניסה חד פעמית 36 ₪,\nתקף ל-24 שעות מרגע כניסת הרכב\n75% הנחה לתושבי תל-אביב יפו \nהשהייה בחניון עד 15 דקות ללא תשלום\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי. \nלא ניתן לשלם במזומן.",
+  "tariff_text": "תעריף לכניסה חד פעמית 36 ₪ ,\nתקף ל-24 שעות מרגע כניסת הרכב\n75% הנחה לתושבי תל-אביב יפו\nהשהייה בחניון עד 15 דקות ללא תשלום\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
   "tariffs": [
    {
     "days": [
@@ -973,7 +973,7 @@
   "spaces": 1310,
   "serves": "פארק הירקון, צפארי, ממדיון",
   "hours_text": "24 שעות 7 ימים בשבוע",
-  "tariff_text": "תעריף לכניסה חד פעמית 36 ₪, \nתעריף לכניסה חד פעמית של אוטובוסים/משאיות 40 ₪ ,\nתקף ל-24 שעות מרגע כניסת הרכב\n75% הנחה לתושבי תל-אביב יפו\nהשהייה בחניון עד 15 דקות ללא תשלום\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
+  "tariff_text": "תעריף לכניסה חד פעמית 36 ₪,\nתעריף לכניסה חד פעמית של אוטובוסים/משאיות 40 ₪ ,\nתקף ל-24 שעות מרגע כניסת הרכב\n75% הנחה לתושבי תל-אביב יפו\nהשהייה בחניון עד 15 דקות ללא תשלום\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
   "tariffs": [
    {
     "days": [
@@ -1492,7 +1492,7 @@
   "spaces": 997,
   "serves": "היכל התרבות , תאטרון הבימה , שדרות רוטשילד",
   "hours_text": "פתוח 24 שעות 7 ימים בשבוע למעט הכניסה שלא תתאפשר בין השעות 20:00 עד 21:00 בימי א` – ה` ושבת ובשעות 12:00 עד 13:00 בימי שישי",
-  "tariff_text": "שעתי תקף בימים א` - ו`\nבין השעות 07:00 בבוקר עד 22:00 \n24 ₪ לשעה\nהחיוב לפי משך החניה בדקות בפועל\nרכב הנכנס לפי תעריף שעתי החל מ-07:00 ישלם לפי תעריף שעתי ביציאה\nתעריף לכניסה חד פעמית 36 ₪\nתקף בימים א` - ו` בין השעות 22:00 עד 07:00 בבוקר שלמחרת\nובימי שבת וחגים בין השעות 07:00 עד 07:00 בבוקר שלמחרת\n75% הנחה לתושבי תל-אביב יפו\nהשהייה בחניון עד 15 דקות ללא תשלום\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.\nשימו לב!\nכי הכניסה לחניון לא תתאפשר בשעות 20:00 עד 21:00 בימי א` - ה` ושבת\nובשעות 12:00 עד 13:00 בימי שישי",
+  "tariff_text": "שעתי תקף בימים א` - ו`\nבין השעות 07:00 בבוקר עד 22:00\n24 ₪ לשעה\nהחיוב לפי משך החניה בדקות בפועל\nרכב הנכנס לפי תעריף שעתי החל מ-07:00 ישלם לפי תעריף שעתי ביציאה\nתעריף לכניסה חד פעמית 36 ₪\nתקף בימים א` - ו` בין השעות 22:00 עד 07:00 בבוקר שלמחרת\nובימי שבת וחגים בין השעות 07:00 עד 07:00 בבוקר שלמחרת\n75% הנחה לתושבי תל-אביב יפו\nהשהייה בחניון עד 15 דקות ללא תשלום\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.\nשימו לב!\nכי הכניסה לחניון לא תתאפשר בשעות 20:00 עד 21:00 בימי א` - ה` ושבת\nובשעות 12:00 עד 13:00 בימי שישי",
   "tariffs": [
    {
     "days": [
@@ -1867,7 +1867,7 @@
   "spaces": 114,
   "serves": "אוניברסיטת תל-אביב, אודיטוריום אולם סמולרש באוניברסיטה, מכון התקנים הישראלי",
   "hours_text": "24 שעות 7 ימים בשבוע",
-  "tariff_text": "חד פעמי,\n49 ₪ \nעבור סטודנט / תושב תל אביב - יפו תו אזורי 22 ₪ \nתקף ל-24 שעות מרגע כניסת הרכב\nהזיהוי באמצעות לוחית הרישוי, ההנחה תינתן לחניה רציפה של עד 96 שעות\nלאחר מכן החיוב יהיה לפי התעריף המלא\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
+  "tariff_text": "חד פעמי,\n49 ₪\nעבור סטודנט / תושב תל אביב - יפו תו אזורי 22 ₪\nתקף ל-24 שעות מרגע כניסת הרכב\nהזיהוי באמצעות לוחית הרישוי, ההנחה תינתן לחניה רציפה של עד 96 שעות\nלאחר מכן החיוב יהיה לפי התעריף המלא\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
   "tariffs": [
    {
     "days": [
@@ -1926,7 +1926,7 @@
   "spaces": 243,
   "serves": "שוק הכרמל, מסוף כרמלית",
   "hours_text": "24 שעות 7 ימים בשבוע",
-  "tariff_text": "שעתי תקף בימים א` - ו` (ערבי חג)\nבין השעות 07:00 בבוקר עד 18:00 אחר הצהריים\n24 ₪ לשעה\nהחיוב לפי משך דקות בפועל\nרכב הנכנס לפי תעריף שעתי החל מ-07:00 ישלם לפי תעריף שעתי ביציאה\nתעריף לכניסה חד פעמית 36 ₪\nתקף בימים א` - ו` (ערבי חג) בין השעות 18:00 עד 07:00 בבוקר שלמחרת\nובימי שבת וחגים בין השעות 07:00 עד 07:00 בבוקר שלמחרת\n50% הנחה לתושבי תל-אביב יפו\nהשהייה בחניון עד 15 דקות ללא תשלום\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
+  "tariff_text": "שעתי תקף בימים א` - ו` (ערבי חג)\nבין השעות 07:00 בבוקר עד 18:00 אחר הצהריים\n24 ₪ לשעה\nהחיוב לפי משך דקות בפועל\nרכב הנכנס לפי תעריף שעתי החל מ-07:00 ישלם לפי תעריף שעתי ביציאה\nתעריף לכניסה חד פעמית 36 ₪\nתקף בימים א` - ו` (ערבי חג) בין השעות 18:00 עד 07:00 בבוקר שלמחרת\nובימי שבת וחגים בין השעות 07:00 עד 07:00 בבוקר שלמחרת\n50% הנחה לתושבי תל-אביב יפו\nהשהייה בחניון עד 15 דקות ללא תשלום\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן .",
   "tariffs": [
    {
     "days": [
@@ -2255,7 +2255,7 @@
   "spaces": 567,
   "serves": "אוניברסיטת תל-אביב",
   "hours_text": "ימים א` - ה` בין השעות 7:00 עד 23:00, ימי ו` וערבי חג בין השעות 07:00 עד 14:00, ימי שבת וחג בין השעות 08:00 עד השעה 18:00",
-  "tariff_text": "חד פעמי,\n44 ₪ \nעבור סטודנט / תושב תל אביב - יפו תו אזורי 20 ₪ \nהזיהוי באמצעות לוחית הרישוי, ההנחה תינתן לחניה רציפה של עד 96 שעות\nלאחר מכן החיוב יהיה לפי התעריף המלא\nשימו לב לשעות פעילות החניון :\nבימים א` - ה` בין השעות 7:00 עד 23:00\nבימי ו` וערבי חג בין השעות 07:00 עד 14:00\nבימי שבת וחג בין השעות 08:00 עד השעה 18:00\nלתשומת לב החונים, בסיום שעות פעילות החניון, \nלא תתאפשר יציאת רכבים\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
+  "tariff_text": "חד פעמי,\n44 ₪\nעבור סטודנט / תושב תל אביב - יפו תו אזורי 20 ₪\nהזיהוי באמצעות לוחית הרישוי, ההנחה תינתן לחניה רציפה של עד 96 שעות\nלאחר מכן החיוב יהיה לפי התעריף המלא\nשימו לב לשעות פעילות החניון :\nבימים א` - ה` בין השעות 7:00 עד 23:00\nבימי ו` וערבי חג בין השעות 07:00 עד 14:00\nבימי שבת וחג בין השעות 08:00 עד השעה 18:00\nלתשומת לב החונים, בסיום שעות פעילות החניון,\nלא תתאפשר יציאת רכבים\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
   "tariffs": [
    {
     "days": [
@@ -2564,7 +2564,7 @@
   "id": "ahuzot-31",
   "name": "חניון מפעל הפיס",
   "operator": "ahuzot",
-  "address": "ליאונרדו דוינצ&#39;י 5 תל-אביב יפו",
+  "address": "ליאונרדו דוינצ'י 5 תל-אביב יפו",
   "lat": 32.0729,
   "lng": 34.7847,
   "spaces": 83,
@@ -2882,7 +2882,7 @@
   "spaces": 104,
   "serves": "אוניברסיטת תל-אביב, לבאי האודיטוריום , אולם סמולרש באוניברסיטה , מכון התקנים הישראלי ,",
   "hours_text": "24 שעות 7 ימים בשבוע",
-  "tariff_text": "חד פעמי,\n49 ₪ \nעבור סטודנט / תושב תל אביב - יפו תו אזורי 22 ₪ \nתקף ל-24 שעות מרגע כניסת הרכב\nהזיהוי באמצעות לוחית הרישוי, ההנחה תינתן לחניה רציפה של עד 96 שעות\nלאחר מכן החיוב יהיה לפי התעריף המלא\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
+  "tariff_text": "חד פעמי,\n49 ₪\nעבור סטודנט / תושב תל אביב - יפו תו אזורי 22 ₪\nתקף ל-24 שעות מרגע כניסת הרכב\nהזיהוי באמצעות לוחית הרישוי, ההנחה תינתן לחניה רציפה של עד 96 שעות\nלאחר מכן החיוב יהיה לפי התעריף המלא\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
   "tariffs": [
    {
     "days": [
@@ -3003,7 +3003,7 @@
   "spaces": 490,
   "serves": "אוניברסיטת תל-אביב, אודיטוריום אולם סמולרש באוניברסיטה, מכון התקנים הישראלי",
   "hours_text": "ימים א`-ה` 07:00-23:00 , ימי שישי 07:00-14:00 שבת סגור (לא תתאפשר כניסה ו/או יציאה מעבר לשעות הפעילות)",
-  "tariff_text": "חד פעמי,\n49 ₪\nעבור סטודנט / תושב תל אביב - יפו תו אזורי 22 ₪ \nהזיהוי באמצעות לוחית הרישוי, ההנחה תינתן לחניה רציפה של עד 96 שעות\nלאחר מכן החיוב יהיה לפי התעריף המלא\nשימו לב לשעות פעילות החניון :\nבימים א` - ה` בין השעות 7:00 עד 23:00\nבימי ו` וערבי חג בין השעות 07:00 עד 14:00\nלתשומת לב החונים, בסיום שעות פעילות החניון,\nלא תתאפשר יציאת רכבים\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
+  "tariff_text": "חד פעמי,\n49 ₪\nעבור סטודנט / תושב תל אביב - יפו תו אזורי 22 ₪\nהזיהוי באמצעות לוחית הרישוי, ההנחה תינתן לחניה רציפה של עד 96 שעות\nלאחר מכן החיוב יהיה לפי התעריף המלא\nשימו לב לשעות פעילות החניון :\nבימים א` - ה` בין השעות 7:00 עד 23:00\nבימי ו` וערבי חג בין השעות 07:00 עד 14:00\nלתשומת לב החונים, בסיום שעות פעילות החניון,\nלא תתאפשר יציאת רכבים\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
   "tariffs": [
    {
     "days": [
@@ -3354,7 +3354,7 @@
   "spaces": 390,
   "serves": "מגדל שלום מאיר, רחוב הרצל, שדרות רוטשילד,",
   "hours_text": "24 שעות 7 ימים בשבוע",
-  "tariff_text": "שעתי תקף בימים א` - ו`\nבין השעות 07:00 בבוקר עד 22:00 \n24 ₪ לשעה\nהחיוב לפי משך החניה בדקות בפועל\nרכב הנכנס לפי תעריף שעתי החל מ-07:00 ישלם לפי תעריף שעתי ביציאה\nתעריף לכניסה חד פעמית 36 ₪\nתקף בימים א` - ו` בין השעות 22:00 עד 07:00 בבוקר שלמחרת\nובימי שבת וחגים בין השעות 07:00 עד 07:00 בבוקר שלמחרת\n75% הנחה לתושבי תל-אביב יפו\nהשהייה בחניון עד 15 דקות ללא תשלום\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
+  "tariff_text": "שעתי תקף בימים א` - ו`\nבין השעות 07:00 בבוקר עד 22:00\n24 ₪ לשעה\nהחיוב לפי משך החניה בדקות בפועל\nרכב הנכנס לפי תעריף שעתי החל מ-07:00 ישלם לפי תעריף שעתי ביציאה\nתעריף לכניסה חד פעמית 36 ₪\nתקף בימים א` - ו` בין השעות 22:00 עד 07:00 בבוקר שלמחרת\nובימי שבת וחגים בין השעות 07:00 עד 07:00 בבוקר שלמחרת\n75% הנחה לתושבי תל-אביב יפו\nהשהייה בחניון עד 15 דקות ללא תשלום\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
   "tariffs": [
    {
     "days": [
@@ -3644,7 +3644,7 @@
   "spaces": 121,
   "serves": "אוניברסיטת תל-אביב",
   "hours_text": "24 שעות 7 ימים בשבוע",
-  "tariff_text": "חד פעמי,\n44 ₪ \n(בין השעות 07:00 בבוקר ועד 07:00 בבוקר למחרת)\nעבור סטודנט / תושב תל אביב - יפו תו אזורי 19 ₪ \nהזיהוי באמצעות לוחית הרישוי, ההנחה תינתן לחניה רציפה של עד 96 שעות\nלאחר מכן החיוב יהיה לפי התעריף המלא\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
+  "tariff_text": "חד פעמי,\n44 ₪\n(בין השעות 07:00 בבוקר ועד 07:00 בבוקר למחרת)\nעבור סטודנט / תושב תל אביב - יפו תו אזורי 19 ₪\nהזיהוי באמצעות לוחית הרישוי, ההנחה תינתן לחניה רציפה של עד 96 שעות\nלאחר מכן החיוב יהיה לפי התעריף המלא\nבחניון זה התשלום הינו רק בכרטיס אשראי ו/או ישומון סלולארי.\nלא ניתן לשלם במזומן.",
   "tariffs": [
    {
     "days": [
@@ -9487,6 +9487,3173 @@
   ],
   "tariff_text": "שעה ראשונה 20 ₪\nכל רבע שעה 6 ₪\nחניה יומית\n₪50\nאובדן כרטיס\n100 ₪\nשישי שבת\nכניסה משעה 18:00 עד 06:00 למחרת 25 ש\"ח",
   "source_url": "https://www.greenparking.co.il/parkings/חניון-המסגר/",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "dizengoff-center",
+  "name": "חניון דיזנגוף סנטר",
+  "operator": "dizengoff-center",
+  "address": "דיזנגוף 61",
+  "lat": 32.07556,
+  "lng": 34.77448,
+  "source_url": "https://www.dizengof-center.co.il/useful-info/parking",
+  "tariffs": [
+   {
+    "days": [
+     "sun",
+     "mon",
+     "tue",
+     "wed",
+     "thu"
+    ],
+    "from": "18:00",
+    "to": "06:00",
+    "kind": "per_minute",
+    "rate": 15,
+    "daily_max": 35,
+    "tiers": [
+     [
+      60,
+      24
+     ]
+    ]
+   },
+   {
+    "days": [
+     "fri"
+    ],
+    "from": "16:00",
+    "to": "06:00",
+    "kind": "per_minute",
+    "rate": 15,
+    "daily_max": 35,
+    "tiers": [
+     [
+      60,
+      24
+     ]
+    ]
+   },
+   {
+    "days": [
+     "sun",
+     "mon",
+     "tue",
+     "wed",
+     "thu"
+    ],
+    "from": "06:00",
+    "to": "18:00",
+    "kind": "per_minute",
+    "rate": 15,
+    "daily_max": 85,
+    "tiers": [
+     [
+      60,
+      24
+     ]
+    ]
+   },
+   {
+    "days": [
+     "fri"
+    ],
+    "from": "06:00",
+    "to": "16:00",
+    "kind": "per_minute",
+    "rate": 15,
+    "daily_max": 85,
+    "tiers": [
+     [
+      60,
+      24
+     ]
+    ]
+   },
+   {
+    "days": [
+     "sat"
+    ],
+    "from": "06:00",
+    "to": "06:00",
+    "kind": "per_minute",
+    "rate": 15,
+    "daily_max": 85,
+    "tiers": [
+     [
+      60,
+      24
+     ]
+    ]
+   }
+  ],
+  "tariff_text": "תעריף יום (כניסה משעה 06:00)\nשעה ראשונה 24 ש\"ח שעה שניה 15 ש\"ח כל שעה נוספת 15 ש\"ח מחיר מקסימלי 85 ש\"ח\nתעריף לילה בימי א-ה (כניסה משעה 18:00 יציאה עד 9:00) שעה ראשונה 24 ש\"ח שעה שניה 15 ש\"ח מחיר מקסימלי 35 ש\"ח\nבימי שישי יחל תעריף לילה לכניסה החל בשעה 16:00\nבחישוב לפי דקות",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "sarona-gindi",
+  "name": "חניון שרונה (גינדי)",
+  "operator": "sarona",
+  "address": "אלוף קלמן מגן 3",
+  "lat": 32.07134,
+  "lng": 34.7876,
+  "source_url": "https://www.saronaparking.co.il/",
+  "tariffs": [
+   {
+    "days": [
+     "sun",
+     "mon",
+     "tue",
+     "wed",
+     "thu",
+     "fri",
+     "sat"
+    ],
+    "from": "00:00",
+    "to": "00:00",
+    "kind": "per_minute",
+    "rate": 30,
+    "daily_max": 115,
+    "tiers": [
+     [
+      30,
+      36
+     ]
+    ]
+   }
+  ],
+  "tariff_text": "תעריף לדקה בין הדקות 1-30 ₪0.60\nהחל מהדקה ה-31 ₪0.50\nחנייה יומית/אובדן כרטיס ₪115",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "azrieli-center",
+  "name": "חניון מרכז עזריאלי",
+  "operator": "azrieli",
+  "address": "דרך מנחם בגין 132",
+  "lat": 32.07387,
+  "lng": 34.79107,
+  "source_url": "https://www.azrielimalls.co.il/malls/tel-aviv/useful-information",
+  "tariffs": [
+   {
+    "days": [
+     "fri",
+     "sat",
+     "holiday"
+    ],
+    "from": "00:00",
+    "to": "00:00",
+    "kind": "per_minute",
+    "rate": 24,
+    "daily_max": 25
+   },
+   {
+    "days": [
+     "sun",
+     "mon",
+     "tue",
+     "wed",
+     "thu"
+    ],
+    "from": "17:00",
+    "to": "00:00",
+    "kind": "per_minute",
+    "rate": 24,
+    "daily_max": 25
+   },
+   {
+    "days": [
+     "sun",
+     "mon",
+     "tue",
+     "wed",
+     "thu"
+    ],
+    "from": "00:00",
+    "to": "17:00",
+    "kind": "per_minute",
+    "rate": 24,
+    "daily_max": 100
+   }
+  ],
+  "tariff_text": "תעריף לכל דקה: 40 אגורות. תעריף מקסימום ליום שלם: 100 ₪. לנכנסים בשעות 17:00-24:00, 40 אגורות לדקה עד מקסימום 25 ₪. שישי /שבת /חג -40 אגורות לדקה עד מקסימום 25 ₪.",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "azrieli-sarona",
+  "name": "חניון עזריאלי שרונה",
+  "operator": "azrieli",
+  "address": "דרך מנחם בגין 121",
+  "lat": 32.07204,
+  "lng": 34.78899,
+  "source_url": "https://www.azrielimalls.co.il/malls/tel-aviv/useful-information",
+  "tariffs": [
+   {
+    "days": [
+     "fri",
+     "sat",
+     "holiday"
+    ],
+    "from": "00:00",
+    "to": "00:00",
+    "kind": "per_minute",
+    "rate": 30,
+    "daily_max": 25
+   },
+   {
+    "days": [
+     "sun",
+     "mon",
+     "tue",
+     "wed",
+     "thu"
+    ],
+    "from": "18:00",
+    "to": "00:00",
+    "kind": "per_minute",
+    "rate": 30,
+    "daily_max": 25
+   },
+   {
+    "days": [
+     "sun",
+     "mon",
+     "tue",
+     "wed",
+     "thu"
+    ],
+    "from": "00:00",
+    "to": "18:00",
+    "kind": "per_minute",
+    "rate": 30,
+    "daily_max": 100
+   }
+  ],
+  "tariff_text": "תעריף לכל דקה: 50 אגורות יום שלם 100 ₪ לנכנסים בשעות 18:00-24:00 , 50 אגורות לדקה עד מקסימום 25 ₪ שישי/שבת/חג 50 אגורות לדקה עד מקסימום 25 ₪",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "azrieli-town",
+  "name": "חניון עזריאלי טאון",
+  "operator": "azrieli",
+  "address": "דרך מנחם בגין 146",
+  "lat": 32.07831,
+  "lng": 34.79393,
+  "source_url": "https://www.azrielimalls.co.il/malls/tel-aviv/useful-information",
+  "tariffs": [
+   {
+    "days": [
+     "fri",
+     "sat",
+     "holiday"
+    ],
+    "from": "00:00",
+    "to": "00:00",
+    "kind": "per_minute",
+    "rate": 30,
+    "daily_max": 25
+   },
+   {
+    "days": [
+     "sun",
+     "mon",
+     "tue",
+     "wed",
+     "thu"
+    ],
+    "from": "00:00",
+    "to": "00:00",
+    "kind": "per_minute",
+    "rate": 30,
+    "daily_max": 100
+   }
+  ],
+  "tariff_text": "תעריף לכל דקה: 50 אגורות. תעריף מקסימלי ליום שלם: 100 ₪. שישי/שבת/חג עד השעה 24:00, 50 אגורות לדקה עד מקסימום 25 ₪",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-1",
+  "name": "חניון ציבורי",
+  "operator": "registry",
+  "address": "",
+  "lat": 32.063163,
+  "lng": 34.783012,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-2",
+  "name": "חניון חכמי דוד",
+  "operator": "registry",
+  "address": "",
+  "lat": 32.063271,
+  "lng": 34.784479,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-3",
+  "name": "חניון עתידים לתעשיות עתירות",
+  "operator": "registry",
+  "address": "",
+  "lat": 32.114166,
+  "lng": 34.84297,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-4",
+  "name": "חניון כלל",
+  "operator": "registry",
+  "address": "",
+  "lat": 32.115597,
+  "lng": 34.843123,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-7",
+  "name": "חניון הזיתים",
+  "operator": "registry",
+  "address": "",
+  "lat": 32.051949,
+  "lng": 34.764868,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-9",
+  "name": "חניון מגדל המאה",
+  "operator": "registry",
+  "address": "אבן גבירול 124",
+  "lat": 32.087058,
+  "lng": 34.78231,
+  "spaces": 447,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-10",
+  "name": "חניון לונדון מינסטור",
+  "operator": "registry",
+  "address": "אבן גבירול 30",
+  "lat": 32.075178,
+  "lng": 34.782049,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-11",
+  "name": "חניון בית אליהו",
+  "operator": "registry",
+  "address": "אבן גבירול 31",
+  "lat": 32.075124,
+  "lng": 34.781482,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-12",
+  "name": "חניון גן העיר",
+  "operator": "registry",
+  "address": "אבן גבירול 71",
+  "lat": 32.082306,
+  "lng": 34.781059,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-19",
+  "name": "חניון שחר-אבא אחמאיר",
+  "operator": "registry",
+  "address": "אחימאיר אבא 15",
+  "lat": 32.12502,
+  "lng": 34.801485,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-21",
+  "name": "חניון אידלסון",
+  "operator": "registry",
+  "address": "אידלסון 8",
+  "lat": 32.073747,
+  "lng": 34.767708,
+  "spaces": 51,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-22",
+  "name": "חניון יאיר השחר",
+  "operator": "registry",
+  "address": "אילת 19א",
+  "lat": 32.057529,
+  "lng": 34.762614,
+  "spaces": 59,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-23",
+  "name": "חניון החוף",
+  "operator": "registry",
+  "address": "אילת 22",
+  "lat": 32.057736,
+  "lng": 34.763811,
+  "spaces": 24,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-24",
+  "name": "חניון אברבנל",
+  "operator": "registry",
+  "address": "אילת 56",
+  "lat": 32.059338,
+  "lng": 34.767042,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-25",
+  "name": "חניון קניון רמת אביב",
+  "operator": "registry",
+  "address": "אינשטיין 40",
+  "lat": 32.112492,
+  "lng": 34.796778,
+  "spaces": 1569,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-26",
+  "name": "חניון איינשטיין 7",
+  "operator": "registry",
+  "address": "אינשטיין 7",
+  "lat": 32.112429,
+  "lng": 34.787143,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-28",
+  "name": "חניון הפלמ\"ח",
+  "operator": "registry",
+  "address": "אלון יגאל 1",
+  "lat": 32.054163,
+  "lng": 34.791391,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-29",
+  "name": "חניון בית קליפורניה",
+  "operator": "registry",
+  "address": "אלון יגאל 120",
+  "lat": 32.073819,
+  "lng": 34.795428,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-30",
+  "name": "חניון אלון יגאל 126",
+  "operator": "registry",
+  "address": "אלון יגאל 126",
+  "lat": 32.074476,
+  "lng": 34.795671,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-31",
+  "name": "חניון עמק ברכה",
+  "operator": "registry",
+  "address": "אלון יגאל 141",
+  "lat": 32.077068,
+  "lng": 34.796287,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-33",
+  "name": "חניון אשדר",
+  "operator": "registry",
+  "address": "אלון יגאל 57",
+  "lat": 32.063271,
+  "lng": 34.791886,
+  "spaces": 646,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-34",
+  "name": "חניון ש.ש.חניונים",
+  "operator": "registry",
+  "address": "אלון יגאל 63",
+  "lat": 32.065399,
+  "lng": 34.792294,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-35",
+  "name": "חניון אלון",
+  "operator": "registry",
+  "address": "אלון יגאל 94",
+  "lat": 32.068428,
+  "lng": 34.793668,
+  "spaces": 1047,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-36",
+  "name": "חניון אלקטרה",
+  "operator": "registry",
+  "address": "אלון יגאל 96",
+  "lat": 32.069427,
+  "lng": 34.793812,
+  "spaces": 1516,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-39",
+  "name": "חניון אליפלט",
+  "operator": "registry",
+  "address": "אליפלט 4",
+  "lat": 32.055288,
+  "lng": 34.765129,
+  "spaces": 27,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-40",
+  "name": "חניון בית הכנסת הגדול",
+  "operator": "registry",
+  "address": "אלנבי 110",
+  "lat": 32.064342,
+  "lng": 34.77237,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-41",
+  "name": "חניון אלנבי",
+  "operator": "registry",
+  "address": "אלנבי 115",
+  "lat": 32.062416,
+  "lng": 34.773459,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-42",
+  "name": "חניון מוגרבי",
+  "operator": "registry",
+  "address": "אלנבי 25",
+  "lat": 32.073072,
+  "lng": 34.768639,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-43",
+  "name": "חניון מגדל הפלטינום",
+  "operator": "registry",
+  "address": "אלעזר דוד 34",
+  "lat": 32.070394,
+  "lng": 34.787994,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-45",
+  "name": "חניון אמץ",
+  "operator": "registry",
+  "address": "אמץ 8",
+  "lat": 32.052696,
+  "lng": 34.762204,
+  "spaces": 32,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-46",
+  "name": "חניון נירים",
+  "operator": "registry",
+  "address": "אנילביץ מרדכי 53",
+  "lat": 32.06382,
+  "lng": 34.789825,
+  "spaces": 128,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-48",
+  "name": "חניון גוף ראשון",
+  "operator": "registry",
+  "address": "ארלוזורוב 62",
+  "lat": 32.086158,
+  "lng": 34.777419,
+  "spaces": 22,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-55",
+  "name": "חניון מגדל היובל",
+  "operator": "registry",
+  "address": "בגין מנחם 125",
+  "lat": 32.072856,
+  "lng": 34.789407,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-59",
+  "name": "חניון עזיראלי טאון e",
+  "operator": "registry",
+  "address": "בגין מנחם 148",
+  "lat": 32.07876,
+  "lng": 34.794622,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-60",
+  "name": "חניון מקדן חניון קרדן",
+  "operator": "registry",
+  "address": "בגין מנחם 154",
+  "lat": 32.079381,
+  "lng": 34.795504,
+  "spaces": 326,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-61",
+  "name": "חניון מגדל לוינשטין",
+  "operator": "registry",
+  "address": "בגין מנחם 23",
+  "lat": 32.063838,
+  "lng": 34.780029,
+  "spaces": 378,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-62",
+  "name": "חניון בגין 24",
+  "operator": "registry",
+  "address": "בגין מנחם 24",
+  "lat": 32.060994,
+  "lng": 34.777468,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-64",
+  "name": "חניון בית רובישנטיין",
+  "operator": "registry",
+  "address": "בגין מנחם 37",
+  "lat": 32.065152,
+  "lng": 34.782351,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-65",
+  "name": "חניון מגדלי העיר",
+  "operator": "registry",
+  "address": "בגין מנחם 48",
+  "lat": 32.062884,
+  "lng": 34.78051,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-66",
+  "name": "חניון רח' המלאכה",
+  "operator": "registry",
+  "address": "בגין מנחם 74",
+  "lat": 32.066502,
+  "lng": 34.784637,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-70",
+  "name": "חניון אהרון חניונים",
+  "operator": "registry",
+  "address": "בית עובד 10",
+  "lat": 32.063928,
+  "lng": 34.787458,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-71",
+  "name": "חניון רשת חניוני M.M.N.",
+  "operator": "registry",
+  "address": "בית עובד 15",
+  "lat": 32.064117,
+  "lng": 34.787944,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-72",
+  "name": "חניון הדרך",
+  "operator": "registry",
+  "address": "בית עובד 9",
+  "lat": 32.064324,
+  "lng": 34.787301,
+  "spaces": 115,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-73",
+  "name": "חניון בלפור",
+  "operator": "registry",
+  "address": "בלפור 7",
+  "lat": 32.068455,
+  "lng": 34.771735,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-76",
+  "name": "חניון מלון דבורה",
+  "operator": "registry",
+  "address": "בן יהודה 91",
+  "lat": 32.082999,
+  "lng": 34.771303,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-77",
+  "name": "חניון החוף",
+  "operator": "registry",
+  "address": "בן עזריה אלעזר 8",
+  "lat": 32.05383,
+  "lng": 34.757605,
+  "spaces": 22,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-78",
+  "name": "חניון בית דחף",
+  "operator": "registry",
+  "address": "בן צבי 2",
+  "lat": 32.050455,
+  "lng": 34.759369,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-79",
+  "name": "חניון פ.פ.א. נדל''ן 2007",
+  "operator": "registry",
+  "address": "בן צבי 84",
+  "lat": 32.041932,
+  "lng": 34.771816,
+  "spaces": 340,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-80",
+  "name": "חניון א.י ניהול נעסים",
+  "operator": "registry",
+  "address": "בן שמן 11",
+  "lat": 32.074152,
+  "lng": 34.794289,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-81",
+  "name": "חניון גזית גלוב",
+  "operator": "registry",
+  "address": "בקר אהרון 8",
+  "lat": 32.122878,
+  "lng": 34.81651,
+  "spaces": 181,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-82",
+  "name": "חניון מגדל המוזאון",
+  "operator": "registry",
+  "address": "ברקוביץ 4",
+  "lat": 32.078526,
+  "lng": 34.787044,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-86",
+  "name": "חניון הדרך",
+  "operator": "registry",
+  "address": "גולדמן נחום 6",
+  "lat": 32.056557,
+  "lng": 34.757016,
+  "spaces": 113,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-87",
+  "name": "חניון החוף",
+  "operator": "registry",
+  "address": "גרוזנברג 1",
+  "lat": 32.064603,
+  "lng": 34.768045,
+  "spaces": 19,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-91",
+  "name": "חניון פארק עתידים",
+  "operator": "registry",
+  "address": "דבורה הנביאה 121",
+  "lat": 32.113194,
+  "lng": 34.844293,
+  "spaces": 831,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-92",
+  "name": "חניון רונימור מגדל ויתניה",
+  "operator": "registry",
+  "address": "דבורה הנביאה 122",
+  "lat": 32.114094,
+  "lng": 34.841004,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-93",
+  "name": "חניון רמי לוי רמת החייל - חניון",
+  "operator": "registry",
+  "address": "דבורה הנביאה 126",
+  "lat": 32.113293,
+  "lng": 34.842219,
+  "spaces": 121,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-103",
+  "name": "חניון שוק הכרמל",
+  "operator": "registry",
+  "address": "דניאל 24",
+  "lat": 32.067366,
+  "lng": 34.765665,
+  "spaces": 323,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-104",
+  "name": "חניון הדרך",
+  "operator": "registry",
+  "address": "דניאל 8",
+  "lat": 32.068491,
+  "lng": 34.764058,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-105",
+  "name": "חניון התיכון",
+  "operator": "registry",
+  "address": "הארבעה 19",
+  "lat": 32.070525,
+  "lng": 34.786887,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-108",
+  "name": "חניון אונדליין",
+  "operator": "registry",
+  "address": "הארד 6",
+  "lat": 32.111692,
+  "lng": 34.840586,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-109",
+  "name": "חניון מקאן מל אביב",
+  "operator": "registry",
+  "address": "הברזל 1",
+  "lat": 32.106669,
+  "lng": 34.835019,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-112",
+  "name": "חניון חנין מאיה",
+  "operator": "registry",
+  "address": "הברזל 2",
+  "lat": 32.106471,
+  "lng": 34.835658,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-113",
+  "name": "חניון אסותא רמת החייל",
+  "operator": "registry",
+  "address": "הברזל 20",
+  "lat": 32.108082,
+  "lng": 34.838866,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-115",
+  "name": "חניון מגדלי אור",
+  "operator": "registry",
+  "address": "הברזל 27",
+  "lat": 32.109729,
+  "lng": 34.84036,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-116",
+  "name": "חניון נכסי אריאל",
+  "operator": "registry",
+  "address": "הברזל 28",
+  "lat": 32.109495,
+  "lng": 34.840873,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-117",
+  "name": "חניון הברזל 31",
+  "operator": "registry",
+  "address": "הברזל 31",
+  "lat": 32.110278,
+  "lng": 34.841116,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-118",
+  "name": "חניון נכסי אריאל-עוגן רמת החיל,",
+  "operator": "registry",
+  "address": "הברזל 6",
+  "lat": 32.106858,
+  "lng": 34.836459,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-119",
+  "name": "חניון הגדוד העברי 30",
+  "operator": "registry",
+  "address": "הגדוד העברי 30",
+  "lat": 32.059365,
+  "lng": 34.776928,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-120",
+  "name": "חניון הגדוד העברי 45",
+  "operator": "registry",
+  "address": "הגדוד העברי 45",
+  "lat": 32.058141,
+  "lng": 34.779448,
+  "spaces": 29,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-121",
+  "name": "חניון התקוה",
+  "operator": "registry",
+  "address": "ההגנה 76א",
+  "lat": 32.053839,
+  "lng": 34.790253,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-124",
+  "name": "חניון חשמונאים",
+  "operator": "registry",
+  "address": "החשמונאים 86",
+  "lat": 32.069373,
+  "lng": 34.783305,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-126",
+  "name": "חניון קניון העיר ת\"א",
+  "operator": "registry",
+  "address": "החשמונאים 94",
+  "lat": 32.068617,
+  "lng": 34.785127,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-132",
+  "name": "חניון בוגרשוב דינוביץ שד",
+  "operator": "registry",
+  "address": "הירקון 107",
+  "lat": 32.080218,
+  "lng": 34.768099,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-133",
+  "name": "חניון מלון יובל",
+  "operator": "registry",
+  "address": "הירקון 111",
+  "lat": 32.080731,
+  "lng": 34.768293,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-134",
+  "name": "חניון מלון קוסמופוליטן",
+  "operator": "registry",
+  "address": "הירקון 115",
+  "lat": 32.081091,
+  "lng": 34.768203,
+  "spaces": 142,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-135",
+  "name": "חניון אתרים 2",
+  "operator": "registry",
+  "address": "הירקון 133",
+  "lat": 32.08272,
+  "lng": 34.768581,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-136",
+  "name": "חניון אולימפיה חניון",
+  "operator": "registry",
+  "address": "הירקון 162",
+  "lat": 32.084664,
+  "lng": 34.769868,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-137",
+  "name": "חניון אתרים",
+  "operator": "registry",
+  "address": "הירקון 165",
+  "lat": 32.086005,
+  "lng": 34.769994,
+  "spaces": 365,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-138",
+  "name": "חניון רויאל ביץ",
+  "operator": "registry",
+  "address": "הירקון 19",
+  "lat": 32.0703,
+  "lng": 34.764562,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-139",
+  "name": "חניון הילטון",
+  "operator": "registry",
+  "address": "הירקון 205",
+  "lat": 32.089218,
+  "lng": 34.77066,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-140",
+  "name": "חניון הילטון 2",
+  "operator": "registry",
+  "address": "הירקון 241",
+  "lat": 32.089355,
+  "lng": 34.771378,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-141",
+  "name": "חניון החוף",
+  "operator": "registry",
+  "address": "הירקון 299",
+  "lat": 32.094915,
+  "lng": 34.773976,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-142",
+  "name": "חניון מאיה",
+  "operator": "registry",
+  "address": "הירקון 63",
+  "lat": 32.075817,
+  "lng": 34.766601,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-146",
+  "name": "חניון ע.ר. פתרונות חניה ירוקים",
+  "operator": "registry",
+  "address": "הכרמל 11",
+  "lat": 32.068329,
+  "lng": 34.768275,
+  "spaces": 39,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-148",
+  "name": "חניון מאיה",
+  "operator": "registry",
+  "address": "הלוחמים 11",
+  "lat": 32.036901,
+  "lng": 34.760998,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-150",
+  "name": "חניון הדרך",
+  "operator": "registry",
+  "address": "הלל הזקן 14",
+  "lat": 32.070012,
+  "lng": 34.769688,
+  "spaces": 17,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-152",
+  "name": "חניון בצלאל ניהול",
+  "operator": "registry",
+  "address": "המלך ג'ורג' 35",
+  "lat": 32.072811,
+  "lng": 34.774201,
+  "spaces": 348,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-155",
+  "name": "חניון המסגר 6",
+  "operator": "registry",
+  "address": "המסגר 6",
+  "lat": 32.060364,
+  "lng": 34.784736,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-156",
+  "name": "חניון בית אמפא",
+  "operator": "registry",
+  "address": "המסגר 9",
+  "lat": 32.062281,
+  "lng": 34.784664,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-162",
+  "name": "חניון הפלך",
+  "operator": "registry",
+  "address": "הפלך 10",
+  "lat": 32.050221,
+  "lng": 34.766326,
+  "spaces": 309,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-163",
+  "name": "חניון הצורפים",
+  "operator": "registry",
+  "address": "הצורפים 15",
+  "lat": 32.05383,
+  "lng": 34.753902,
+  "spaces": 47,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-164",
+  "name": "חניון צפירה",
+  "operator": "registry",
+  "address": "הצפירה 16",
+  "lat": 32.060004,
+  "lng": 34.783759,
+  "spaces": 60,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-169",
+  "name": "חניון פארק צארלס קלור",
+  "operator": "registry",
+  "address": "הרברט סמואל 1",
+  "lat": 32.066547,
+  "lng": 34.762114,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-171",
+  "name": "חניון סיטי רון אחזקות",
+  "operator": "registry",
+  "address": "הרכבת 28",
+  "lat": 32.062362,
+  "lng": 34.779502,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-173",
+  "name": "חניון הדרך",
+  "operator": "registry",
+  "address": "הרצל 108",
+  "lat": 32.05545,
+  "lng": 34.770723,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-174",
+  "name": "חניון השוק",
+  "operator": "registry",
+  "address": "השוק 46",
+  "lat": 32.056809,
+  "lng": 34.771227,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-176",
+  "name": "חניון היכל מנורה",
+  "operator": "registry",
+  "address": "השלושה 1",
+  "lat": 32.062218,
+  "lng": 34.788507,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-177",
+  "name": "חניון אי בי סי ניהול חניונים",
+  "operator": "registry",
+  "address": "השלושה 2",
+  "lat": 32.061777,
+  "lng": 34.788336,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-178",
+  "name": "חניון השרון",
+  "operator": "registry",
+  "address": "השרון 15",
+  "lat": 32.061975,
+  "lng": 34.778517,
+  "spaces": 30,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-179",
+  "name": "חניון השרון",
+  "operator": "registry",
+  "address": "השרון 9",
+  "lat": 32.061084,
+  "lng": 34.778107,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-183",
+  "name": "חניון דניאל פרקינג",
+  "operator": "registry",
+  "address": "התערוכה 3",
+  "lat": 32.097327,
+  "lng": 34.775655,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-184",
+  "name": "חניון VIP התקומה",
+  "operator": "registry",
+  "address": "התקומה 3",
+  "lat": 32.051715,
+  "lng": 34.760089,
+  "spaces": 61,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-186",
+  "name": "חניון מרכז ויצמן, ניהול ב",
+  "operator": "registry",
+  "address": "ויצמן 14",
+  "lat": 32.081289,
+  "lng": 34.789483,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-188",
+  "name": "חניון בית אסיה",
+  "operator": "registry",
+  "address": "ויצמן 4",
+  "lat": 32.07822,
+  "lng": 34.788817,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-189",
+  "name": "חניון סי יו",
+  "operator": "registry",
+  "address": "ולנברג ראול 18",
+  "lat": 32.109567,
+  "lng": 34.837345,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-190",
+  "name": "חניון מקאן תל אביב",
+  "operator": "registry",
+  "address": "ולנברג ראול 2",
+  "lat": 32.107407,
+  "lng": 34.834771,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-192",
+  "name": "חניון שותפות ניהול מגדלי זיו",
+  "operator": "registry",
+  "address": "ולנברג ראול 24",
+  "lat": 32.111421,
+  "lng": 34.839136,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-195",
+  "name": "חניון איריס",
+  "operator": "registry",
+  "address": "חומה ומגדל 4",
+  "lat": 32.061471,
+  "lng": 34.785735,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-196",
+  "name": "חניון הדרך",
+  "operator": "registry",
+  "address": "חומה ומגדל 8",
+  "lat": 32.062011,
+  "lng": 34.786005,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-200",
+  "name": "חניון מ. מטרופוליטן-חניון",
+  "operator": "registry",
+  "address": "טרומפלדור 11",
+  "lat": 32.075601,
+  "lng": 34.767429,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-204",
+  "name": "חניון יד חרוצים 12.(קרסו)",
+  "operator": "registry",
+  "address": "יד חרוצים 12",
+  "lat": 32.061777,
+  "lng": 34.782868,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-207",
+  "name": "חניון החוף",
+  "operator": "registry",
+  "address": "ילין מור נתן 4",
+  "lat": 32.068599,
+  "lng": 34.791144,
+  "spaces": 15,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-208",
+  "name": "חניון G כוכב הצפון",
+  "operator": "registry",
+  "address": "יערי מאיר 19",
+  "lat": 32.100234,
+  "lng": 34.787899,
+  "spaces": 51,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-209",
+  "name": "חניון THE JAFFA",
+  "operator": "registry",
+  "address": "יפת 36",
+  "lat": 32.052624,
+  "lng": 34.753272,
+  "spaces": 150,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-212",
+  "name": "חניון מוזיאון א\"י",
+  "operator": "registry",
+  "address": "לבנון חיים 6",
+  "lat": 32.103518,
+  "lng": 34.79697,
+  "spaces": 199,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-213",
+  "name": "חניון מוזיאון א\"י",
+  "operator": "registry",
+  "address": "לבנון חיים 6",
+  "lat": 32.10351,
+  "lng": 34.797964,
+  "spaces": 263,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-218",
+  "name": "חניון תחנה מרכזית תל אביב",
+  "operator": "registry",
+  "address": "לוינסקי 108",
+  "lat": 32.056458,
+  "lng": 34.779502,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-219",
+  "name": "חניון לוינסקי",
+  "operator": "registry",
+  "address": "לוינסקי 122",
+  "lat": 32.055909,
+  "lng": 34.781316,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-220",
+  "name": "חניון לוינסקי",
+  "operator": "registry",
+  "address": "לוינסקי 39",
+  "lat": 32.060121,
+  "lng": 34.771605,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-222",
+  "name": "חניון לינקולן",
+  "operator": "registry",
+  "address": "לינקולן 20",
+  "lat": 32.066034,
+  "lng": 34.782958,
+  "spaces": 72,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-223",
+  "name": "חניון נמל ת\"א",
+  "operator": "registry",
+  "address": "ליפקין שחק- שטח הנמל 7",
+  "lat": 32.096532,
+  "lng": 34.773601,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-226",
+  "name": "חניון מוזס 1",
+  "operator": "registry",
+  "address": "מוזס יהודה ונח 1",
+  "lat": 32.076393,
+  "lng": 34.79271,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-230",
+  "name": "חניון פלורנטין",
+  "operator": "registry",
+  "address": "מעון 23",
+  "lat": 32.05554,
+  "lng": 34.765759,
+  "spaces": 28,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-232",
+  "name": "חניון מבנה תעשיה",
+  "operator": "registry",
+  "address": "נחלת יצחק 18",
+  "lat": 32.074107,
+  "lng": 34.797849,
+  "spaces": 355,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-233",
+  "name": "חניון יאיר השחר",
+  "operator": "registry",
+  "address": "נחלת יצחק 34",
+  "lat": 32.073945,
+  "lng": 34.800094,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-234",
+  "name": "חניון מאיה",
+  "operator": "registry",
+  "address": "נחמיה 6",
+  "lat": 32.069139,
+  "lng": 34.764027,
+  "spaces": 53,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-236",
+  "name": "חניון בית רילון",
+  "operator": "registry",
+  "address": "נירים 1",
+  "lat": 32.062281,
+  "lng": 34.790491,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-238",
+  "name": "חניון נמל יפו",
+  "operator": "registry",
+  "address": "נמל יפו 5",
+  "lat": 32.049015,
+  "lng": 34.748209,
+  "spaces": 608,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-241",
+  "name": "חניון התכלת",
+  "operator": "registry",
+  "address": "נמל תל אביב 20",
+  "lat": 32.095064,
+  "lng": 34.77295,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-242",
+  "name": "חניון נמל ת\"א 40",
+  "operator": "registry",
+  "address": "נמל תל אביב 40",
+  "lat": 32.097219,
+  "lng": 34.774107,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-245",
+  "name": "חניון ARM",
+  "operator": "registry",
+  "address": "עזרא הסופר 4",
+  "lat": 32.069805,
+  "lng": 34.764171,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-250",
+  "name": "חניון דן ת\"א",
+  "operator": "registry",
+  "address": "פרישמן 4",
+  "lat": 32.07984,
+  "lng": 34.767865,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-251",
+  "name": "חניון פרישמן 46",
+  "operator": "registry",
+  "address": "פרישמן 46",
+  "lat": 32.079552,
+  "lng": 34.774386,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-253",
+  "name": "חניון בית הכהנים",
+  "operator": "registry",
+  "address": "צייטלין 1",
+  "lat": 32.079597,
+  "lng": 34.78155,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-257",
+  "name": "חניון דן פנורמה",
+  "operator": "registry",
+  "address": "קויפמן יחזקאל 10",
+  "lat": 32.064846,
+  "lng": 34.762866,
+  "spaces": 187,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-258",
+  "name": "חניון אילת 2",
+  "operator": "registry",
+  "address": "קויפמן יחזקאל 2",
+  "lat": 32.063118,
+  "lng": 34.762002,
+  "spaces": 71,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-266",
+  "name": "חניון הפשפשים",
+  "operator": "registry",
+  "address": "רבי פנחס 4",
+  "lat": 32.053128,
+  "lng": 34.754428,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-269",
+  "name": "חניון טופ דן",
+  "operator": "registry",
+  "address": "רוזן פנחס 72",
+  "lat": 32.11458,
+  "lng": 34.82583,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-270",
+  "name": "חניון מלון ווסט",
+  "operator": "registry",
+  "address": "רוזנבלום הרצל ד\"ר 12",
+  "lat": 32.138889,
+  "lng": 34.791508,
+  "spaces": 58,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-271",
+  "name": "חניון סי אנד סאן",
+  "operator": "registry",
+  "address": "רוזנבלום הרצל ד\"ר 9",
+  "lat": 32.138169,
+  "lng": 34.791886,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-273",
+  "name": "חניון רוטשילד 20",
+  "operator": "registry",
+  "address": "רוטשילד 20",
+  "lat": 32.062848,
+  "lng": 34.771308,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-274",
+  "name": "חניון אם .אנד.די ריל אסטייט",
+  "operator": "registry",
+  "address": "רוטשילד 28",
+  "lat": 32.063001,
+  "lng": 34.772244,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-275",
+  "name": "חניון בית ציון",
+  "operator": "registry",
+  "address": "רוטשילד 41",
+  "lat": 32.064144,
+  "lng": 34.774341,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-277",
+  "name": "חניון גיא",
+  "operator": "registry",
+  "address": "רוטשילד 58",
+  "lat": 32.064243,
+  "lng": 34.775952,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-278",
+  "name": "חניון פנימי מרכז ירידים",
+  "operator": "registry",
+  "address": "רוקח ישראל 101א",
+  "lat": 32.106597,
+  "lng": 34.813207,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-283",
+  "name": "חניון גולפיטק",
+  "operator": "registry",
+  "address": "רוקח ישראל 80",
+  "lat": 32.10063,
+  "lng": 34.801651,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-285",
+  "name": "חניון פתרונות חניה ירוקים",
+  "operator": "registry",
+  "address": "רמב\"ם 12",
+  "lat": 32.067762,
+  "lng": 34.769499,
+  "spaces": 21,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-286",
+  "name": "חניון דרייב אין",
+  "operator": "registry",
+  "address": "רמבה אייזיק 5",
+  "lat": 32.107385,
+  "lng": 34.808275,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-287",
+  "name": "חניון האמץ",
+  "operator": "registry",
+  "address": "שארית ישראל 19",
+  "lat": 32.052876,
+  "lng": 34.761768,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-288",
+  "name": "חניון רמות בנייני רובינשטיין",
+  "operator": "registry",
+  "address": "שדה יצחק 4",
+  "lat": 32.065395,
+  "lng": 34.78461,
+  "spaces": 762,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-290",
+  "name": "חניון ליטל",
+  "operator": "registry",
+  "address": "שונצינו 23",
+  "lat": 32.067996,
+  "lng": 34.787985,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-292",
+  "name": "חניון חצרות יפו",
+  "operator": "registry",
+  "address": "שלמה 2",
+  "lat": 32.054784,
+  "lng": 34.760022,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-293",
+  "name": "חניון הדרך",
+  "operator": "registry",
+  "address": "שלמה 32",
+  "lat": 32.054424,
+  "lng": 34.764247,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-294",
+  "name": "חניון שמרלינג 2",
+  "operator": "registry",
+  "address": "שמרלינג 2",
+  "lat": 32.061615,
+  "lng": 34.762123,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-295",
+  "name": "חניון שרבט סהר",
+  "operator": "registry",
+  "address": "שנקר אריה 3",
+  "lat": 32.062713,
+  "lng": 34.762866,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-297",
+  "name": "חניון בית צרפת (דלדר)",
+  "operator": "registry",
+  "address": "תובל 5",
+  "lat": 32.070273,
+  "lng": 34.794942,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-298",
+  "name": "חניון מגדל תוהא",
+  "operator": "registry",
+  "address": "תוצרת הארץ 6",
+  "lat": 32.073252,
+  "lng": 34.796031,
+  "spaces": 950,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "registry-299",
+  "name": "חניון בית טפר",
+  "operator": "registry",
+  "address": "תל גבורים 5",
+  "lat": 32.041257,
+  "lng": 34.770156,
+  "spaces": 92,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-node-4166597201",
+  "name": "חניון הבימה",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.0733066,
+  "lng": 34.778817,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/node/4166597201",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-34333914",
+  "name": "חניון הספורטק",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.0988632,
+  "lng": 34.78913,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/34333914",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-37573583",
+  "name": "חניון נמל תל אביב",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.0960112,
+  "lng": 34.7726921,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/37573583",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-90503110",
+  "name": "חניון אח\"י דקר",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.1193093,
+  "lng": 34.8397377,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/90503110",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-98426422",
+  "name": "חניון עבודה סוציאלית והנדסה",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.1081127,
+  "lng": 34.8048596,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/98426422",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-98602599",
+  "name": "חניון הגולפיטק",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.1002662,
+  "lng": 34.796969,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/98602599",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-98867826",
+  "name": "חניון בלומפילד",
+  "operator": "osm",
+  "address": "שלבים 11",
+  "lat": 32.0509019,
+  "lng": 34.764339,
+  "spaces": 350,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/98867826",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-101471468",
+  "name": "חניון מטודלרה פתוח לקהל",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.1097267,
+  "lng": 34.8273839,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/101471468",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-104301500",
+  "name": "חניון הדולפינריום",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.0647686,
+  "lng": 34.7618041,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/104301500",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-116398746",
+  "name": "חניון וולפסון",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.0589243,
+  "lng": 34.8074685,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/116398746",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-151717170",
+  "name": "חניון אבקה אלי",
+  "operator": "osm",
+  "address": "אלנבי 102",
+  "lat": 32.0653749,
+  "lng": 34.7718589,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/151717170",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-156587627",
+  "name": "חניון יד אליהו",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.0608066,
+  "lng": 34.7901567,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/156587627",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-162269103",
+  "name": "חניון רידינג צפון",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.1008986,
+  "lng": 34.7802325,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/162269103",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-189260766",
+  "name": "חניון שפע טל",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.0721511,
+  "lng": 34.7909786,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/189260766",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-361318266",
+  "name": "חניון קרן הקריה",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.0773938,
+  "lng": 34.7913753,
+  "spaces": 300,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/361318266",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-374720368",
+  "name": "חניון TLV",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.0699463,
+  "lng": 34.7845362,
+  "spaces": 1000,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/374720368",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-529125859",
+  "name": "חניון דניאל",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.1000535,
+  "lng": 34.7787995,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/529125859",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-536317860",
+  "name": "חניון הנציב",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.0713038,
+  "lng": 34.7906304,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/536317860",
+  "verified_at": "2026-10-06"
+ },
+ {
+  "id": "osm-way-1085295551",
+  "name": "חניון הנדסה",
+  "operator": "osm",
+  "address": "",
+  "lat": 32.107937,
+  "lng": 34.8056461,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "source_url": "https://www.openstreetmap.org/way/1085295551",
   "verified_at": "2026-10-06"
  }
 ]

@@ -1,21 +1,23 @@
-// Pipeline: TLV GIS layer 970 (coords, live key) + ahuzot.co.il lot pages (tariffs), Central Park and Green Parking
+// Pipeline: TLV GIS layer 970 (coords, live key) + ahuzot.co.il lot pages (tariffs), private operators, and unpriced
+// public lots from the city license registry and OpenStreetMap
 // -> data/lots.json, plus data/holidays.json from hebcal. Exits non-zero when something needs a human (CI then fails loudly).
 import { readFileSync, writeFileSync } from "node:fs";
+import { setTimeout as sleep } from "node:timers/promises";
 import { HebrewCalendar, flags } from "@hebcal/core";
 import { parseTariff, ALL_DAYS } from "./parse.ts";
 import { overrides } from "./overrides.ts";
-import { centralPark, green } from "./operators.ts";
-import { gisQuery, geocode } from "../src/places.ts";
+import { centralPark, green, single, text as clean } from "./operators.ts";
+import { registry, osm } from "./opendata.ts";
+import { gisQuery, geocode, UA } from "../src/places.ts";
 import type { Lot } from "../src/engine.ts";
 
-const UA = "tlv-parking-bot/1.0 (+https://github.com/roeeBuchler/tlv-parking)";
 const today = new Date().toISOString().slice(0, 10);
 const problems: string[] = [];
 
 // 1. holidays (Israel): CHAG days, and the day before each as its eve
 const year = new Date().getFullYear();
 const holidays: Record<string, string> = {};
-const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const iso = (d: Date) => d.toLocaleDateString("en-CA");
 for (const e of HebrewCalendar.calendar({ start: new Date(year, 0, 1), end: new Date(year + 2, 0, 1), il: true })) {
   if (!(e.getFlags() & flags.CHAG)) continue;
   const d = e.getDate().greg();
@@ -40,18 +42,16 @@ const get = async (url: string, tries = 3): Promise<string> => {
     return await r.text();
   } catch (e) {
     if (tries <= 1) throw e;
-    await new Promise((r) => setTimeout(r, 5000));
+    await sleep(5000);
     return get(url, tries - 1);
   }
 };
-const clean = (h: string) => h.replace(/<br\s*\/?>|<\/p>/g, "\n").replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ")
-  .replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/[ \t]+/g, " ").replace(/\n\s*/g, "\n").trim();
 const ids = [...new Set([...(await get("https://www.ahuzot.co.il/Parking/All/")).matchAll(/ParkingDetails\/\?ID=(\d+)/g)].map((m) => +m[1]))];
 if (ids.length < 80) problems.push(`Only ${ids.length} lots on ahuzot.co.il/Parking/All (expected ~88)`);
 
 const lots = [];
 for (const id of ids) {
-  await new Promise((r) => setTimeout(r, 1000));
+  await sleep(1000);
   const source_url = `https://www.ahuzot.co.il/Parking/ParkingDetails/?ID=${id}`;
   const html = await get(source_url);
   const cells = [...html.matchAll(/<td class="ParkingTable(Header)?"[^>]*>([\s\S]*?)<\/td>\s*<\/tr>/g)].map((m) => clean(m[2]));
@@ -76,9 +76,17 @@ for (const id of ids) {
 }
 
 // 4. private operators
-lots.push(...await centralPark(get, today, problems), ...await green(get, today, problems));
+lots.push(...await centralPark(get, today, problems), ...await green(get, today, problems), ...await single(get, today, problems));
+let old: any[] = [];
+try { old = JSON.parse(readFileSync("data/lots.json", "utf8")); } catch {}
 
-// 5. checks: every entry time of a week (+ holiday/eve days) must hit a rule; prices must not jump > 50%
+// 5. lots without a published price (open data); OSM is best effort, last week's copy if Overpass is down
+lots.push(...await registry(lots, today, problems));
+const fromOsm = await osm(lots, today);
+if (!fromOsm) console.warn("Overpass unreachable: keeping last week's OpenStreetMap lots");
+lots.push(...(fromOsm ?? old.filter((o) => o.operator === "osm")));
+
+// 6. checks: every entry time of a week (+ holiday/eve days) must hit a rule; prices must not jump > 50%
 const probe = ["2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07", "2026-10-08", "2026-10-09", "2026-10-10",
   ...Object.keys(holidays).filter((d) => d >= today).slice(0, 6)];
 for (const l of lots as Lot[]) for (const rules of [l.tariffs, l.resident_tariffs, l.app_tariffs]) {
@@ -89,11 +97,12 @@ for (const l of lots as Lot[]) for (const rules of [l.tariffs, l.resident_tariff
   }
   for (const r of rules) if (!r.days.every((x) => ALL_DAYS.includes(x)) || !(r.rate ?? r.price ?? r.first_hour)) problems.push(`${l.id}: bad rule ${JSON.stringify(r)}`);
 }
-let old: any[] = [];
-try { old = JSON.parse(readFileSync("data/lots.json", "utf8")); } catch {}
 for (const o of old) {
   const n = lots.find((l) => l.id === o.id);
-  if (!n) { problems.push(`${o.id} ${o.name}: disappeared from its source`); continue; }
+  if (!n) { // open-data lots come and go (dedup against new priced lots, OSM edits); only priced sources are guarded
+    if (!["registry", "osm"].includes(o.operator)) problems.push(`${o.id} ${o.name}: disappeared from its source`);
+    continue;
+  }
   if (o.operator !== "ahuzot") continue; // jump check guards the free-text parser; Central Park's JSON has real weekly/event prices
   for (const [when, mins] of [["2026-10-04T10:00", 120], ["2026-10-04T20:00", 180], ["2026-10-10T14:00", 180]] as const) {
     const a = quote(o, parseLocal(when), mins).price_ils, b = quote(n as any, parseLocal(when), mins).price_ils;

@@ -6,8 +6,8 @@ import lotsJson from "../data/lots.json" with { type: "json" };
 import offersJson from "../data/offers.json" with { type: "json" };
 
 const lots = lotsJson as unknown as Lot[], offers = offersJson as unknown as Offer[];
-const lot = (id: number) => lots.find((l) => l.id === `ahuzot-${id}`)!;
-const q = (id: number, when: string, mins: number, profile = {}) => quote(lot(id), parseLocal(when), mins, profile, offers);
+const qq = (id: string, when: string, mins: number, profile = {}) => quote(lots.find((l) => l.id === id)!, parseLocal(when), mins, profile, offers);
+const q = (id: number, when: string, mins: number, profile = {}) => qq(`ahuzot-${id}`, when, mins, profile);
 const SAT = "2026-10-10", SUN = "2026-10-04", TUE = "2026-10-06";
 
 test("Habima (HaTarbut) – the plan's headline case", () => {
@@ -56,7 +56,6 @@ test("per-sign lots: free per city data (unverified) vs unknown", () => {
   assert.equal(q(133, `${SUN}T10:00`, 120).price_basis, "none");
 });
 
-const qq = (id: string, when: string, mins: number, profile = {}) => quote(lots.find((l) => l.id === id)!, parseLocal(when), mins, profile, offers);
 test("Central Park: gate vs app price, opening hours", () => {
   const gate = qq("centralpark-22", `${SUN}T10:00`, 120), app = qq("centralpark-22", `${SUN}T10:00`, 120, { apps: ["centralpark"] });
   assert.deepEqual([gate.price_ils, gate.gate_price_ils, gate.app_price_ils], [30, 30, 20]); // 15/h gate, 10/h app
@@ -71,4 +70,19 @@ test("Green: tiered per-minute, Shabbat and evening flats", () => {
   assert.equal(qq("green-541", `${SAT}T14:00`, 120).price_ils, 30); // Shabbat flat
   assert.equal(qq("green-1969", "2026-10-09T21:00", 120).price_ils, 15); // evening, Friday included
   assert.equal(qq("green-2142", `${SUN}T10:00`, 90).price_ils, 25 + 2 * 7); // first hour + 2 quarters
+});
+
+test("malls: Dizengoff Center, Azrieli, Sarona", () => {
+  assert.equal(qq("dizengoff-center", `${SUN}T10:00`, 120).price_ils, 24 + 15); // first hour 24, then 15/h by the minute
+  assert.equal(qq("dizengoff-center", `${SUN}T19:00`, 600).price_ils, 35); // night cap
+  assert.equal(qq("azrieli-center", `${SUN}T10:00`, 120).price_ils, 48); // 0.40/min
+  assert.equal(qq("azrieli-center", `${SAT}T14:00`, 180).price_ils, 25); // weekend cap
+  assert.equal(qq("azrieli-center", `${SUN}T18:00`, 180).price_ils, 25); // evening cap
+  assert.equal(qq("sarona-gindi", `${SUN}T10:00`, 120).price_ils, 30 * 0.6 + 90 * 0.5);
+});
+
+test("open-data lots: listed, no price", () => {
+  const l = lots.find((l) => l.operator === "registry")!;
+  const r = qq(l.id, `${SUN}T10:00`, 120);
+  assert.deepEqual([r.price_ils, r.price_basis], [null, "none"]);
 });

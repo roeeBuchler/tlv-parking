@@ -10,13 +10,14 @@ const LIVE = { free: "פנוי", few: "מעט מקומות", full: "מלא", clo
 const liveOf = (l) => (l.live && LIVE[l.live.status] ? l.live.status : null);
 const KIND = { flat: "כניסה חד-פעמית", per_minute: "לפי דקה", step: "לפי שעה" };
 const DAYS = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
-const OPERATOR = { ahuzot: "אחוזות החוף", centralpark: "סנטרל פארק", green: "גרין פרקינג" };
+const OPERATOR = { ahuzot: "אחוזות החוף", centralpark: "סנטרל פארק", green: "גרין פרקינג", "dizengoff-center": "דיזנגוף סנטר", sarona: "חניון שרונה (גינדי)",
+  azrieli: "עזריאלי", registry: "מרשם רישוי העסקים של העירייה", osm: "OpenStreetMap" };
 const ils = (n) => (n == null ? "לפי השילוט" : n === 0 ? "חינם" : `₪${+n.toFixed(2)}`);
 const price = (q) => (q.price_basis === "municipal_data_unverified" ? "חינם?" : ils(q.price_ils));
 // a lot's sign plate: colour = price band for the chosen time, dashed border = unverified, plain P = price per the sign
 const tier = (q) => q.price_ils == null ? "sign" : q.price_basis === "municipal_data_unverified" ? "t1 unv"
   : q.price_ils <= 20 ? "t1" : q.price_ils <= 40 ? "t2" : q.price_ils <= 80 ? "t3" : "t4";
-const face = (q) => q.price_ils == null ? "P" : q.price_basis === "municipal_data_unverified" ? "חינם?" : q.price_ils === 0 ? "חינם" : `₪${Math.round(q.price_ils)}`;
+const face = (q) => q.price_ils == null ? "P" : price({ ...q, price_ils: Math.round(q.price_ils) });
 
 // Asia/Jerusalem wall clock as fake-UTC ms, same convention as the API
 const DAY = 864e5, HOUR = 36e5;
@@ -113,7 +114,7 @@ async function openLot(id, fly = true) {
   const d = await r.json(), q = d.quote;
   const offer = (o) => q.applied_offers.includes(o.id) ? `<p class="note">ההטבה חלה עליכם: ${esc(o.title.he)}</p>`
     : q.potential_offers.includes(o.id) ? `<p class="note">אפשר לחסוך: ${esc(o.title.he)}</p>` : "";
-  const restricted = d.sign && !d.sign.free, op = OPERATOR[d.operator] ?? d.operator;
+  const restricted = d.sign && !d.sign.free && d.operator === "ahuzot", op = OPERATOR[d.operator] ?? d.operator;
   const dur = $("#dur").selectedOptions[0]?.text ?? `${q.duration_minutes} דק׳`;
   panel.innerHTML = `
     <button id="close" aria-label="סגירה">×</button>
@@ -121,7 +122,7 @@ async function openLot(id, fly = true) {
     <p class="sub">${esc(d.address)}<br>${esc(op)}${d.spaces ? `, ${d.spaces} מקומות` : ""}</p>
     <div class="board ${tier(q)}">
       ${q.price_ils == null ? `<div class="board-price small">לפי השילוט</div>` : `<div class="board-price" dir="ltr">${esc(price(q))}</div>`}
-      <div class="board-when">${whenText(q.start)}, ${q.start.slice(11)}–${endOf(q.start, q.duration_minutes)} (${esc(dur)})${state.res ? "<br>כולל הנחת תושב/ת ת״א" : ""}</div>
+      <div class="board-when">${whenText(q.start)}, <span dir="ltr">${q.start.slice(11)}–${endOf(q.start, q.duration_minutes)}</span> (${esc(dur)})${state.res ? "<br>כולל הנחת תושב/ת ת״א" : ""}</div>
     </div>
     ${q.app_price_ils != null ? `<div class="split"><div class="${state.cp ? "" : "on"}">בקופה<b dir="ltr">${ils(q.gate_price_ils)}</b></div><div class="${state.cp ? "on" : ""}">באפליקציית ${esc(op)}<b dir="ltr">${ils(q.app_price_ils)}</b></div></div>` : ""}
     <div class="facts">
@@ -136,7 +137,7 @@ async function openLot(id, fly = true) {
       <a class="btn" href="${esc(d.links.google_maps)}" target="_blank" rel="noopener">Google Maps</a>
       <button class="btn" id="share">העתקת קישור</button>
     </div>
-    <h3>התעריף המפורסם</h3><pre>${esc(d.tariff_text)}</pre>
+    ${d.tariff_text ? `<h3>התעריף המפורסם</h3><pre>${esc(d.tariff_text)}</pre>` : ""}
     ${d.hours_text ? `<h3>שעות פעילות</h3><p>${esc(d.hours_text)}</p>` : ""}
     ${d.serves ? `<p class="sub">משרת את ${esc(d.serves)}</p>` : ""}
     <p class="fine">המחיר הוא הערכה לפי התעריף שפורסם, והשילוט בחניון קובע. נבדק ב-${esc(d.verified_at)}.

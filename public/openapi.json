@@ -3,7 +3,7 @@
   "info": {
     "title": "TLV Parking",
     "version": "1.0.0",
-    "description": "Tel Aviv-Yafo parking lots with estimated prices for a time window. Times are Asia/Jerusalem. Prices are estimates; the sign at the gate prevails. Coverage: Ahuzot HaHof municipal lots, Central Park and Green Parking."
+    "description": "Tel Aviv-Yafo parking lots with estimated prices for a time window. Times are Asia/Jerusalem. Prices are estimates; the sign at the gate prevails. Coverage: Ahuzot HaHof municipal lots, Central Park, Green Parking, Azrieli, Dizengoff Center and Sarona with prices; other public lots (city license registry, OpenStreetMap) with price_ils null."
   },
   "servers": [{ "url": "/" }],
   "paths": {
@@ -49,9 +49,6 @@
         "parameters": [{ "name": "q", "in": "query", "required": true, "schema": { "type": "string" } }],
         "responses": { "200": { "description": "candidates[]" } }
       }
-    },
-    "/api/offers": {
-      "get": { "operationId": "listOffers", "summary": "Special parking deals and their conditions", "responses": { "200": { "description": "offers[]" } } }
     }
   }
 }
