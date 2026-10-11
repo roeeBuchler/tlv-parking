@@ -1,9 +1,10 @@
-import { Map, Marker, NavigationControl, GeolocateControl } from "https://cdn.jsdelivr.net/npm/maplibre-gl@6.12.0/dist/maplibre-gl.mjs";
+import { Map, Marker, Popup, NavigationControl, GeolocateControl } from "https://cdn.jsdelivr.net/npm/maplibre-gl@6.12.0/dist/maplibre-gl.mjs";
 
 const $ = (s) => document.querySelector(s);
 const panel = $("#panel"), list = $("#list");
 const P = new URL(location.href).searchParams;
-const state = { lot: P.get("lot"), when: P.get("when") ?? "", dur: P.get("dur") ?? "120", res: P.get("res") === "1", bus: P.get("bus") === "1", cp: P.get("cp") === "1", center: null, results: [], alts: [] };
+const state = { lot: P.get("lot"), when: P.get("when") ?? "", dur: P.get("dur") ?? "120", res: P.get("res") === "1", bus: P.get("bus") === "1", cp: P.get("cp") === "1",
+  ev: P.get("ev") === "1", cov: P.get("cov") === "1", acc: P.get("acc") === "1", h: P.get("h") ?? "", moto: P.get("moto") === "1", center: null, results: [], alts: [] };
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`); // scraped text: never raw HTML
 const LIVE = { free: "פנוי", few: "מעט מקומות", full: "מלא", closed: "סגור" }; // "open" / "unknown" carry no occupancy
@@ -36,11 +37,15 @@ function qs(extra = {}) {
   const apps = [...(state.bus ? ["pango", "cello"] : []), ...(state.cp ? ["centralpark"] : [])];
   if (apps.length) o.apps = apps.join(",");
   if (state.bus) o.transit = 1;
+  if (state.ev) o.ev = 1;
+  if (state.cov) o.covered = 1;
+  if (state.acc) o.accessible = 1;
+  if (state.h) o.height = state.h;
   return new URLSearchParams(o);
 }
 function sync() {
   const u = new URLSearchParams();
-  for (const [k, v] of [["lot", state.lot], ["when", state.when], ["dur", state.dur !== "120" && state.dur], ["res", state.res && 1], ["bus", state.bus && 1], ["cp", state.cp && 1]]) if (v) u.set(k, v);
+  for (const [k, v] of [["lot", state.lot], ["when", state.when], ["dur", state.dur !== "120" && state.dur], ["res", state.res && 1], ["bus", state.bus && 1], ["cp", state.cp && 1], ["ev", state.ev && 1], ["cov", state.cov && 1], ["acc", state.acc && 1], ["h", state.h], ["moto", state.moto && 1]]) if (v) u.set(k, v);
   history.replaceState(null, "", u.size ? `?${u}` : location.pathname);
 }
 
@@ -110,6 +115,32 @@ list.addEventListener("click", (e) => {
   if (a) { e.preventDefault(); const pick = state.alts[+a.dataset.alt]; state.alts = [state.center, ...state.alts.filter((x) => x !== pick)]; goTo(pick); }
 });
 
+// published facts only; a missing field means unknown, so nothing is said about it
+function features(d) {
+  const f = [d.ev_chargers && `עמדות טעינה לרכב חשמלי: ${d.ev_chargers}`, d.height_m && `הגבלת גובה: ${d.height_m} מ׳`, d.covered && "חניון מקורה", d.accessible && "מונגש לנכים"].filter(Boolean);
+  return f.length ? `<div class="facts">${f.map((x) => `<p>${esc(x)}</p>`).join("")}</div>` : "";
+}
+
+// street motorcycle bays (city GIS layer 951, public/moto.json): a map layer, not lots
+let moto;
+async function drawMoto() {
+  if (state.moto && !moto) moto = await (await fetch("/moto.json")).json().catch(() => ((state.moto = $("#moto").checked = false), undefined));
+  const on = () => {
+    if (map.getLayer("moto")) return map.setLayoutProperty("moto", "visibility", state.moto ? "visible" : "none");
+    if (!state.moto || !moto) return;
+    map.addSource("moto", { type: "geojson", data: { type: "FeatureCollection", features: moto.map((b) => ({ type: "Feature", properties: b, geometry: { type: "Point", coordinates: [b.lng, b.lat] } })) } });
+    map.addLayer({ id: "moto", type: "circle", source: "moto", paint: { "circle-color": "#7b1fa2", "circle-stroke-color": "#fff", "circle-stroke-width": 1.5,
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 3, 17, 9] } });
+    map.on("click", "moto", (e) => {
+      const p = e.features[0].properties;
+      new Popup().setLngLat(e.lngLat).setHTML(`<b>חניית אופנועים</b><br>${esc(p.address)}${p.spaces ? `<br>${esc(p.spaces)} מקומות` : ""}<br>חינם, ברחוב`).addTo(map);
+    });
+    map.on("mouseenter", "moto", () => (map.getCanvas().style.cursor = "pointer"));
+    map.on("mouseleave", "moto", () => (map.getCanvas().style.cursor = ""));
+  };
+  map.isStyleLoaded() ? on() : map.once("load", on);
+}
+
 async function openLot(id, fly = true) {
   state.lot = id; sync(); select(id);
   const r = await fetch(`/api/lots/${encodeURIComponent(id)}?${qs()}`);
@@ -132,6 +163,7 @@ async function openLot(id, fly = true) {
       ${liveOf(d) ? `<p><span class="status ${liveOf(d)}" style="display:inline">${LIVE[liveOf(d)]}</span> עכשיו, עודכן ב-${esc(d.live.updated.slice(11))}</p>` : ""}
       ${q.breakdown.length > 1 ? q.breakdown.map((b) => `<p>${b.from.slice(11)}–${b.to.slice(11)}: ${KIND[b.kind]}, ₪${b.price}</p>`).join("") : q.breakdown.map((b) => `<p>תשלום ${KIND[b.kind]}</p>`).join("")}
     </div>
+    ${features(d)}
     ${d.sign ? `<p class="note${restricted ? " red" : ""}">${esc(d.sign.he)}</p>` : ""}
     ${!q.can_enter ? `<p class="note red">אין כניסה לחניון בשעה הזו.</p>` : !q.open_whole_stay ? `<p class="note red">החניון סגור בחלק מזמן החניה, וייתכן שלא תוכלו לצאת.</p>` : ""}
     ${d.offers.map(offer).join("")}
@@ -242,6 +274,9 @@ $("#dur").addEventListener("change", (e) => { state.dur = e.target.value; sync()
 $("#res").addEventListener("change", (e) => { state.res = e.target.checked; sync(); load(); });
 $("#bus").addEventListener("change", (e) => { state.bus = e.target.checked; sync(); load(); });
 $("#cp").addEventListener("change", (e) => { state.cp = e.target.checked; sync(); load(); });
+for (const k of ["ev", "cov", "acc"]) $("#" + k).addEventListener("change", (e) => { state[k] = e.target.checked; sync(); load(); });
+$("#h").addEventListener("change", (e) => { state.h = e.target.value; sync(); load(); });
+$("#moto").addEventListener("change", (e) => { state.moto = e.target.checked; sync(); drawMoto(); });
 $("#listBtn").addEventListener("click", () => (list.hidden ? showList() : ((list.hidden = true), $("#listBtn").setAttribute("aria-pressed", "false"))));
 new ResizeObserver(() => document.documentElement.style.setProperty("--bar-h", `${$("#bar").offsetHeight}px`)).observe($("#bar"));
 
@@ -349,5 +384,8 @@ $("#dur").value = [...$("#dur").options].some((o) => o.value === state.dur) ? st
 $("#res").checked = state.res;
 $("#bus").checked = state.bus;
 $("#cp").checked = state.cp;
+for (const k of ["ev", "cov", "acc", "moto"]) $("#" + k).checked = state[k];
+$("#h").value = state.h;
+state.moto && drawMoto();
 load();
 loadMe().then(() => state.lot && openLot(state.lot)); // after loadMe: the lot card shows the user's places

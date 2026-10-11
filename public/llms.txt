@@ -14,7 +14,7 @@ Prices are estimates from the operator's published tariff; the sign at the gate 
 ## REST
 
 - [OpenAPI spec](/openapi.json)
-- `GET /api/search?near=Dizengoff%20Center&start=2026-10-10T14:00&duration=180`: lots ranked by price. Optional: `lat`,`lng` instead of `near`; `weekday=sat&time=14:00` instead of `start`; `max_walk` (m, default 800); `resident=1`; `apps=pango,cello,centralpark`; `transit=1`; `sort=distance`; `limit`.
+- `GET /api/search?near=Dizengoff%20Center&start=2026-10-10T14:00&duration=180`: lots ranked by price. Optional: `lat`,`lng` instead of `near`; `weekday=sat&time=14:00` instead of `start`; `max_walk` (m, default 800); `resident=1`; `apps=pango,cello,centralpark`; `transit=1`; `ev=1`, `covered=1`, `accessible=1` (only lots known to have it; null = unknown); `height=2.1` (car height in m; drops only lots with a lower published limit); `sort=distance`; `limit`.
 - `GET /api/lots/{id}?start=...&duration=...`: one lot with full tariff (original Hebrew text), hours, offers, live status and Waze/Google Maps links.
 - `GET /api/places?q=דיזנגוף 50`: place/address to coordinates (Hebrew works best for streets).
 

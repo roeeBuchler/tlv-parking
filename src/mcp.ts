@@ -43,6 +43,10 @@ export function createServer(origin: string, pois?: LoadPois) {
       max_walk_m: z.number().int().min(100).max(5000).default(800).describe("Max straight-line distance in meters."),
       sort_by: z.enum(["price", "distance"]).default("price"),
       limit: z.number().int().min(1).max(50).default(10),
+      ev_charging: z.boolean().default(false).describe("Only lots known to have EV chargers (mostly Central Park lots)."),
+      covered: z.boolean().default(false).describe("Only lots known to be covered/underground. Data is sparse: inferred from a published height limit."),
+      accessible: z.boolean().default(false).describe("Only lots known to be wheelchair accessible / have disabled bays."),
+      vehicle_height_m: z.number().min(1).max(4).optional().describe("Car height in meters (e.g. 2.1 for a tall SUV or roof box). Drops lots with a lower published limit; lots with no published limit stay, with height_m null."),
     }),
     annotations: readOnly,
   }, async (a) => {
@@ -59,6 +63,7 @@ export function createServer(origin: string, pois?: LoadPois) {
     const r = await search({
       lat: at.lat, lng: at.lng, start, minutes: a.duration_minutes, max_walk_m: a.max_walk_m, sort_by: a.sort_by, limit: a.limit,
       resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, origin,
+      ev: a.ev_charging, covered: a.covered, accessible: a.accessible, height_m: a.vehicle_height_m,
     });
     const data = { resolved_location: places?.resolved ?? at, alternatives: places?.alternatives ?? [], ...r };
     const top = r.results.slice(0, 3).map((x) => `${x.name} ${priceText(x)} ${x.distance_m}m`).join("; ");

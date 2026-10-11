@@ -14,7 +14,7 @@ const SIGN = {
 };
 
 export async function registry(have: Lot[], today: string, problems: string[]): Promise<Lot[]> {
-  const rows = await gisQuery(556, { where: "1=1", outFields: "oid,name,address,num_vehicles", returnGeometry: "true", outSR: "4326" });
+  const rows = await gisQuery(556, { where: "1=1", outFields: "oid,name,address,num_vehicles,num_disabled", returnGeometry: "true", outSR: "4326" });
   if (rows.length < 200) problems.push(`registry: only ${rows.length} lots in GIS layer 556 (expected ~250)`);
   const lots: Lot[] = [];
   for (const r of rows) {
@@ -29,11 +29,18 @@ export async function registry(have: Lot[], today: string, problems: string[]): 
     if (named(name, p, have)) continue;
     lots.push({
       id: `registry-${r.oid}`, name, operator: "registry", address, ...p,
-      spaces: r.num_vehicles || undefined, tariffs: null, sign: { free: false, ...SIGN },
+      spaces: r.num_vehicles || undefined, ...(r.num_disabled > 0 && { accessible: true }), tariffs: null, sign: { free: false, ...SIGN },
       source_url: `${GIS}/556`, verified_at: today,
     });
   }
   return lots;
+}
+
+// Street motorcycle bays (GIS layer 951): not lots, so a separate file for the map's motorcycle layer.
+export async function motoBays(problems: string[]) {
+  const rows = await gisQuery(951, { where: "1=1", outFields: "ktovet,ms_mekomot", returnGeometry: "true", outSR: "4326" });
+  if (rows.length < 400) problems.push(`moto: only ${rows.length} bays in GIS layer 951 (expected ~525)`);
+  return rows.map((r) => ({ address: r.ktovet.replace(/\s+/g, " ").trim(), spaces: r.ms_mekomot || undefined, lat: +r.y.toFixed(6), lng: +r.x.toFixed(6) }));
 }
 
 const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter"];

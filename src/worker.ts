@@ -40,7 +40,8 @@ export default {
             ({ lat, lng } = place.resolved);
           }
           const sort = p.get("sort") === "distance" ? "distance" : "price";
-          const r = await search({ ...common(), lat, lng, max_walk_m: num("max_walk") ?? (lat == null ? Infinity : 800), sort_by: sort, limit: num("limit") });
+          const r = await search({ ...common(), lat, lng, max_walk_m: num("max_walk") ?? (lat == null ? Infinity : 800), sort_by: sort, limit: num("limit"),
+            ev: bool("ev"), covered: bool("covered"), accessible: bool("accessible"), height_m: num("height") });
           return json({ resolved_location: place?.resolved ?? null, alternatives: place?.alternatives ?? [], ...r });
         }
         case url.pathname.startsWith("/api/lots/"): {

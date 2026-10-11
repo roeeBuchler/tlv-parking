@@ -24,7 +24,11 @@
           { "name": "apps", "in": "query", "schema": { "type": "string" }, "description": "Comma list: pango,cello,moovit,centralpark (centralpark = Central Park in-app price)" },
           { "name": "transit", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = will ride a TLV bus the same day" },
           { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["price", "distance"] } },
-          { "name": "limit", "in": "query", "schema": { "type": "integer" } }
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } },
+          { "name": "ev", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = only lots known to have EV chargers" },
+          { "name": "covered", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = only lots known to be covered (inferred from a published height limit)" },
+          { "name": "accessible", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = only lots known to be accessible / with disabled bays" },
+          { "name": "height", "in": "query", "schema": { "type": "number" }, "description": "Car height in meters: drops lots with a lower published limit; lots with no published limit (height_m null) stay" }
         ],
         "responses": { "200": { "description": "resolved_location, query, results[] (price_ils null = price on sign), caveats[]" } }
       }

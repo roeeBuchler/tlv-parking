@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=account_circle,add,block,calendar_today,chevron_left,chevron_right,close,delete,directions,directions_bus,edit,format_list_bulleted,home,info,link,local_offer,local_parking,logout,map,place,schedule,search,smartphone,star,timer&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=accessible,account_circle,add,block,calendar_today,chevron_left,chevron_right,close,delete,directions,directions_bus,edit,ev_station,format_list_bulleted,garage,height,home,info,link,local_offer,local_parking,logout,map,place,schedule,search,smartphone,star,timer,two_wheeler&display=block">
 <style>
   /* Google Maps feel: floating white cards over a colourful map; Google's four colours carry meaning (price band, status, chip). */
   :root {
@@ -243,6 +243,15 @@
     <label class="chip tog res"><input type="checkbox" id="res"><span class="ms">home</span>תושב/ת ת״א</label>
     <label class="chip tog bus" title="פנגו או סלו + נסיעה באוטובוס בת״א באותו יום"><input type="checkbox" id="bus"><span class="ms">directions_bus</span>פנגו/סלו + אוטובוס</label>
     <label class="chip tog cpa" title="מחיר מוזל בחניוני סנטרל פארק למשלמים באפליקציה שלהם"><input type="checkbox" id="cp"><span class="ms">smartphone</span>אפליקציית סנטרל פארק</label>
+    <span class="sep" aria-hidden="true"></span>
+    <label class="chip tog" title="רק חניונים עם עמדות טעינה ידועות"><input type="checkbox" id="ev"><span class="ms">ev_station</span>טעינה</label>
+    <label class="chip tog" title="רק חניונים שידוע שהם מקורים (נגזר מהגבלת גובה)"><input type="checkbox" id="cov"><span class="ms">garage</span>מקורה</label>
+    <label class="chip tog" title="רק חניונים שידוע שהם מונגשים לנכים"><input type="checkbox" id="acc"><span class="ms">accessible</span>נגיש</label>
+    <label class="chip" title="מסתיר חניונים עם הגבלת גובה נמוכה יותר. חניונים בלי נתון נשארים."><span class="ms">height</span><select id="h" aria-label="גובה הרכב">
+      <option value="">גובה רכב</option><option value="1.8">עד 1.8 מ׳</option><option value="1.9">עד 1.9 מ׳</option><option value="2">עד 2.0 מ׳</option>
+      <option value="2.1">עד 2.1 מ׳</option><option value="2.2">עד 2.2 מ׳</option>
+    </select></label>
+    <label class="chip tog" title="חניות אופנועים ברחוב (מהעירייה)"><input type="checkbox" id="moto"><span class="ms">two_wheeler</span>אופנועים</label>
   </div>
 </header>
 <main id="map" aria-label="מפת חניונים"></main>

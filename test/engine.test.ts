@@ -86,3 +86,17 @@ test("open-data lots: listed, no price", () => {
   const r = qq(l.id, `${SUN}T10:00`, 120);
   assert.deepEqual([r.price_ils, r.price_basis], [null, "none"]);
 });
+
+test("feature filters: a wanted feature must be known; height drops only known-too-low lots", async () => {
+  const { hasFeatures } = await import("../src/search.ts");
+  const base = { id: "x", name: "x", operator: "x", address: "", lat: 0, lng: 0, tariffs: null, source_url: "", verified_at: "" } as Lot;
+  const ev = { ...base, ev_chargers: 2 }, tall = { ...base, height_m: 2.2, covered: true }, low = { ...base, height_m: 1.8 };
+  assert.equal(hasFeatures(base, { ev: true }), false); // unknown is not "has"
+  assert.equal(hasFeatures(ev, { ev: true }), true);
+  assert.equal(hasFeatures(base, { accessible: true }), false);
+  assert.equal(hasFeatures(tall, { covered: true }), true);
+  assert.equal(hasFeatures(base, { height_m: 2.1 }), true); // no published limit: stays
+  assert.equal(hasFeatures(tall, { height_m: 2.1 }), true);
+  assert.equal(hasFeatures(low, { height_m: 2.1 }), false); // known too low
+  assert.equal(hasFeatures(low, {}), true); // no filters: everything passes
+});

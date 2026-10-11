@@ -7,7 +7,7 @@ import { HebrewCalendar, flags } from "@hebcal/core";
 import { parseTariff, ALL_DAYS } from "./parse.ts";
 import { overrides } from "./overrides.ts";
 import { centralPark, green, single, text as clean } from "./operators.ts";
-import { registry, osm } from "./opendata.ts";
+import { registry, osm, motoBays } from "./opendata.ts";
 import { gisQuery, geocode, UA } from "../src/places.ts";
 import type { Lot } from "../src/engine.ts";
 
@@ -70,6 +70,7 @@ for (const id of ids) {
     id: `ahuzot-${id}`, name, operator: "ahuzot", address, ...pos,
     spaces: +(html.match(/מקומות חנייה בחניון:\s*(\d+)/)?.[1] ?? 0) || undefined,
     serves: field("מתחם, איזור אותו משמש החניון"), hours_text: field("שעות פעילות החניון").replace(/^שעות פעילות החניון:\s*/, ""),
+    ...(/החניון מונגש לנכים/.test(html) && { accessible: true }),
     tariff_text, ...parsed, ...overrides[id],
     live_key: g?.code_achoza, source_url, verified_at: today,
   });
@@ -111,6 +112,7 @@ for (const o of old) {
 }
 
 writeFileSync("data/lots.json", JSON.stringify(lots, null, 1) + "\n");
+writeFileSync("public/moto.json", JSON.stringify(await motoBays(problems)) + "\n");
 const count = (f: (l: Lot) => unknown) => Object.entries(Object.groupBy(lots as Lot[], (l) => l.operator)).map(([op, ls]) => `${op} ${ls!.filter(f).length}`).join(", ");
 console.log(`lots: ${count(() => true)}\npriced: ${count((l) => l.tariffs)}\nfree per sign: ${count((l) => l.sign?.free)}`);
 if (problems.length) {
