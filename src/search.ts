@@ -16,6 +16,7 @@ const n = (op: string) => lots.filter((l) => l.operator === op).length;
 export const CAVEATS = [
   "Prices are estimates from the operator's published tariff; the sign at the gate prevails.",
   "Times are Asia/Jerusalem. Shabbat, holiday and holiday-eve tariffs differ from weekdays.",
+  "ev_chargers, height_m, covered, accessible: null = unknown, not 'no'. Filters ev/covered/accessible keep only lots known to have it; the height filter drops only lots known to be too low, so say lots with height_m null are unchecked. covered is inferred from a published height limit.",
   "price_ils null = the lot publishes no tariff ('as per the sign at the lot'); see notes.",
   "price_basis 'municipal_data_unverified' = an open municipal lot the city lists as free (price_ils 0); say it is unverified and to check the traffic sign.",
   "subscriptions (monthly/weekly passes) are not part of price_ils. With subscription=night|full|weekdays the results are ranked by that plan's monthly price. source 'operator' = the operator's own site; 'city' = the city's open data, possibly out of date: confirm with the lot before buying.",
@@ -62,11 +63,16 @@ export async function live() {
   }
 }
 
-export type SearchInput = Profile & {
+export type Features = { ev?: boolean; covered?: boolean; accessible?: boolean; height_m?: number };
+export type SearchInput = Profile & Features & {
   lat?: number; lng?: number; start: number; minutes: number;
   max_walk_m?: number; sort_by?: "price" | "distance"; limit?: number; origin: string;
   sub?: Sub["type"]; // only lots selling this plan, ranked by its monthly price instead of the price of the stay
 };
+
+// A wanted feature must be known; absent data is "unknown", not "no". Height is the reverse: only a known-too-low limit excludes.
+export const hasFeatures = (l: Lot, f: Features) =>
+  (!f.ev || !!l.ev_chargers) && (!f.covered || !!l.covered) && (!f.accessible || !!l.accessible) && (f.height_m == null || l.height_m == null || l.height_m >= f.height_m);
 
 export async function search(s: SearchInput) {
   const status = await live();
@@ -76,12 +82,13 @@ export async function search(s: SearchInput) {
     .map((l) => ({ l, distance_m: here ? distanceM(here, l) : null }))
     .filter((x) => x.distance_m == null || x.distance_m <= (s.max_walk_m ?? 800))
     .filter((x) => !s.sub || cheapestSub(x.l, s.sub))
+    .filter((x) => hasFeatures(x.l, s))
     .map(({ l, distance_m }) => ({
       id: l.id, name: l.name, operator: l.operator, address: l.address, lat: l.lat, lng: l.lng, distance_m,
       ...quote(l, s.start, s.minutes, profile, offers),
       live: (l.live_key != null && status[l.live_key]) || null,
       subscriptions: l.subscriptions, subscription: s.sub && cheapestSub(l, s.sub),
-      spaces: l.spaces ?? null, verified_at: l.verified_at, source_url: l.source_url,
+      spaces: l.spaces ?? null, ev_chargers: l.ev_chargers ?? null, height_m: l.height_m ?? null, covered: l.covered ?? null, accessible: l.accessible ?? null, verified_at: l.verified_at, source_url: l.source_url,
       map_url: mapUrl(s.origin, l.id, s.start, s.sub ?? s.minutes, s.resident),
     }))
     .sort((a, b) => s.sort_by === "distance"
@@ -93,7 +100,8 @@ export async function search(s: SearchInput) {
   const nearby = Math.abs(s.start - localNow()) < HOUR
     ? results.filter((r) => r.live && r.distance_m != null && r.distance_m <= 600).map((r) => r.live!.status) : [];
   return {
-    query: { start: fmtLocal(s.start), end: fmtLocal(s.start + s.minutes * 60_000), duration_minutes: s.minutes, day_type: dayOf(s.start), subscription: s.sub, ...profile },
+    query: { start: fmtLocal(s.start), end: fmtLocal(s.start + s.minutes * 60_000), duration_minutes: s.minutes, day_type: dayOf(s.start), subscription: s.sub, ...profile,
+      ...(s.ev && { ev: true }), ...(s.covered && { covered: true }), ...(s.accessible && { accessible: true }), ...(s.height_m != null && { height_m: s.height_m }) },
     street: zone ? { ...streetQuote(zone, s.start, s.minutes, profile), ...streetChance(zone, s.start, nearby) } : null,
     count: results.length,
     results: results.slice(0, s.limit ?? results.length),

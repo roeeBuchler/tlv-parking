@@ -73,9 +73,13 @@ export async function centralPark(get: Get, today: string, problems: string[]): 
       if (!type || !period) { problems.push(`centralpark-${l.id} ${name}: unknown subscription ${s.subscriptionType}/${s.periodType}`); continue; }
       subscriptions.push({ type, period, price_ils: s.priceNis, text: s.text?.trim() || undefined, source: "operator" });
     }
+    const extra = d.parkingLotExtraDetailsDto ?? {}, props: any[] = d.parkingLotStaticInfo?.parkingLotProperties ?? [];
+    // "Electric loading" flag without a count = at least one charger. A height limit means a structure, so covered.
+    const ev = (extra.chargingStations ?? 0) + (extra.fastChargingStations ?? 0) || (props.some((p) => p.propertyKey === "Electric loading") ? 1 : 0);
     lots.push({
       id: `centralpark-${l.id}`, name, operator: "centralpark", address: l.address, lat: l.lat, lng: l.lon,
       spaces: d.parkingLotExtraDetailsDto?.totalSpots ?? undefined,
+      ...(ev && { ev_chargers: ev }), ...(extra.heightLimit && { height_m: extra.heightLimit, covered: true }),
       hours_text: always ? "פתוח 24 שעות" : sched.map((s) => `${HEB[DAYNAME.indexOf(s.day)]} ${desc(s)}`).join(" · "),
       tariff_text, tariffs: rules(false), app_tariffs: rules(true), ...(subscriptions.length && { subscriptions }), ...(sched.length && !always && { open }), source_url, verified_at: today,
     });

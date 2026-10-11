@@ -43,7 +43,8 @@ export default {
           const sub = p.get("sub") as Sub["type"] | null;
           if (sub && !SUB_TYPES.includes(sub)) return json({ error: `sub must be one of ${SUB_TYPES.join(", ")}` }, 400);
           const sort = p.get("sort") === "distance" ? "distance" : "price";
-          const r = await search({ ...common(), lat, lng, max_walk_m: num("max_walk") ?? (lat == null ? Infinity : 800), sort_by: sort, limit: num("limit"), sub: sub ?? undefined });
+          const r = await search({ ...common(), lat, lng, max_walk_m: num("max_walk") ?? (lat == null ? Infinity : 800), sort_by: sort, limit: num("limit"),
+            ev: bool("ev"), covered: bool("covered"), accessible: bool("accessible"), height_m: num("height"), sub: sub ?? undefined });
           return json({ resolved_location: place?.resolved ?? null, alternatives: place?.alternatives ?? [], ...r });
         }
         case url.pathname.startsWith("/api/lots/"): {
