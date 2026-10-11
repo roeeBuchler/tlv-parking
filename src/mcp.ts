@@ -35,11 +35,13 @@ export function createServer(origin: string, pois?: LoadPois) {
       "(Shabbat/holiday tariffs, resident discounts and special offers applied), with live occupancy and a map link. " +
       "Give `near` (Hebrew or English place/address, e.g. 'Dizengoff Center', 'דיזנגוף 50') or lat/lng. " +
       "Always tell the user which resolved_location was used, the assumed duration, and that the sign at the gate prevails. " +
-      "Mention potential_offers (deals the user could unlock) when present.",
+      "Mention potential_offers (deals the user could unlock) when present. " +
+      "Also returns `street`: blue-white curbside parking at that point (zone, price for the stay, chance_pct of finding a spot: an estimate, say so).",
     inputSchema: z.object({
       near: z.string().optional().describe("Place, business, landmark, street address or Google Maps link (e.g. \"Dizengoff 50\", \"פארק המסילה\")."),
       lat: z.number().optional(), lng: z.number().optional(),
       ...when,
+      permit_zone: z.number().int().optional().describe("The user's Tel Aviv residential parking permit zone (1, 2, 4, 6, 7, 9, 10, 12 or 13): blue-white parking there is free."),
       max_walk_m: z.number().int().min(100).max(5000).default(800).describe("Max straight-line distance in meters."),
       sort_by: z.enum(["price", "distance"]).default("price"),
       limit: z.number().int().min(1).max(50).default(10),
@@ -58,11 +60,12 @@ export function createServer(origin: string, pois?: LoadPois) {
     try { start = resolveStart(a.start, a.weekday, a.time); } catch (e) { return fail(String(e)); }
     const r = await search({
       lat: at.lat, lng: at.lng, start, minutes: a.duration_minutes, max_walk_m: a.max_walk_m, sort_by: a.sort_by, limit: a.limit,
-      resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, origin,
+      resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, zone: a.permit_zone, origin,
     });
     const data = { resolved_location: places?.resolved ?? at, alternatives: places?.alternatives ?? [], ...r };
     const top = r.results.slice(0, 3).map((x) => `${x.name} ${priceText(x)} ${x.distance_m}m`).join("; ");
-    return out(data, `${r.count} lots within ${a.max_walk_m}m, ${r.query.start}→${r.query.end} (${r.query.day_type}). Top: ${top || "none"}`);
+    const st = r.street && ` Street (blue-white, zone ${r.street.zone}): ₪${r.street.price_ils}, ~${r.street.chance_pct}% chance of a spot (estimate).`;
+    return out(data, `${r.count} lots within ${a.max_walk_m}m, ${r.query.start}→${r.query.end} (${r.query.day_type}). Top: ${top || "none"}.${st ?? ""}`);
   });
 
   server.registerTool("get_lot_details", {

@@ -265,7 +265,7 @@ More details:
 | **M3** MCP | 1–2 days | 4 tools on Workers; tested with Inspector, Claude connector, Claude Code |
 | **M4** Website | 2–3 days | map, filters, details panel, deep links, Hebrew/English |
 | **M5** Coverage | ongoing | license-registry grey dots; ~20 hand-curated private lots at hotspots (Dizengoff Center, Azrieli, Sarona, Port, Rothschild, Carmel Market, Jaffa); email other operators for permission (Central Park already agreed); "report a price" flow |
-| **M6** Extras | later | street (blue-and-white) parking rules (changed in 2025, needs its own research), EV charging, motorcycles |
+| **M6** Extras | later | ~~street (blue-and-white) parking rules~~ done 2026-10-11 (`src/street.ts`: zone price + estimated chance of a spot); EV charging, motorcycles |
 
 ---
 
