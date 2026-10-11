@@ -20,6 +20,7 @@ export const CAVEATS = [
   "price_ils null = the lot publishes no tariff ('as per the sign at the lot'); see notes.",
   "price_basis 'municipal_data_unverified' = an open municipal lot the city lists as free (price_ils 0); say it is unverified and to check the traffic sign.",
   "subscriptions (monthly/weekly passes) are not part of price_ils. With subscription=night|full|weekdays the results are ranked by that plan's monthly price. source 'operator' = the operator's own site; 'city' = the city's open data, possibly out of date: confirm with the lot before buying.",
+  "live.source 'crowd' = reported by app users in the last 30 minutes (unverified); crowd_prices = what drivers say they paid (unverified, never used in price_ils).",
   "Central Park lots: price_ils is the gate price unless apps includes 'centralpark'; gate_price_ils and app_price_ils give both.",
   `Coverage, Tel Aviv-Yafo: ${n("ahuzot")} Ahuzot HaHof (municipal), ${n("centralpark")} Central Park, ${n("green")} Green Parking and ` +
     `${n("azrieli") + n("dizengoff-center") + n("sarona")} mall lots (Azrieli, Dizengoff Center, Sarona) with prices, plus ` +
@@ -63,9 +64,17 @@ export async function live() {
   }
 }
 
+// lot id → newest "full"/"space" report (src/reports.ts); beats the GIS status when newer, or when GIS has no occupancy
+export type Crowd = Record<string, { status: "full" | "free"; updated: string }>;
+const OCCUPANCY = ["free", "few", "full", "closed"];
+export function liveFor(l: Lot, gis: Record<number, { status: string; updated: string }>, crowd?: Crowd) {
+  const g = l.live_key != null ? gis[l.live_key] : undefined, c = crowd?.[l.id];
+  return c && (!g || !OCCUPANCY.includes(g.status) || g.updated < c.updated) ? { ...c, source: "crowd" } : g || null;
+}
+
 export type Features = { ev?: boolean; covered?: boolean; accessible?: boolean; height_m?: number };
 export type SearchInput = Profile & Features & {
-  lat?: number; lng?: number; start: number; minutes: number;
+  crowd?: Crowd; lat?: number; lng?: number; start: number; minutes: number;
   max_walk_m?: number; sort_by?: "price" | "distance"; limit?: number; origin: string;
   sub?: Sub["type"]; // only lots selling this plan, ranked by its monthly price instead of the price of the stay
 };
@@ -86,7 +95,7 @@ export async function search(s: SearchInput) {
     .map(({ l, distance_m }) => ({
       id: l.id, name: l.name, operator: l.operator, address: l.address, lat: l.lat, lng: l.lng, distance_m,
       ...quote(l, s.start, s.minutes, profile, offers),
-      live: (l.live_key != null && status[l.live_key]) || null,
+      live: liveFor(l, status, s.crowd),
       subscriptions: l.subscriptions, subscription: s.sub && cheapestSub(l, s.sub),
       spaces: l.spaces ?? null, ev_chargers: l.ev_chargers ?? null, height_m: l.height_m ?? null, covered: l.covered ?? null, accessible: l.accessible ?? null, verified_at: l.verified_at, source_url: l.source_url,
       map_url: mapUrl(s.origin, l.id, s.start, s.sub ?? s.minutes, s.resident),
@@ -117,7 +126,7 @@ export async function lotDetails(id: string, s: Omit<SearchInput, "lat" | "lng">
     ...l,
     quote: { start: fmtLocal(s.start), duration_minutes: s.minutes, ...quote(l, s.start, s.minutes, s, offers) },
     offers: offers.filter((o) => o.lot_ids.includes(id)),
-    live: (l.live_key != null && status[l.live_key]) || null,
+    live: liveFor(l, status, s.crowd),
     links: {
       waze: `https://waze.com/ul?ll=${l.lat},${l.lng}&navigate=yes`,
       google_maps: `https://www.google.com/maps/dir/?api=1&destination=${l.lat},${l.lng}`,

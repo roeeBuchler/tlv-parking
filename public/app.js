@@ -209,7 +209,7 @@ async function openLot(id, fly = true) {
     </div>
     ${q.app_price_ils != null ? `<div class="split"><div class="${state.cp ? "" : "on"}">${L("בקופה", "At the gate")}<b dir="ltr">${ils(q.gate_price_ils)}</b></div><div class="${state.cp ? "on" : ""}">${L(`באפליקציית ${esc(op)}`, `In the ${esc(op)} app`)}<b dir="ltr">${ils(q.app_price_ils)}</b></div></div>` : ""}
     <div class="facts">
-      ${liveOf(d) ? `<p><span class="status ${liveOf(d)}" style="display:inline">${LIVE[liveOf(d)]}</span> ${L("עכשיו, עודכן ב-", "now, updated at ")}${esc(d.live.updated.slice(11))}</p>` : ""}
+      ${liveOf(d) ? `<p><span class="status ${liveOf(d)}" style="display:inline">${LIVE[liveOf(d)]}</span> ${L("עכשיו, עודכן ב-", "now, updated at ")}${esc(d.live.updated.slice(11))}${d.live.source === "crowd" ? L(" (דווח על ידי נהגים)", " (reported by drivers)") : ""}</p>` : ""}
       ${q.breakdown.length > 1 ? q.breakdown.map((b) => `<p>${b.from.slice(11)}–${b.to.slice(11)}: ${KIND[b.kind]}, ₪${b.price}</p>`).join("") : q.breakdown.map((b) => `<p>${L("תשלום ", "Billing: ")}${KIND[b.kind]}</p>`).join("")}
     </div>
     `}
@@ -224,6 +224,7 @@ async function openLot(id, fly = true) {
     </div>
     <div id="attach"></div>
     ${subsHtml}
+    <div id="report"></div>
     ${d.tariffs ? `<h3>${L("תעריף", "Tariff")}</h3>${tariffTable(d.tariffs, d.app_tariffs)}
       ${d.grace_minutes ? `<p class="tariff-note">${L(`עד ${d.grace_minutes} דקות בחניון: חינם`, `Free for up to ${d.grace_minutes} minutes`)}</p>` : ""}
       ${d.resident_discount_pct ? `<p class="tariff-note">${d.resident_discount_pct}% ${L("הנחה לתושבי תל אביב-יפו", "discount for Tel Aviv-Yafo residents")}</p>` : ""}
@@ -233,10 +234,11 @@ async function openLot(id, fly = true) {
     ${d.hours_text ? `<h3>${L("שעות פעילות", "Opening hours (Hebrew)")}</h3><p>${esc(d.hours_text)}</p>` : ""}
     ${d.serves ? `<p class="sub">${L("משרת את ", "Serves: ")}${esc(d.serves)}</p>` : ""}
     <p class="fine">${L("המחיר הוא הערכה לפי התעריף שפורסם, והשילוט בחניון קובע. נבדק ב-", "The price is an estimate from the published tariff; the sign at the lot is what counts. Checked ")}${esc(d.verified_at)}.
-      <a href="${esc(d.source_url)}" target="_blank" rel="noopener">${L("למקור", "Source")}</a>, <a href="${esc(d.links.report)}" target="_blank" rel="noopener">${L("דיווח על מחיר שגוי", "Report a wrong price")}</a></p>`;
+      <a href="${esc(d.source_url)}" target="_blank" rel="noopener">${L("למקור", "Source")}</a>, <a href="${esc(d.links.report)}" target="_blank" rel="noopener">${L("טעות אחרת?", "Something else wrong?")}</a></p>`;
   panel.hidden = false; list.hidden = true; panel.dataset.view = "lot";
   $("#listBtn").setAttribute("aria-pressed", "false");
   drawAttach(d);
+  drawReport(d, q);
   $("#close").onclick = () => { panel.hidden = true; state.lot = null; sync(); select(null); };
   $("#share").onclick = () => navigator.clipboard.writeText(location.href).then(() => ($("#share span:last-child").textContent = L("הועתק ✓", "Copied ✓")));
   if (fly) map.easeTo({ center: [d.lng, d.lat], zoom: Math.max(map.getZoom(), 15), padding: sidePad() });
@@ -354,6 +356,45 @@ async function addPlace(c, label = c.label) {
   if (!me) return showAccount(L("התחברו כדי לשמור נקודות ציון.", "Sign in to save places."));
   await api("/api/favorites", "POST", { label, lat: c.lat, lng: c.lng });
   await loadMe();
+}
+
+// crowd reports: occupancy buttons (shown as the live status for 30 min) and "what I paid" (listed beside the tariff, never changes the price)
+const REPORT_ERR = { 429: L("הגעתם למגבלת הדיווחים היומית.", "You've reached the daily report limit."), 400: L("הנתונים לא תקינים. בדקו את המחיר והשעה.", "Invalid data. Check the price and time.") };
+const SIGN_IN_TO_REPORT = () => L("התחברו כדי לדווח.", "Sign in to report.");
+function drawReport(d, q) {
+  const box = $("#report"), c = d.crowd_prices, now = fmt(jlmNow());
+  const paid = (r) => `<p>₪${+r.price.toFixed(2)}, ${r.minutes >= 120 ? `${+(r.minutes / 60).toFixed(1)} ${L("שעות", "h")}` : `${r.minutes} ${L("דק׳", "min")}`}, ${whenText(r.entered_at)}${r.resident ? L(", תושב/ת", ", resident") : ""}</p>`;
+  box.innerHTML = `<h3>${L("דיווחי נהגים", "Driver reports")}</h3>
+    ${c?.recent.length ? `<div class="facts"><p class="sub">${L("מה נהגים כתבו ששילמו:", "What drivers say they paid:")}</p>${c.recent.map(paid).join("")}</div>` : ""}
+    ${c?.mismatches >= 2 ? `<p class="note yellow">${L(`${c.mismatches} דיווחים בחודש האחרון שונים מהמחיר שמוצג. בדקו את השילוט.`, `${c.mismatches} reports in the last month differ from the price shown. Check the sign.`)}</p>` : ""}
+    <div class="attach">
+      <button class="chip" data-kind="full"><span class="ms">block</span>${L("החניון מלא", "Lot is full")}</button>
+      <button class="chip" data-kind="space"><span class="ms">check_circle</span>${L("יש מקום", "Has space")}</button>
+    </div>
+    <details><summary>${L("כמה שילמתי?", "What did I pay?")}</summary>
+      <form class="form" id="paid">
+        <label>${L("מחיר ששילמתי (₪)", "Price I paid (₪)")}<input name="price" type="number" inputmode="decimal" min="0" max="1000" step="any" required></label>
+        <label>${L("שעת כניסה", "Entry time")}<input name="entered_at" type="datetime-local" required max="${now}" value="${q.start < now ? q.start : now}"></label>
+        <label>${L("משך החניה בדקות", "Stay length in minutes")}<input name="minutes" type="number" inputmode="numeric" min="1" max="10080" step="1" required value="${q.duration_minutes}"></label>
+        <label class="chip tog"><input type="checkbox" name="resident"${state.res ? " checked" : ""}><span class="ms">home</span>${L("תושב/ת תל אביב-יפו", "Tel Aviv-Yafo resident")}</label>
+        <p class="note red" id="rerr" hidden></p>
+        <div class="btns"><button class="btn primary">${L("שליחה", "Send")}</button></div>
+      </form>
+    </details>`;
+  const send = async (body) => {
+    if (!me) return showAccount(SIGN_IN_TO_REPORT());
+    try { await api("/api/reports", "POST", { lot_id: d.id, ...body }); await load(); openLot(d.id, false); }
+    catch (err) {
+      if (err.status === 401) return showAccount(SIGN_IN_TO_REPORT());
+      Object.assign($("#rerr"), { hidden: false, textContent: REPORT_ERR[err.status] ?? L("משהו השתבש. נסו שוב.", "Something went wrong. Try again.") });
+    }
+  };
+  box.onclick = (e) => { const k = e.target.closest("[data-kind]")?.dataset.kind; if (k) send({ kind: k }); };
+  $("#paid").onsubmit = (e) => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    send({ kind: "price", price: +f.get("price"), entered_at: f.get("entered_at"), minutes: +f.get("minutes"), resident: f.has("resident") });
+  };
 }
 
 // lot details: tick the places this lot is a favorite for

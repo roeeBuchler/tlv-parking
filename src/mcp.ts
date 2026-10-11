@@ -2,6 +2,7 @@
 import { McpServer } from "@modelcontextprotocol/server";
 import * as z from "zod/v4";
 import { search, lotDetails, resolveStart, placeOut, CAVEATS } from "./search.ts";
+import { crowdLive, crowdPrices } from "./reports.ts";
 import { resolvePlace, type LoadPois } from "./places.ts";
 import { SUB_TYPES } from "./engine.ts";
 
@@ -25,7 +26,7 @@ const when = {
   will_ride_public_transport: z.boolean().default(false).describe("User will ride a TLV bus the same day (unlocks park & ride deals)."),
 };
 
-export function createServer(origin: string, pois?: LoadPois) {
+export function createServer(origin: string, pois?: LoadPois, db?: unknown) {
   const server = new McpServer({ name: "tlv-parking", version: "1.0.0" }, {
     instructions: "Tel Aviv parking lots with estimated prices for a specific time window. " + CAVEATS.join(" "),
   });
@@ -66,7 +67,7 @@ export function createServer(origin: string, pois?: LoadPois) {
     try { start = resolveStart(a.start, a.weekday, a.time); } catch (e) { return fail(String(e)); }
     const r = await search({
       lat: at.lat, lng: at.lng, start, minutes: a.duration_minutes, max_walk_m: a.max_walk_m, sort_by: a.sort_by, limit: a.limit,
-      resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, zone: a.permit_zone, origin,
+      resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, zone: a.permit_zone, origin, crowd: await crowdLive(db),
       ev: a.ev_charging, covered: a.covered, accessible: a.accessible, height_m: a.vehicle_height_m, sub: a.subscription,
     });
     const data = { resolved_location: places?.resolved ?? at, alternatives: places?.alternatives ?? [], ...r };
@@ -84,9 +85,9 @@ export function createServer(origin: string, pois?: LoadPois) {
   }, async (a) => {
     let start;
     try { start = resolveStart(a.start, a.weekday, a.time); } catch (e) { return fail(String(e)); }
-    const d = await lotDetails(a.id, { start, minutes: a.duration_minutes, resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, origin });
+    const d = await lotDetails(a.id, { start, minutes: a.duration_minutes, resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, origin, crowd: await crowdLive(db) });
     if (!d) return fail(`No lot "${a.id}". Use ids from search_parking.`);
-    return out(d, `${d.name}, ${d.address}: ${priceText(d.quote)} for ${a.duration_minutes} min from ${d.quote.start}`);
+    return out({ ...d, crowd_prices: await crowdPrices(db, d.id) },`${d.name}, ${d.address}: ${priceText(d.quote)} for ${a.duration_minutes} min from ${d.quote.start}`);
   });
 
   return server;
