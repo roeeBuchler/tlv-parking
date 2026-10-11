@@ -24,6 +24,7 @@
           { "name": "zone", "in": "query", "schema": { "type": "integer", "enum": [1, 2, 4, 6, 7, 9, 10, 12, 13] }, "description": "The user's TLV residential parking permit zone (blue-white parking there is free)" },
           { "name": "apps", "in": "query", "schema": { "type": "string" }, "description": "Comma list: pango,cello,moovit,centralpark (centralpark = Central Park in-app price)" },
           { "name": "transit", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = will ride a TLV bus the same day" },
+          { "name": "sub", "in": "query", "schema": { "type": "string", "enum": ["full", "night", "weekdays", "motorcycle", "reserved"] }, "description": "Monthly pass instead of a one-off stay: only lots selling it (night = evenings/nights, full = 24/7), ranked by the pass price (subscription.price_ils, ILS incl. VAT); time and duration are ignored. source 'city' prices may be out of date." },
           { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["price", "distance"] } },
           { "name": "limit", "in": "query", "schema": { "type": "integer" } },
           { "name": "ev", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = only lots known to have EV chargers" },

@@ -7,7 +7,7 @@ import { HebrewCalendar, flags } from "@hebcal/core";
 import { parseTariff, ALL_DAYS } from "./parse.ts";
 import { overrides } from "./overrides.ts";
 import { centralPark, green, single, text as clean } from "./operators.ts";
-import { registry, osm, zones, motoBays } from "./opendata.ts";
+import { registry, osm, zones, motoBays, nightSubs } from "./opendata.ts";
 import { gisQuery, geocode, UA } from "../src/places.ts";
 import type { Lot } from "../src/engine.ts";
 
@@ -86,6 +86,7 @@ lots.push(...await registry(lots, today, problems));
 const fromOsm = await osm(lots, today);
 if (!fromOsm) console.warn("Overpass unreachable: keeping last week's OpenStreetMap lots");
 lots.push(...(fromOsm ?? old.filter((o) => o.operator === "osm")));
+lots.push(...await nightSubs(lots, today, problems)); // last, so a plan can attach to a lot from any source
 
 // 6. blue-white parking zones for src/street.ts
 writeFileSync("data/zones.json", JSON.stringify(await zones(problems)) + "\n");
@@ -104,7 +105,7 @@ for (const l of lots as Lot[]) for (const rules of [l.tariffs, l.resident_tariff
 for (const o of old) {
   const n = lots.find((l) => l.id === o.id);
   if (!n) { // open-data lots come and go (dedup against new priced lots, OSM edits); only priced sources are guarded
-    if (!["registry", "osm"].includes(o.operator)) problems.push(`${o.id} ${o.name}: disappeared from its source`);
+    if (!["registry", "osm", "private"].includes(o.operator)) problems.push(`${o.id} ${o.name}: disappeared from its source`);
     continue;
   }
   if (o.operator !== "ahuzot") continue; // jump check guards the free-text parser; Central Park's JSON has real weekly/event prices

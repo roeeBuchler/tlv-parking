@@ -14,10 +14,14 @@ export type Rule = Window & {
   price?: number; valid_hours?: number; valid_until?: string; // flat: valid N hours, or until next HH:MM
   daily_max?: number;
 };
+// A monthly/weekly pass: not priced per stay, so quote() ignores it. price_ils includes VAT where the source says so.
+export const SUB_TYPES = ["full", "night", "weekdays", "motorcycle", "reserved"] as const; // full = 24/7
+export type Sub = { type: (typeof SUB_TYPES)[number]; period: "month" | "week"; price_ils: number; hours?: string; text?: string; source: "operator" | "city" };
 export type Lot = {
   id: string; name: string; operator: string; address: string; lat: number; lng: number;
   spaces?: number; serves?: string; hours_text?: string; tariff_text?: string;
   tariffs: Rule[] | null; // null = "price on sign"
+  subscriptions?: Sub[];
   app_tariffs?: Rule[]; // paying in the operator's own app (Central Park): used when profile.apps includes lot.operator
   sign?: { free: boolean; he: string; en: string }; // no tariff: what the municipal data / evidence says about the sign
   resident_tariffs?: Rule[]; // replaces tariffs for TLV residents (instead of a % discount)

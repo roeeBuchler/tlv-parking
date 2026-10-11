@@ -9,7 +9,7 @@ if (EN) {
   document.title = "Tel Aviv parking";
   $("meta[name=description]").content = "Map of Tel Aviv-Yafo parking lots (Ahuzot HaHof, Central Park, Green Parking) with an estimated price for your day and time, live availability and offers.";
   document.querySelectorAll("[data-en]").forEach((e) => (e.textContent = e.dataset.en));
-  for (const a of ["aria-label", "title", "placeholder"]) document.querySelectorAll(`[data-en-${a}]`).forEach((e) => e.setAttribute(a, e.getAttribute(`data-en-${a}`)));
+  for (const a of ["aria-label", "title", "placeholder", "label"]) document.querySelectorAll(`[data-en-${a}]`).forEach((e) => e.setAttribute(a, e.getAttribute(`data-en-${a}`)));
 }
 const panel = $("#panel"), list = $("#list");
 const P = new URL(location.href).searchParams;
@@ -22,15 +22,24 @@ const liveOf = (l) => (l.live && LIVE[l.live.status] ? l.live.status : null);
 const KIND = { flat: L("כניסה חד-פעמית", "flat entry"), per_minute: L("לפי דקה", "per minute"), step: L("לפי שעה", "hourly") };
 const DAYS = L(["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"], ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]);
 const OPERATOR = EN ? { ahuzot: "Ahuzot HaHof", centralpark: "Central Park", green: "Green Parking", "dizengoff-center": "Dizengoff Center", sarona: "Sarona (Gindi) lot",
-  azrieli: "Azrieli", registry: "Municipal business-license registry", osm: "OpenStreetMap" }
+  azrieli: "Azrieli", private: "Private lot (city data)", registry: "Municipal business-license registry", osm: "OpenStreetMap" }
   : { ahuzot: "אחוזות החוף", centralpark: "סנטרל פארק", green: "גרין פרקינג", "dizengoff-center": "דיזנגוף סנטר", sarona: "חניון שרונה (גינדי)",
-  azrieli: "עזריאלי", registry: "מרשם רישוי העסקים של העירייה", osm: "OpenStreetMap" };
+  azrieli: "עזריאלי", private: "חניון פרטי (נתוני העירייה)", registry: "מרשם רישוי העסקים של העירייה", osm: "OpenStreetMap" };
 const ils = (n) => (n == null ? L("לפי השילוט", "Per sign") : n === 0 ? L("חינם", "Free") : `₪${+n.toFixed(2)}`);
 const price = (q) => (q.price_basis === "municipal_data_unverified" ? L("חינם?", "Free?") : ils(q.price_ils));
 // a lot's sign plate: colour = price band for the chosen time, dashed border = unverified, plain P = price per the sign
-const tier = (q) => q.price_ils == null ? "sign" : q.price_basis === "municipal_data_unverified" ? "t1 unv"
+const tier = (q) => subOf() && q.price_ils != null ? subTier(q.price_ils) : q.price_ils == null ? "sign" : q.price_basis === "municipal_data_unverified" ? "t1 unv"
   : q.price_ils <= 20 ? "t1" : q.price_ils <= 40 ? "t2" : q.price_ils <= 80 ? "t3" : "t4";
 const face = (q) => q.price_ils == null ? "P" : price({ ...q, price_ils: Math.round(q.price_ils) });
+
+// Monthly passes (dur=night|full): the plate shows the pass price, per month (a weekly pass counts 4.33 weeks, as in src/search.ts)
+const subOf = () => (state.dur === "night" || state.dur === "full" ? state.dur : null);
+const SUBNAME = L({ full: "מנוי 24/7", night: "מנוי לילה", weekdays: "מנוי א׳–ה׳", motorcycle: "מנוי אופנוע", reserved: "מקום שמור" },
+  { full: "24/7 subscription", night: "Night subscription", weekdays: "Sun–Thu subscription", motorcycle: "Motorcycle subscription", reserved: "Reserved space" });
+const monthly = (s) => (s.period === "week" ? Math.round(s.price_ils * 4.33) : s.price_ils);
+const subTier = (n) => (n <= 300 ? "t1" : n <= 600 ? "t2" : n <= 1200 ? "t3" : "t4");
+const LEGEND = document.querySelector("#legend").innerHTML;
+const LEGEND_SUB = `<span class="cap">${L("מחיר מנוי לחודש, בש״ח", "Subscription price per month, ₪")}</span><span class="plate t1">${L("עד", "up to")} 300</span><span class="plate t2">${L("עד", "up to")} 600</span><span class="plate t3">${L("עד", "up to")} 1,200</span><span class="plate t4">1,200+</span>`;
 
 // Asia/Jerusalem wall clock as fake-UTC ms, same convention as the API
 const DAY = 864e5, HOUR = 36e5;
@@ -43,7 +52,7 @@ const whenText = (s) => { const d = new Date(Date.parse(s + ":00Z")); return `${
 const endOf = (s, mins) => fmt(Date.parse(s + ":00Z") + mins * 6e4).slice(11);
 
 function qs(extra = {}) {
-  const o = { duration: state.dur, ...extra };
+  const o = { duration: subOf() ? "120" : state.dur, ...(subOf() && { sub: subOf() }), ...extra };
   if (state.when) o.start = state.when;
   if (state.res) o.resident = 1;
   if (state.res && state.zone) o.zone = state.zone;
@@ -103,7 +112,8 @@ async function load() {
   const extra = state.center ? { lat: state.center.lat, lng: state.center.lng, max_walk: 100000 } : {};
   const r = await (await fetch(`/api/search?${qs(extra)}`)).json();
   if (n !== loads) return;
-  state.results = r.results ?? [];
+  // in pass mode the result's "price" is the pass, so plates, colours and the list need no second code path
+  state.results = (r.results ?? []).map((x) => (x.subscription ? { ...x, price_ils: monthly(x.subscription), price_basis: "tariff", open_whole_stay: true } : x));
   state.street = r.street ?? null;
   drawPins();
   if (!list.hidden) showList();
@@ -181,11 +191,19 @@ async function openLot(id, fly = true) {
     : q.potential_offers.includes(o.id) ? `<p class="note yellow">${L("אפשר לחסוך: ", "You could save: ")}${esc(o.title[LANG])}</p>` : "";
   const restricted = d.sign && !d.sign.free && d.operator === "ahuzot", op = OPERATOR[d.operator] ?? d.operator;
   const dur = $("#dur").selectedOptions[0]?.text ?? `${q.duration_minutes} ${L("דק׳", "min")}`;
+  const ms = subOf() && d.subscriptions?.filter((s) => s.type === subOf()).sort((a, b) => monthly(a) - monthly(b))[0]; // pass mode: the pass is the headline
+  const subBoard = ms && `<div class="board ${subTier(monthly(ms))}"><div class="board-price" dir="ltr">${ils(monthly(ms))}</div>
+      <div class="board-when">${SUBNAME[ms.type]}, ${L("לחודש", "per month")}${ms.hours ? `, <span dir="ltr">${esc(ms.hours)}</span>` : ""}</div></div>`;
+  const subRows = (d.subscriptions ?? []).map((s) => `<tr><td>${SUBNAME[s.type]}${s.hours ? ` <span dir="ltr">${esc(s.hours)}</span>` : ""}${s.text ? `<br><small>${esc(s.text)}</small>` : ""}</td>
+      <td>${ils(s.price_ils)} ${s.period === "week" ? L("לשבוע", "per week") : L("לחודש", "per month")}</td></tr>`).join("");
+  const subsHtml = subRows ? `<h3>${L("מנויים", "Subscriptions")}</h3><table class="tariff"><tbody>${subRows}</tbody></table>
+      <p class="tariff-note">${d.subscriptions.some((s) => s.source === "city") ? L("המחיר לפי נתוני העירייה וייתכן שאינו עדכני: כדאי לוודא מול החניון.", "Price from city data; it may be out of date: confirm with the lot.") : L("המחיר לפי אתר המפעיל, כולל מע״מ.", "Price from the operator's site, including VAT.")}</p>`
+    : d.operator === "ahuzot" ? `<h3>${L("מנויים", "Subscriptions")}</h3><p class="tariff-note">${L("אחוזות החוף מציעה הסדר מנוי חודשי בחניוניה (על בסיס מקום פנוי). המחיר אינו מפורסם באתר. ", "Ahuzot HaHof offers a monthly subscription at its lots (subject to free space). The price isn't published online. ")}<a href="https://www.ahuzot.co.il/Parking/?ID=7" target="_blank" rel="noopener">${L("לפרטים", "Details")}</a></p>` : "";
   panel.innerHTML = `
     <button id="close" class="icon-btn" aria-label="${L("סגירה", "Close")}"><span class="ms">close</span></button>
     <h2>${esc(d.name)}</h2>
     <p class="sub">${esc(d.address)}<br>${esc(op)}${d.spaces ? `, ${d.spaces} ${L("מקומות", "spaces")}` : ""}</p>
-    <div class="board ${tier(q)}">
+    ${subBoard || `<div class="board ${tier(q)}">
       ${q.price_ils == null ? `<div class="board-price small">${L("לפי השילוט", "Per the sign")}</div>` : `<div class="board-price" dir="ltr">${esc(price(q))}</div>`}
       <div class="board-when">${whenText(q.start)}, <span dir="ltr">${q.start.slice(11)}–${endOf(q.start, q.duration_minutes)}</span> (${esc(dur)})${state.res ? `<br>${L("כולל הנחת תושב/ת ת״א", "Includes Tel Aviv resident discount")}` : ""}</div>
     </div>
@@ -194,6 +212,7 @@ async function openLot(id, fly = true) {
       ${liveOf(d) ? `<p><span class="status ${liveOf(d)}" style="display:inline">${LIVE[liveOf(d)]}</span> ${L("עכשיו, עודכן ב-", "now, updated at ")}${esc(d.live.updated.slice(11))}${d.live.source === "crowd" ? L(" (דווח על ידי נהגים)", " (reported by drivers)") : ""}</p>` : ""}
       ${q.breakdown.length > 1 ? q.breakdown.map((b) => `<p>${b.from.slice(11)}–${b.to.slice(11)}: ${KIND[b.kind]}, ₪${b.price}</p>`).join("") : q.breakdown.map((b) => `<p>${L("תשלום ", "Billing: ")}${KIND[b.kind]}</p>`).join("")}
     </div>
+    `}
     ${features(d)}
     ${d.sign ? `<p class="note${restricted ? " red" : ""}">${esc(d.sign[LANG])}</p>` : ""}
     ${!q.can_enter ? `<p class="note red">${L("אין כניסה לחניון בשעה הזו.", "No entry to the lot at this time.")}</p>` : !q.open_whole_stay ? `<p class="note red">${L("החניון סגור בחלק מזמן החניה, וייתכן שלא תוכלו לצאת.", "The lot is closed for part of your stay, and you may not be able to leave.")}</p>` : ""}
@@ -204,6 +223,7 @@ async function openLot(id, fly = true) {
       <button class="act" id="share"><span class="ms">link</span><span>${L("העתקת קישור", "Copy link")}</span></button>
     </div>
     <div id="attach"></div>
+    ${subsHtml}
     <div id="report"></div>
     ${d.tariffs ? `<h3>${L("תעריף", "Tariff")}</h3>${tariffTable(d.tariffs, d.app_tariffs)}
       ${d.grace_minutes ? `<p class="tariff-note">${L(`עד ${d.grace_minutes} דקות בחניון: חינם`, `Free for up to ${d.grace_minutes} minutes`)}</p>` : ""}
@@ -289,7 +309,9 @@ const STEP = 15 * 6e4;
 const dateFmt = new Intl.DateTimeFormat(L("he-IL", "en-GB"), { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" });
 function showWhen() {
   $("#mode").value = state.when ? "at" : "now";
-  $("#at").hidden = !state.when;
+  $("#mode").closest(".chip").hidden = !!subOf(); // a pass has no entry time
+  $("#at").hidden = !state.when || !!subOf();
+  $("#legend").innerHTML = subOf() ? LEGEND_SUB : LEGEND;
   if (!state.when) return;
   $("#time").value = state.when.slice(11);
   $("#date").value = state.when.slice(0, 10);
@@ -305,7 +327,7 @@ document.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("clic
   setWhen(fmt(b.dataset.unit === "date" ? t + d * DAY : Math[d > 0 ? "floor" : "ceil"](t / STEP) * STEP + d * STEP));
 }));
 $("#dateBtn").addEventListener("click", () => { try { $("#date").showPicker(); } catch { $("#date").focus(); } });
-$("#dur").addEventListener("change", (e) => { state.dur = e.target.value; sync(); load(); });
+$("#dur").addEventListener("change", (e) => { state.dur = e.target.value; showWhen(); sync(); load(); });
 $("#res").addEventListener("change", (e) => { state.res = e.target.checked; $("#zoneChip").hidden = !state.res; sync(); load(); });
 $("#zone").addEventListener("change", (e) => { state.zone = e.target.value; sync(); load(); });
 $("#bus").addEventListener("change", (e) => { state.bus = e.target.checked; sync(); load(); });

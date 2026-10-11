@@ -2,7 +2,7 @@
 // Green Parking: free-text price blocks that differ per lot, so the TLV lots are hand-encoded below and
 // the build flags any change in a lot's text, and any new lot.
 import { setTimeout as sleep } from "node:timers/promises";
-import { WEEK, type Day, type Lot, type Rule } from "../src/engine.ts";
+import { WEEK, type Day, type Lot, type Rule, type Sub } from "../src/engine.ts";
 
 type Get = (url: string) => Promise<string>;
 const ALL = WEEK, SUN_THU: Day[] = WEEK.slice(0, 5), FRI_SAT: Day[] = ["fri", "sat"];
@@ -24,6 +24,9 @@ function jsonAt(s: string, i: number): any {
     else if ((c === "}" || c === "]") && --depth === 0) return JSON.parse(s.slice(i, j + 1));
   }
 }
+
+const SUB_TYPE: Record<string, Sub["type"]> = { Regular: "full", Night: "night", WeekdaySundayThursday: "weekdays", Motorcycle: "motorcycle", Saved: "reserved" };
+const SUB_PERIOD: Record<string, Sub["period"]> = { Monthly: "month", Weekly: "week" };
 
 export async function centralPark(get: Get, today: string, problems: string[]): Promise<Lot[]> {
   const list = flight(await get("https://centralpark.co.il/he/parking"));
@@ -63,6 +66,13 @@ export async function centralPark(get: Get, today: string, problems: string[]): 
       .map((s) => ({ days: [WEEK[DAYNAME.indexOf(s.day)]], from: s.openingTime.slice(0, 5), to: s.closingTime.slice(0, 5) }));
     const always = sched.length === 7 && open.length === 7 && open.every((w) => w.from === w.to);
     const desc = (s: any) => !s.openingTime ? "סגור" : s.openingTime === s.closingTime ? "24 שעות" : `${s.openingTime.slice(0, 5)}–${s.closingTime.slice(0, 5)}`;
+    const subscriptions: Sub[] = [];
+    for (const s of d.subscriptionPriceListDtos ?? []) {
+      if (!(s.priceNis > 0)) continue; // 0 = "subscriptions not available at this lot"
+      const type = /ראשון עד חמישי|א'-ה'/.test(s.text ?? "") ? "weekdays" : SUB_TYPE[s.subscriptionType], period = SUB_PERIOD[s.periodType];
+      if (!type || !period) { problems.push(`centralpark-${l.id} ${name}: unknown subscription ${s.subscriptionType}/${s.periodType}`); continue; }
+      subscriptions.push({ type, period, price_ils: s.priceNis, text: s.text?.trim() || undefined, source: "operator" });
+    }
     const extra = d.parkingLotExtraDetailsDto ?? {}, props: any[] = d.parkingLotStaticInfo?.parkingLotProperties ?? [];
     // "Electric loading" flag without a count = at least one charger. A height limit means a structure, so covered.
     const ev = (extra.chargingStations ?? 0) + (extra.fastChargingStations ?? 0) || (props.some((p) => p.propertyKey === "Electric loading") ? 1 : 0);
@@ -71,7 +81,7 @@ export async function centralPark(get: Get, today: string, problems: string[]): 
       spaces: d.parkingLotExtraDetailsDto?.totalSpots ?? undefined,
       ...(ev && { ev_chargers: ev }), ...(extra.heightLimit && { height_m: extra.heightLimit, covered: true }),
       hours_text: always ? "פתוח 24 שעות" : sched.map((s) => `${HEB[DAYNAME.indexOf(s.day)]} ${desc(s)}`).join(" · "),
-      tariff_text, tariffs: rules(false), app_tariffs: rules(true), ...(sched.length && !always && { open }), source_url, verified_at: today,
+      tariff_text, tariffs: rules(false), app_tariffs: rules(true), ...(subscriptions.length && { subscriptions }), ...(sched.length && !always && { open }), source_url, verified_at: today,
     });
   }
   return lots;

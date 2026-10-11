@@ -4,6 +4,7 @@ import * as z from "zod/v4";
 import { search, lotDetails, resolveStart, placeOut, CAVEATS } from "./search.ts";
 import { crowdLive, crowdPrices } from "./reports.ts";
 import { resolvePlace, type LoadPois } from "./places.ts";
+import { SUB_TYPES } from "./engine.ts";
 
 const readOnly = { readOnlyHint: true, openWorldHint: false };
 const out = (data: unknown, summary: string) => ({
@@ -45,6 +46,7 @@ export function createServer(origin: string, pois?: LoadPois, db?: unknown) {
       permit_zone: z.number().int().optional().describe("The user's Tel Aviv residential parking permit zone (1, 2, 4, 6, 7, 9, 10, 12 or 13): blue-white parking there is free."),
       max_walk_m: z.number().int().min(100).max(5000).default(800).describe("Max straight-line distance in meters."),
       sort_by: z.enum(["price", "distance"]).default("price"),
+      subscription: z.enum(SUB_TYPES).optional().describe("For regular parkers, not one-off visits: only lots selling this monthly pass (night = evenings and nights, full = 24/7, weekdays = Sun-Thu, motorcycle, reserved), ranked by the pass price. Time and duration are ignored. Prices come from the operator or from city data that may be stale: tell the user to confirm with the lot."),
       limit: z.number().int().min(1).max(50).default(10),
       ev_charging: z.boolean().default(false).describe("Only lots known to have EV chargers (mostly Central Park lots)."),
       covered: z.boolean().default(false).describe("Only lots known to be covered/underground. Data is sparse: inferred from a published height limit."),
@@ -66,10 +68,10 @@ export function createServer(origin: string, pois?: LoadPois, db?: unknown) {
     const r = await search({
       lat: at.lat, lng: at.lng, start, minutes: a.duration_minutes, max_walk_m: a.max_walk_m, sort_by: a.sort_by, limit: a.limit,
       resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, zone: a.permit_zone, origin, crowd: await crowdLive(db),
-      ev: a.ev_charging, covered: a.covered, accessible: a.accessible, height_m: a.vehicle_height_m,
+      ev: a.ev_charging, covered: a.covered, accessible: a.accessible, height_m: a.vehicle_height_m, sub: a.subscription,
     });
     const data = { resolved_location: places?.resolved ?? at, alternatives: places?.alternatives ?? [], ...r };
-    const top = r.results.slice(0, 3).map((x) => `${x.name} ${priceText(x)} ${x.distance_m}m`).join("; ");
+    const top = r.results.slice(0, 3).map((x) => `${x.name} ${x.subscription ? `₪${x.subscription.price_ils}/${x.subscription.period}` : priceText(x)} ${x.distance_m}m`).join("; ");
     const st = r.street && ` Street (blue-white, zone ${r.street.zone}): ₪${r.street.price_ils}, ~${r.street.chance_pct}% chance of a spot (estimate).`;
     return out(data, `${r.count} lots within ${a.max_walk_m}m, ${r.query.start}→${r.query.end} (${r.query.day_type}). Top: ${top || "none"}.${st ?? ""}`);
   });
