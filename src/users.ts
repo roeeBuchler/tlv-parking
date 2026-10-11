@@ -32,7 +32,7 @@ const json = (data: unknown, status = 200, headers: Record<string, string> = {})
 const cookie = (token: string, maxAge: number) => ({ "set-cookie": `sid=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}` });
 const sid = (req: Request) => req.headers.get("cookie")?.match(/(?:^|;\s*)sid=([0-9a-f]{64})/)?.[1];
 
-async function currentUser(req: Request, env: Env): Promise<{ id: number; username: string } | null> {
+export async function currentUser(req: Request, env: Env): Promise<{ id: number; username: string } | null> {
   const t = sid(req);
   if (!t) return null;
   return env.DB.prepare("SELECT u.id, u.username FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ? AND s.expires_at > ?")
