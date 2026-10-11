@@ -5,6 +5,7 @@ import { search, lotDetails, resolveStart, placeOut, CAVEATS } from "./search.ts
 import { crowdLive, crowdPrices } from "./reports.ts";
 import { resolvePlace, type LoadPois } from "./places.ts";
 import { SUB_TYPES } from "./engine.ts";
+import { streetZones } from "./street.ts";
 
 const readOnly = { readOnlyHint: true, openWorldHint: false };
 const out = (data: unknown, summary: string) => ({
@@ -38,7 +39,9 @@ export function createServer(origin: string, pois?: LoadPois, db?: unknown) {
       "Give `near` (Hebrew or English place/address, e.g. 'Dizengoff Center', 'דיזנגוף 50') or lat/lng. " +
       "Always tell the user which resolved_location was used, the assumed duration, and that the sign at the gate prevails. " +
       "Mention potential_offers (deals the user could unlock) when present. " +
-      "Also returns `street`: blue-white curbside parking at that point (zone, price for the stay, chance_pct of finding a spot: an estimate, say so).",
+      "Also returns `street`: blue-white curbside parking at that point (zone, price for the stay, `who` = price for a permit for this zone / " +
+      "another zone / a visitor, chance_pct of finding a spot: an estimate, say so), and `street.along`: the zones along the nearest street " +
+      "by side and house number (long streets cross zones; on border streets each side is a different zone, and a permit is free only in its zone).",
     inputSchema: z.object({
       near: z.string().optional().describe("Place, business, landmark, street address or Google Maps link (e.g. \"Dizengoff 50\", \"פארק המסילה\")."),
       lat: z.number().optional(), lng: z.number().optional(),
@@ -65,14 +68,19 @@ export function createServer(origin: string, pois?: LoadPois, db?: unknown) {
     const at = places?.resolved ?? { lat: a.lat!, lng: a.lng! };
     let start;
     try { start = resolveStart(a.start, a.weekday, a.time); } catch (e) { return fail(String(e)); }
+    // the zones along the street, from the city's GIS in parallel with the search; best effort, never fails the search
+    const along = streetZones(at).catch(() => null);
     const r = await search({
       lat: at.lat, lng: at.lng, start, minutes: a.duration_minutes, max_walk_m: a.max_walk_m, sort_by: a.sort_by, limit: a.limit,
       resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, zone: a.permit_zone, origin, crowd: await crowdLive(db),
       ev: a.ev_charging, covered: a.covered, accessible: a.accessible, height_m: a.vehicle_height_m, sub: a.subscription,
     });
-    const data = { resolved_location: places?.resolved ?? at, alternatives: places?.alternatives ?? [], ...r };
+    const street = r.street && { ...r.street, along: await along };
+    const data = { resolved_location: places?.resolved ?? at, alternatives: places?.alternatives ?? [], ...r, street };
     const top = r.results.slice(0, 3).map((x) => `${x.name} ${x.subscription ? `₪${x.subscription.price_ils}/${x.subscription.period}` : priceText(x)} ${x.distance_m}m`).join("; ");
-    const st = r.street && ` Street (blue-white, zone ${r.street.zone}): ₪${r.street.price_ils}, ~${r.street.chance_pct}% chance of a spot (estimate).`;
+    const zones = street?.along && [...new Set([...street.along.odd, ...street.along.even].map((x) => x.zone))].sort((x, y) => x - y);
+    const st = street && ` Street (blue-white, zone ${street.zone}): ₪${street.price_ils}, ~${street.chance_pct}% chance of a spot (estimate).` +
+      (zones && zones.length > 1 ? ` ${street.along!.street_en} crosses zones ${zones.join(", ")}: see street.along.` : "");
     return out(data, `${r.count} lots within ${a.max_walk_m}m, ${r.query.start}→${r.query.end} (${r.query.day_type}). Top: ${top || "none"}.${st ?? ""}`);
   });
 
