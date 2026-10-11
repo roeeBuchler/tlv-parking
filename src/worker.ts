@@ -30,7 +30,7 @@ export default {
       const common = () => ({
         start: resolveStart(p.get("start") ?? undefined, p.get("weekday") ?? undefined, p.get("time") ?? undefined),
         minutes: Math.min(Math.max(num("duration") ?? 120, 1), 7 * 1440),
-        resident: bool("resident"), apps: p.get("apps")?.split(",").filter(Boolean) ?? [], transit: bool("transit"), origin,
+        resident: bool("resident"), apps: p.get("apps")?.split(",").filter(Boolean) ?? [], transit: bool("transit"), zone: num("zone"), origin,
       });
       switch (true) {
         case url.pathname === "/api/search": {

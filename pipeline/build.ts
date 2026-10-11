@@ -7,7 +7,7 @@ import { HebrewCalendar, flags } from "@hebcal/core";
 import { parseTariff, ALL_DAYS } from "./parse.ts";
 import { overrides } from "./overrides.ts";
 import { centralPark, green, single, text as clean } from "./operators.ts";
-import { registry, osm, nightSubs } from "./opendata.ts";
+import { registry, osm, zones, nightSubs } from "./opendata.ts";
 import { gisQuery, geocode, UA } from "../src/places.ts";
 import type { Lot } from "../src/engine.ts";
 
@@ -87,7 +87,10 @@ if (!fromOsm) console.warn("Overpass unreachable: keeping last week's OpenStreet
 lots.push(...(fromOsm ?? old.filter((o) => o.operator === "osm")));
 lots.push(...await nightSubs(lots, today, problems)); // last, so a plan can attach to a lot from any source
 
-// 6. checks: every entry time of a week (+ holiday/eve days) must hit a rule; prices must not jump > 50%
+// 6. blue-white parking zones for src/street.ts
+writeFileSync("data/zones.json", JSON.stringify(await zones(problems)) + "\n");
+
+// 7. checks: every entry time of a week (+ holiday/eve days) must hit a rule; prices must not jump > 50%
 const probe = ["2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07", "2026-10-08", "2026-10-09", "2026-10-10",
   ...Object.keys(holidays).filter((d) => d >= today).slice(0, 6)];
 for (const l of lots as Lot[]) for (const rules of [l.tariffs, l.resident_tariffs, l.app_tariffs]) {
