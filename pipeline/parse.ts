@@ -3,11 +3,11 @@
 import { WEEK, type Day, type Rule } from "../src/engine.ts";
 
 const LETTER: Record<string, number> = { "א": 0, "ב": 1, "ג": 2, "ד": 3, "ה": 4, "ו": 5, "ש": 6 };
-export const ALL_DAYS: Day[] = [...WEEK, "holiday_eve", "holiday"];
+export const ALL_DAYS: Day[] = [...WEEK, "holiday_eve", "holiday"], SUN_THU: Day[] = WEEK.slice(0, 5);
 const pad = (t: string) => t.padStart(5, "0");
 
 // "א` - ה`", "שישי (וערבי חג)", "שבת וחגים", "ו` וערבי חג" -> days
-export function parseDays(s: string): Day[] {
+function parseDays(s: string): Day[] {
   const out = new Set<Day>();
   for (const [, a, b] of s.matchAll(/([אבגדהוש])[`'׳]\s*[-–]\s*([אבגדהוש])[`'׳]/g))
     for (let i = LETTER[a]; i <= LETTER[b]; i++) out.add(WEEK[i]);

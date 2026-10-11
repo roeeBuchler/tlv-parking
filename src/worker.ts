@@ -23,10 +23,11 @@ export default {
     const url = new URL(req.url), p = url.searchParams, origin = url.origin;
     const pois = () => loadPois(env, url);
     if (url.pathname === "/mcp") return createMcpHandler(() => createServer(origin, pois, env.DB)).fetch(req);
-    const u = await handleUsers(req, env, url.pathname).catch((e) => json({ error: String(e?.message ?? e) }, 500));
-    if (u) return u;
-    const rep = await handleReports(req, env, url.pathname).catch((e) => json({ error: String(e?.message ?? e) }, 500));
-    if (rep) return rep;
+    // cookie is SameSite=Lax; also refuse cross-site writes outright
+    if (req.method !== "GET" && req.headers.get("origin") && req.headers.get("origin") !== origin) return json({ error: "Bad origin" }, 403);
+    const acct = await handleUsers(req, env, url.pathname).then((u) => u ?? handleReports(req, env, url.pathname))
+      .catch((e) => json({ error: String(e?.message ?? e) }, 500));
+    if (acct) return acct;
 
     const num = (k: string) => (p.get(k) ? Number(p.get(k)) : undefined);
     const bool = (k: string) => ["1", "true"].includes(p.get(k) ?? "");

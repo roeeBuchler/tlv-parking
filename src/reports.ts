@@ -2,10 +2,9 @@
 // Reports never change the engine's price; mismatches are counted so the tariff can be fixed in pipeline/overrides.ts.
 import { lots, offers, type Crowd } from "./search.ts";
 import { quote, parseLocal, localNow, fmtLocal, MIN, DAY } from "./engine.ts";
-import { currentUser, type Env } from "./users.ts";
+import { currentUser, json, type Env } from "./users.ts";
 
 const LIVE_MS = 30 * MIN, DAILY_CAP = 20;
-const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { "cache-control": "no-store" } });
 
 // ponytail: per-isolate memory cache like live(); a report shows at once on its own isolate, within 20 s on others
 let cache: { at: number; data: Crowd } | undefined;
@@ -43,7 +42,6 @@ export async function crowdPrices(db: any, lotId: string) {
 export async function handleReports(req: Request, env: Env, path: string): Promise<Response | null> {
   if (path !== "/api/reports") return null;
   if (req.method !== "POST") return json({ error: "Not found" }, 404);
-  if (req.headers.get("origin") && req.headers.get("origin") !== new URL(req.url).origin) return json({ error: "Bad origin" }, 403);
   const user = await currentUser(req, env);
   if (!user) return json({ error: "sign in first" }, 401);
 

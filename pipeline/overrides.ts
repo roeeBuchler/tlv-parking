@@ -1,8 +1,7 @@
 // Hand-encoded facts the parser can't read (opening hours, no-entry windows), keyed by ahuzot.co.il ID.
 // ponytail: keyed by ID, not by text; re-check these when a lot's hours text changes on the site.
 import type { Lot } from "../src/engine.ts";
-
-const WEEKDAYS = ["sun", "mon", "tue", "wed", "thu"] as const;
+import { SUN_THU } from "./parse.ts";
 
 // "בהתאם לשילוט" lots: open municipal lots where the traffic sign rules (GIS layers 488/970 say free).
 // Evidence: research/FINDINGS_2026-10-04.md. Re-check with Street View before upgrading any to verified.
@@ -27,13 +26,13 @@ const signs: Record<number, Partial<Lot>> = {
 export const overrides: Record<number, Partial<Lot>> = {
   ...signs,
   // HaTarbut / Habima: no entry 20:00-21:00 Sun-Thu & Sat, 12:00-13:00 Fri
-  94: { no_entry: [{ days: [...WEEKDAYS, "sat"], from: "20:00", to: "21:00" }, { days: ["fri"], from: "12:00", to: "13:00" }] },
+  94: { no_entry: [{ days: [...SUN_THU, "sat"], from: "20:00", to: "21:00" }, { days: ["fri"], from: "12:00", to: "13:00" }] },
   // Smolarz: Sun-Thu 07-23, Fri & holiday eves 07-14, closed Shabbat; cars can't exit when closed
-  95: { open: [{ days: [...WEEKDAYS], from: "07:00", to: "23:00" }, { days: ["fri", "holiday_eve"], from: "07:00", to: "14:00" }] },
+  95: { open: [{ days: SUN_THU, from: "07:00", to: "23:00" }, { days: ["fri", "holiday_eve"], from: "07:00", to: "14:00" }] },
   // Museums: as above plus Sat & holidays 08-18
   121: {
     open: [
-      { days: [...WEEKDAYS], from: "07:00", to: "23:00" },
+      { days: SUN_THU, from: "07:00", to: "23:00" },
       { days: ["fri", "holiday_eve"], from: "07:00", to: "14:00" },
       { days: ["sat", "holiday"], from: "08:00", to: "18:00" },
     ],
@@ -41,7 +40,7 @@ export const overrides: Record<number, Partial<Lot>> = {
   // Gan HaKovshim 2 West: closed for mosque worshippers Fri 07-15
   129: {
     open: [
-      { days: [...WEEKDAYS, "sat", "holiday_eve", "holiday"], from: "00:00", to: "00:00" },
+      { days: [...SUN_THU, "sat", "holiday_eve", "holiday"], from: "00:00", to: "00:00" },
       { days: ["fri"], from: "00:00", to: "07:00" },
       { days: ["fri"], from: "15:00", to: "00:00" },
     ],
