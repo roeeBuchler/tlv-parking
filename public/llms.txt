@@ -10,7 +10,7 @@ Searches near a point also return `street`: blue-white curbside parking there (z
 
 ## MCP
 
-- Endpoint: `/mcp` (streamable HTTP, stateless, no sign-in). Tools: `search_parking`, `get_lot_details`.
+- Endpoint: `/mcp` (streamable HTTP, stateless, no sign-in). Tools: `search_parking` (its `street` also has `along`: the zones along the street, as `/api/street` gives them), `get_lot_details`.
 
 ## REST
 
