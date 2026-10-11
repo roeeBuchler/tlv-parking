@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=account_circle,add,block,calendar_today,chevron_left,chevron_right,close,delete,directions,directions_bus,edit,format_list_bulleted,home,info,link,local_offer,local_parking,logout,map,place,schedule,search,smartphone,star,timer&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=account_circle,add,block,calendar_today,check_circle,chevron_left,chevron_right,close,delete,directions,directions_bus,edit,format_list_bulleted,home,info,link,local_offer,local_parking,logout,map,place,schedule,search,smartphone,star,timer&display=block">
 <style>
   /* Google Maps feel: floating white cards over a colourful map; Google's four colours carry meaning (price band, status, chip). */
   :root {
@@ -191,6 +191,9 @@
   .attach { display: flex; flex-wrap: wrap; gap: 8px; }
   .attach .chip { box-shadow: none; border: 1px solid var(--line); }
   .attach .ms { color: var(--red); }
+  #report details { margin-top: 10px; }
+  #report summary { cursor: pointer; font-weight: 500; color: var(--blue-fg); }
+  #report .attach .chip[data-kind=space] .ms { color: var(--green-fg); }
 
   /* legend */
   #legend { position: fixed; z-index: 1; bottom: 24px; left: 56px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px;

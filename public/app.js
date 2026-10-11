@@ -129,7 +129,7 @@ async function openLot(id, fly = true) {
     </div>
     ${q.app_price_ils != null ? `<div class="split"><div class="${state.cp ? "" : "on"}">בקופה<b dir="ltr">${ils(q.gate_price_ils)}</b></div><div class="${state.cp ? "on" : ""}">באפליקציית ${esc(op)}<b dir="ltr">${ils(q.app_price_ils)}</b></div></div>` : ""}
     <div class="facts">
-      ${liveOf(d) ? `<p><span class="status ${liveOf(d)}" style="display:inline">${LIVE[liveOf(d)]}</span> עכשיו, עודכן ב-${esc(d.live.updated.slice(11))}</p>` : ""}
+      ${liveOf(d) ? `<p><span class="status ${liveOf(d)}" style="display:inline">${LIVE[liveOf(d)]}</span> עכשיו, עודכן ב-${esc(d.live.updated.slice(11))}${d.live.source === "crowd" ? " (דווח על ידי נהגים)" : ""}</p>` : ""}
       ${q.breakdown.length > 1 ? q.breakdown.map((b) => `<p>${b.from.slice(11)}–${b.to.slice(11)}: ${KIND[b.kind]}, ₪${b.price}</p>`).join("") : q.breakdown.map((b) => `<p>תשלום ${KIND[b.kind]}</p>`).join("")}
     </div>
     ${d.sign ? `<p class="note${restricted ? " red" : ""}">${esc(d.sign.he)}</p>` : ""}
@@ -141,6 +141,7 @@ async function openLot(id, fly = true) {
       <button class="act" id="share"><span class="ms">link</span><span>העתקת קישור</span></button>
     </div>
     <div id="attach"></div>
+    <div id="report"></div>
     ${d.tariffs ? `<h3>תעריף</h3>${tariffTable(d.tariffs, d.app_tariffs)}
       ${d.grace_minutes ? `<p class="tariff-note">עד ${d.grace_minutes} דקות בחניון: חינם</p>` : ""}
       ${d.resident_discount_pct ? `<p class="tariff-note">${d.resident_discount_pct}% הנחה לתושבי תל אביב-יפו</p>` : ""}
@@ -150,10 +151,11 @@ async function openLot(id, fly = true) {
     ${d.hours_text ? `<h3>שעות פעילות</h3><p>${esc(d.hours_text)}</p>` : ""}
     ${d.serves ? `<p class="sub">משרת את ${esc(d.serves)}</p>` : ""}
     <p class="fine">המחיר הוא הערכה לפי התעריף שפורסם, והשילוט בחניון קובע. נבדק ב-${esc(d.verified_at)}.
-      <a href="${esc(d.source_url)}" target="_blank" rel="noopener">למקור</a>, <a href="${esc(d.links.report)}" target="_blank" rel="noopener">דיווח על מחיר שגוי</a></p>`;
+      <a href="${esc(d.source_url)}" target="_blank" rel="noopener">למקור</a>, <a href="${esc(d.links.report)}" target="_blank" rel="noopener">טעות אחרת?</a></p>`;
   panel.hidden = false; list.hidden = true; panel.dataset.view = "lot";
   $("#listBtn").setAttribute("aria-pressed", "false");
   drawAttach(d);
+  drawReport(d, q);
   $("#close").onclick = () => { panel.hidden = true; state.lot = null; sync(); select(null); };
   $("#share").onclick = () => navigator.clipboard.writeText(location.href).then(() => ($("#share span:last-child").textContent = "הועתק ✓"));
   if (fly) map.easeTo({ center: [d.lng, d.lat], zoom: Math.max(map.getZoom(), 15), padding: sidePad() });
@@ -263,6 +265,44 @@ async function addPlace(c, label = c.label) {
   if (!me) return showAccount("התחברו כדי לשמור נקודות ציון.");
   await api("/api/favorites", "POST", { label, lat: c.lat, lng: c.lng });
   await loadMe();
+}
+
+// crowd reports: occupancy buttons (shown as the live status for 30 min) and "what I paid" (listed beside the tariff, never changes the price)
+const REPORT_ERR = { 429: "הגעתם למגבלת הדיווחים היומית.", 400: "הנתונים לא תקינים. בדקו את המחיר והשעה." };
+function drawReport(d, q) {
+  const box = $("#report"), c = d.crowd_prices, now = fmt(jlmNow());
+  const paid = (r) => `<p>₪${+r.price.toFixed(2)}, ${r.minutes >= 120 ? `${+(r.minutes / 60).toFixed(1)} שעות` : `${r.minutes} דק׳`}, ${whenText(r.entered_at)}${r.resident ? ", תושב/ת" : ""}</p>`;
+  box.innerHTML = `<h3>דיווחי נהגים</h3>
+    ${c?.recent.length ? `<div class="facts"><p class="sub">מה נהגים כתבו ששילמו:</p>${c.recent.map(paid).join("")}</div>` : ""}
+    ${c?.mismatches >= 2 ? `<p class="note yellow">${c.mismatches} דיווחים בחודש האחרון שונים מהמחיר שמוצג. בדקו את השילוט.</p>` : ""}
+    <div class="attach">
+      <button class="chip" data-kind="full"><span class="ms">block</span>החניון מלא</button>
+      <button class="chip" data-kind="space"><span class="ms">check_circle</span>יש מקום</button>
+    </div>
+    <details><summary>כמה שילמתי?</summary>
+      <form class="form" id="paid">
+        <label>מחיר ששילמתי (₪)<input name="price" type="number" inputmode="decimal" min="0" max="1000" step="any" required></label>
+        <label>שעת כניסה<input name="entered_at" type="datetime-local" required max="${now}" value="${q.start < now ? q.start : now}"></label>
+        <label>משך החניה בדקות<input name="minutes" type="number" inputmode="numeric" min="1" max="10080" step="1" required value="${q.duration_minutes}"></label>
+        <label class="chip tog"><input type="checkbox" name="resident"${state.res ? " checked" : ""}><span class="ms">home</span>תושב/ת תל אביב-יפו</label>
+        <p class="note red" id="rerr" hidden></p>
+        <div class="btns"><button class="btn primary">שליחה</button></div>
+      </form>
+    </details>`;
+  const send = async (body) => {
+    if (!me) return showAccount("התחברו כדי לדווח.");
+    try { await api("/api/reports", "POST", { lot_id: d.id, ...body }); await load(); openLot(d.id, false); }
+    catch (err) {
+      if (err.status === 401) return showAccount("התחברו כדי לדווח.");
+      Object.assign($("#rerr"), { hidden: false, textContent: REPORT_ERR[err.status] ?? "משהו השתבש. נסו שוב." });
+    }
+  };
+  box.onclick = (e) => { const k = e.target.closest("[data-kind]")?.dataset.kind; if (k) send({ kind: k }); };
+  $("#paid").onsubmit = (e) => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    send({ kind: "price", price: +f.get("price"), entered_at: f.get("entered_at"), minutes: +f.get("minutes"), resident: f.has("resident") });
+  };
 }
 
 // lot details: tick the places this lot is a favorite for
