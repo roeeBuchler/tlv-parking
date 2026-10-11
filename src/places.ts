@@ -71,6 +71,13 @@ export function fromMapsLink(q: string): Place | null {
   return { label: name ? decodeURIComponent(name.replace(/\+/g, " ")) : `${m[1]}, ${m[2]}`, lat: +m[1], lng: +m[2], source: "link" };
 }
 
+// maps.app.goo.gl/… share links redirect once to the full URL. Only Google's shortener is fetched (trust boundary: no open fetch).
+async function expandMapsLink(url: string): Promise<string> {
+  if (!/^https:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps)\//.test(url)) return url;
+  const r = await fetch(url, { redirect: "manual", signal: AbortSignal.timeout(5000) }).catch(() => null);
+  return r?.headers.get("location") ?? url;
+}
+
 // public/pois.tsv lines: "<normalized names, |-separated>\t<label>\t<lat>\t<lng>", best place first.
 // indexOf over the raw text, no JSON parse: a few ms per query (Workers free plan: 10 ms CPU)
 export function poiSearch(q: string, tsv: string, limit = 5): Place[] {
@@ -92,8 +99,8 @@ export function poiSearch(q: string, tsv: string, limit = 5): Place[] {
 }
 
 export async function resolvePlace(q: string, pois?: LoadPois): Promise<Place[]> {
-  const link = fromMapsLink(q.trim());
-  if (link) return [link];
+  const url = q.match(/https?:\/\/\S+/)?.[0]; // the app's share text is "Nachmani https://maps.app.goo.gl/…"
+  if (url) { const link = fromMapsLink(await expandMapsLink(url)); return link ? [link] : []; } // never send a URL to OSM
   const n = norm(q);
   if (!n) return [];
   const hits = landmarks
