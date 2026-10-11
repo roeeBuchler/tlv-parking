@@ -13,7 +13,7 @@ if (EN) {
 }
 const panel = $("#panel"), list = $("#list");
 const P = new URL(location.href).searchParams;
-const state = { lot: P.get("lot"), when: P.get("when") ?? "", dur: P.get("dur") ?? "120", res: P.get("res") === "1", bus: P.get("bus") === "1", cp: P.get("cp") === "1", center: null, results: [], alts: [] };
+const state = { lot: P.get("lot"), when: P.get("when") ?? "", dur: P.get("dur") ?? "120", res: P.get("res") === "1", bus: P.get("bus") === "1", cp: P.get("cp") === "1", zone: P.get("zone") ?? "", center: null, results: [], street: null, alts: [] };
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`); // scraped text: never raw HTML
 const LIVE = { free: L("פנוי", "Free"), few: L("מעט מקומות", "Few spaces"), full: L("מלא", "Full"), closed: L("סגור", "Closed") }; // "open" / "unknown" carry no occupancy
@@ -45,6 +45,7 @@ function qs(extra = {}) {
   const o = { duration: state.dur, ...extra };
   if (state.when) o.start = state.when;
   if (state.res) o.resident = 1;
+  if (state.res && state.zone) o.zone = state.zone;
   const apps = [...(state.bus ? ["pango", "cello"] : []), ...(state.cp ? ["centralpark"] : [])];
   if (apps.length) o.apps = apps.join(",");
   if (state.bus) o.transit = 1;
@@ -52,7 +53,7 @@ function qs(extra = {}) {
 }
 function sync() {
   const u = new URLSearchParams();
-  for (const [k, v] of [["lot", state.lot], ["when", state.when], ["dur", state.dur !== "120" && state.dur], ["res", state.res && 1], ["bus", state.bus && 1], ["cp", state.cp && 1], ["lang", EN && "en"]]) if (v) u.set(k, v);
+  for (const [k, v] of [["lot", state.lot], ["when", state.when], ["dur", state.dur !== "120" && state.dur], ["res", state.res && 1], ["zone", state.res && state.zone], ["bus", state.bus && 1], ["cp", state.cp && 1], ["lang", EN && "en"]]) if (v) u.set(k, v);
   history.replaceState(null, "", u.size ? `?${u}` : location.pathname);
 }
 
@@ -97,6 +98,7 @@ async function load() {
   const r = await (await fetch(`/api/search?${qs(extra)}`)).json();
   if (n !== loads) return;
   state.results = r.results ?? [];
+  state.street = r.street ?? null;
   drawPins();
   if (!list.hidden) showList();
   if (state.lot && !panel.hidden) openLot(state.lot, false);
@@ -108,7 +110,7 @@ function showList() {
     ? `<li class="head">${L(`חניונים עד 1 ק״מ מ${esc(state.center.label)}, מהזול ליקר.`, `Lots within 1 km of ${esc(state.center.label)}, cheapest first.`)}<br>${savedPlace(state.center)
       ? `<span class="save"><span class="ms">place</span>${L("שמור בנקודות הציון שלך", "Saved to your places")}</span>` : `<button class="save" id="savePlace"><span class="ms">add</span>${L("שמירה כנקודת ציון", "Save as a place")}</button>`}${state.alts.length ? `<br>${L("התכוונתם ל", "Did you mean ")}${state.alts.map((a, i) => `<a href="#" data-alt="${i}">${esc(a.label)}</a>`).join(L(" או ", " or "))}?` : ""}</li>`
     : `<li class="head">${L("כל החניונים, מהזול ליקר. חפשו כתובת כדי לראות מה קרוב אליה.", "All lots, cheapest first. Search an address to see what is near it.")}</li>`;
-  list.querySelector("ol").innerHTML = head + (near.map((l) => `<li><button data-id="${esc(l.id)}" aria-label="${esc(`${l.name}, ${price(l)}`)}">
+  list.querySelector("ol").innerHTML = head + (state.center && state.street ? streetRow(state.street) : "") + (near.map((l) => `<li><button data-id="${esc(l.id)}" aria-label="${esc(`${l.name}, ${price(l)}`)}">
     ${plateHtml(l)}
     <span><span class="row-name">${esc(l.name)}</span><span class="row-sub">${esc(OPERATOR[l.operator] ?? l.operator)}</span></span>
     <span class="row-end">${l.distance_m != null ? `${l.distance_m} ${L("מ׳", "m")}` : ""}${liveOf(l) ? `<span class="status ${liveOf(l)}">${LIVE[liveOf(l)]}</span>` : ""}</span>
@@ -116,6 +118,20 @@ function showList() {
   list.hidden = false; panel.hidden = true;
   $("#listBtn").setAttribute("aria-pressed", "true");
 }
+// blue-white parking at the searched point (src/street.ts): price for the stay and a rough chance of finding a spot
+const AREA = { center: L("מרכז העיר", "city center"), city: L("רחבי העיר", "rest of the city") };
+const streetRow = (s) => `<li class="street">
+  <span class="plate bw" dir="ltr">${esc(ils(s.price_ils))}</span>
+  <span><span class="row-name">${L("חניה ברחוב, כחול-לבן", "Street parking, blue-white")}</span><span class="row-sub">${L("אזור", "Zone")} ${esc(s.zone)}, ${AREA[s.area]}${s.permit === "own_zone" ? L(", חינם עם התו שלך", ", free with your permit")
+    : s.paid_minutes ? L(`, ₪${esc(s.rate_ils_per_hour)} לשעה`, `, ₪${esc(s.rate_ils_per_hour)} per hour`) : L(", ללא תשלום בשעות האלה", ", no charge at these hours")}</span></span>
+  <span class="row-end"><span class="status ${s.chance_pct >= 50 ? "free" : s.chance_pct >= 25 ? "few" : "full"}">${L("סיכוי", "Chance")} ~${esc(s.chance_pct)}%</span>${L("הערכה", "estimate")}</span>
+  <details><summary>${L("איך זה מחושב", "How this is estimated")}</summary>
+    <p>${L(`הסיכוי למצוא מקום הוא הערכה לפי היום והשעה${s.live_lots ? `, ולפי התפוסה עכשיו ב-${esc(s.live_lots)} חניוני אחוזות החוף הקרובים` : ""}. זה לא נתון חי מהרחוב.`,
+      `The chance of finding a spot is an estimate from the day and time${s.live_lots ? `, and from how full the ${esc(s.live_lots)} nearest Ahuzot HaHof lots are right now` : ""}. It is not live street data.`)}</p>
+    ${s.permit === "other_zone" ? `<p>${L("בעלי תו מאזור אחר: שעתיים ביום חינם, ואחריהן 30% הנחה.", "Permit holders from another zone: 2 free hours a day, then 30% off.")}${state.zone ? "" : L(" בחרו את אזור התו שלכם כדי לראות אם החניה כאן חינם.", " Pick your permit zone to see whether parking here is free for you.")}</p>` : ""}
+    <p>${L("משלמים בפנגו או בסלו מהדקה הראשונה. חלק מרחובות הכחול-לבן מיועדים לבעלי תו האזור בלבד, והתמרור בתחילת הרחוב קובע.", "Pay with Pango or Cello from the first minute. Some blue-white streets are for zone permit holders only; the sign at the start of the street decides.")}</p>
+  </details>
+</li>`;
 list.addEventListener("click", (e) => {
   const b = e.target.closest("[data-id]"), a = e.target.closest("[data-alt]");
   if (b) openLot(b.dataset.id);
@@ -254,7 +270,8 @@ document.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("clic
 }));
 $("#dateBtn").addEventListener("click", () => { try { $("#date").showPicker(); } catch { $("#date").focus(); } });
 $("#dur").addEventListener("change", (e) => { state.dur = e.target.value; sync(); load(); });
-$("#res").addEventListener("change", (e) => { state.res = e.target.checked; sync(); load(); });
+$("#res").addEventListener("change", (e) => { state.res = e.target.checked; $("#zoneChip").hidden = !state.res; sync(); load(); });
+$("#zone").addEventListener("change", (e) => { state.zone = e.target.value; sync(); load(); });
 $("#bus").addEventListener("change", (e) => { state.bus = e.target.checked; sync(); load(); });
 $("#cp").addEventListener("change", (e) => { state.cp = e.target.checked; sync(); load(); });
 $("#listBtn").addEventListener("click", () => (list.hidden ? showList() : ((list.hidden = true), $("#listBtn").setAttribute("aria-pressed", "false"))));
@@ -371,6 +388,8 @@ $("#langBtn").addEventListener("click", () => {
 showWhen();
 $("#dur").value = [...$("#dur").options].some((o) => o.value === state.dur) ? state.dur : ($("#dur").add(new Option(`${state.dur} ${L("דק׳", "min")}`, state.dur)), state.dur);
 $("#res").checked = state.res;
+$("#zoneChip").hidden = !state.res;
+$("#zone").value = state.zone;
 $("#bus").checked = state.bus;
 $("#cp").checked = state.cp;
 load();

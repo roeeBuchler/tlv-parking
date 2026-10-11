@@ -3,6 +3,7 @@
 // Both skip lots within a short walk of a lot already in the data.
 import { distanceM, type Lot } from "../src/engine.ts";
 import { gisQuery, GIS, UA } from "../src/places.ts";
+import { AREA } from "../src/street.ts";
 
 const near = (p: { lat: number; lng: number }, lots: Lot[], m: number) => lots.some((l) => distanceM(p, l) < m);
 const key = (s: string) => s.replace(/חניו(ן|ני)|parking|[^\p{L}\p{N}]/giu, "");
@@ -65,4 +66,14 @@ export async function osm(have: Lot[], today: string): Promise<Lot[] | null> {
     });
   }
   return lots;
+}
+
+// Blue-white parking zones (GIS layer 544), simplified to ~10 m: [lng, lat] rings for the point-in-zone lookup in src/street.ts.
+export async function zones(problems: string[]) {
+  const rows = await gisQuery(544, { where: "1=1", outFields: "ms_ezor", returnGeometry: "true", outSR: "4326",
+    maxAllowableOffset: "0.0001", geometryPrecision: "5" }, 30_000);
+  const known = Object.keys(AREA).map(Number), got = rows.map((r) => r.ms_ezor);
+  if (got.length !== known.length || !known.every((z) => got.includes(z)))
+    problems.push(`zones: GIS layer 544 has zones ${got.sort((a, b) => a - b)}; update AREA in src/street.ts (expected ${known})`);
+  return rows.map((r) => ({ zone: r.ms_ezor as number, rings: r.rings as [number, number][][] })).sort((a, b) => a.zone - b.zone);
 }
