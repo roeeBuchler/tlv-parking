@@ -5,6 +5,7 @@ import { search, lotDetails, resolveStart, placeOut } from "./search.ts";
 import { resolvePlace } from "./places.ts";
 import { streetZones } from "./street.ts";
 import { handleUsers, type Env as UsersEnv } from "./users.ts";
+import { handleReports, crowdLive, crowdPrices } from "./reports.ts";
 
 const json = (data: unknown, status = 200) => Response.json(data, {
   status, headers: { "access-control-allow-origin": "*", "cache-control": "no-store" },
@@ -20,17 +21,20 @@ export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url), p = url.searchParams, origin = url.origin;
     const pois = () => loadPois(env, url);
-    if (url.pathname === "/mcp") return createMcpHandler(() => createServer(origin, pois)).fetch(req);
+    if (url.pathname === "/mcp") return createMcpHandler(() => createServer(origin, pois, env.DB)).fetch(req);
     const u = await handleUsers(req, env, url.pathname).catch((e) => json({ error: String(e?.message ?? e) }, 500));
     if (u) return u;
+    const rep = await handleReports(req, env, url.pathname).catch((e) => json({ error: String(e?.message ?? e) }, 500));
+    if (rep) return rep;
 
     const num = (k: string) => (p.get(k) ? Number(p.get(k)) : undefined);
     const bool = (k: string) => ["1", "true"].includes(p.get(k) ?? "");
     try {
+      const crowd = await crowdLive(env.DB);
       const common = () => ({
         start: resolveStart(p.get("start") ?? undefined, p.get("weekday") ?? undefined, p.get("time") ?? undefined),
         minutes: Math.min(Math.max(num("duration") ?? 120, 1), 7 * 1440),
-        resident: bool("resident"), apps: p.get("apps")?.split(",").filter(Boolean) ?? [], transit: bool("transit"), zone: num("zone"), origin,
+        crowd, resident: bool("resident"), apps: p.get("apps")?.split(",").filter(Boolean) ?? [], transit: bool("transit"), zone: num("zone"), origin,
       });
       switch (true) {
         case url.pathname === "/api/search": {
@@ -41,12 +45,13 @@ export default {
             ({ lat, lng } = place.resolved);
           }
           const sort = p.get("sort") === "distance" ? "distance" : "price";
-          const r = await search({ ...common(), lat, lng, max_walk_m: num("max_walk") ?? (lat == null ? Infinity : 800), sort_by: sort, limit: num("limit") });
+          const r = await search({ ...common(), lat, lng, max_walk_m: num("max_walk") ?? (lat == null ? Infinity : 800), sort_by: sort, limit: num("limit"),
+            ev: bool("ev"), covered: bool("covered"), accessible: bool("accessible"), height_m: num("height") });
           return json({ resolved_location: place?.resolved ?? null, alternatives: place?.alternatives ?? [], ...r });
         }
         case url.pathname.startsWith("/api/lots/"): {
           const d = await lotDetails(decodeURIComponent(url.pathname.slice(10)), common());
-          return d ? json(d) : json({ error: "No such lot" }, 404);
+          return d ? json({ ...d, crowd_prices: await crowdPrices(env.DB, d.id) }) : json({ error: "No such lot" }, 404);
         }
         case url.pathname === "/api/street": { // zones along the street nearest lat/lng
           const z = await streetZones({ lat: num("lat") ?? NaN, lng: num("lng") ?? NaN });

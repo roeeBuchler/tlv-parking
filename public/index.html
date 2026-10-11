@@ -2,6 +2,12 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
+<script>
+  // ?lang=en|he, else the last choice, else Hebrew; app.js reads <html lang>
+  let l = new URLSearchParams(location.search).get("lang");
+  try { l ??= localStorage.lang; } catch {}
+  if (l === "en") { document.documentElement.lang = "en"; document.documentElement.dir = "ltr"; }
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>חניונים בתל אביב</title>
 <meta name="description" content="מפת חניונים בתל אביב-יפו (אחוזות החוף, סנטרל פארק, גרין פרקינג) עם מחיר משוער לשעה וליום שבחרתם, תפוסה בזמן אמת והטבות.">
@@ -9,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=account_circle,add,badge,block,calendar_today,chevron_left,chevron_right,close,delete,directions,directions_bus,edit,format_list_bulleted,home,info,link,local_offer,local_parking,logout,map,place,schedule,search,smartphone,star,timer&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=accessible,account_circle,add,badge,block,calendar_today,check_circle,chevron_left,chevron_right,close,delete,directions,directions_bus,edit,ev_station,format_list_bulleted,garage,height,home,info,link,local_offer,local_parking,logout,map,place,schedule,search,smartphone,star,timer,two_wheeler&display=block">
 <style>
   /* Google Maps feel: floating white cards over a colourful map; Google's four colours carry meaning (price band, status, chip). */
   :root {
@@ -68,6 +74,7 @@
   .step button { display: flex; align-items: center; gap: 6px; height: 28px; min-width: 28px; justify-content: center; padding: 0 4px; border: 0; border-radius: 14px; background: none; cursor: pointer; }
   .step button:hover { background: var(--hover); }
   .step .arr .ms { color: var(--muted); }
+  html[dir=ltr] .step .arr .ms { transform: scaleX(-1); } /* markup draws RTL: first button = previous = chevron_right */
   #time::-webkit-calendar-picker-indicator { display: none; }
   #date { position: absolute; bottom: 0; width: 1px; height: 1px; padding: 0; opacity: 0; pointer-events: none; }
   .sep { flex: none; width: 1px; height: 20px; background: rgba(60, 64, 67, .25); }
@@ -129,7 +136,8 @@
     background: linear-gradient(90deg, var(--blue) 50%, #fff 0) bottom / 12px 4px repeat-x, var(--paper); }
 
   /* lot details */
-  #close { float: left; margin: -8px -12px 0 0; }
+  #langBtn { font: 700 13px/1 var(--font); }
+  #close { float: inline-end; margin-block-start: -8px; margin-inline-start: -12px; }
   h2 { margin: 0; font-size: 22px; font-weight: 500; line-height: 1.3; }
   .sub { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
   .board { margin: 18px 0 14px; padding: 18px 20px 16px; border-radius: 16px; background: var(--c); color: var(--on); }
@@ -204,6 +212,9 @@
   .attach { display: flex; flex-wrap: wrap; gap: 8px; }
   .attach .chip { box-shadow: none; border: 1px solid var(--line); }
   .attach .ms { color: var(--red); }
+  #report details { margin-top: 10px; }
+  #report summary { cursor: pointer; font-weight: 500; color: var(--blue-fg); }
+  #report .attach .chip[data-kind=space] .ms { color: var(--green-fg); }
 
   /* legend */
   #legend { position: fixed; z-index: 1; bottom: 24px; left: 56px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
@@ -211,6 +222,7 @@
   #legend .plate { height: 24px; min-width: 0; padding: 0 8px; font-size: 12px; box-shadow: none; }
   #legend .plate.sign { width: 24px; padding: 0; border-radius: 6px; }
   #legend .cap { margin-inline-end: 4px; }
+  @media (min-width: 701px) { html[dir=ltr] #legend { left: auto; right: 56px; } } /* map controls and legend sit opposite the side card */
 
   @media (max-width: 700px) {
     #bar { flex-wrap: wrap; padding: 8px 8px 0; }
@@ -228,47 +240,57 @@
 <body>
 <header id="bar">
   <form id="search" role="search">
-    <a class="logo" href="/" aria-label="חניונים בתל אביב, לדף הראשי">P</a>
-    <input id="q" type="search" placeholder="לאן נוסעים? למשל דיזנגוף 50" aria-label="חיפוש מקום או כתובת">
-    <button type="submit" class="icon-btn go" aria-label="חיפוש"><span class="ms">search</span></button>
-    <button type="button" class="icon-btn" id="listBtn" aria-pressed="false" aria-controls="list" aria-label="רשימת חניונים" title="רשימה"><span class="ms">format_list_bulleted</span></button>
-    <button type="button" class="icon-btn" id="meBtn" aria-controls="panel" aria-label="החשבון והמקומות השמורים שלי" title="המקומות שלי"><span class="ms">account_circle</span></button>
+    <a class="logo" href="/" aria-label="חניונים בתל אביב, לדף הראשי" data-en-aria-label="Tel Aviv parking, home">P</a>
+    <input id="q" type="search" placeholder="לאן נוסעים? למשל דיזנגוף 50" data-en-placeholder="Where to? e.g. Dizengoff 50" aria-label="חיפוש מקום או כתובת" data-en-aria-label="Search for a place or address">
+    <button type="submit" class="icon-btn go" aria-label="חיפוש" data-en-aria-label="Search"><span class="ms">search</span></button>
+    <button type="button" class="icon-btn" id="listBtn" aria-pressed="false" aria-controls="list" aria-label="רשימת חניונים" data-en-aria-label="List of lots" title="רשימה" data-en-title="List"><span class="ms">format_list_bulleted</span></button>
+    <button type="button" class="icon-btn" id="meBtn" aria-controls="panel" aria-label="החשבון והמקומות השמורים שלי" data-en-aria-label="My account and saved places" title="המקומות שלי" data-en-title="My places"><span class="ms">account_circle</span></button>
+    <button type="button" class="icon-btn" id="langBtn" lang="en" aria-label="English" data-en-aria-label="עברית" title="English" data-en-title="עברית" data-en="עב">EN</button>
   </form>
   <div id="opts">
-    <label class="chip"><span class="ms">schedule</span><select id="mode" aria-label="מתי"><option value="now">עכשיו</option><option value="at">כניסה ב-</option></select></label>
+    <label class="chip"><span class="ms">schedule</span><select id="mode" aria-label="מתי" data-en-aria-label="When"><option value="now" data-en="Now">עכשיו</option><option value="at" data-en="Enter at">כניסה ב-</option></select></label>
     <div id="at" hidden>
       <span class="chip step">
-        <button type="button" class="arr" data-step="-1" data-unit="time" aria-label="רבע שעה קודם"><span class="ms">chevron_right</span></button>
-        <input id="time" type="time" aria-label="שעת כניסה">
-        <button type="button" class="arr" data-step="1" data-unit="time" aria-label="רבע שעה אחרי"><span class="ms">chevron_left</span></button>
+        <button type="button" class="arr" data-step="-1" data-unit="time" aria-label="רבע שעה קודם" data-en-aria-label="15 minutes earlier"><span class="ms">chevron_right</span></button>
+        <input id="time" type="time" aria-label="שעת כניסה" data-en-aria-label="Entry time">
+        <button type="button" class="arr" data-step="1" data-unit="time" aria-label="רבע שעה אחרי" data-en-aria-label="15 minutes later"><span class="ms">chevron_left</span></button>
       </span>
       <span class="chip step" style="position: relative">
-        <button type="button" class="arr" data-step="-1" data-unit="date" aria-label="יום קודם"><span class="ms">chevron_right</span></button>
-        <button type="button" id="dateBtn" aria-label="בחירת תאריך"><span class="ms">calendar_today</span><span id="dateTxt"></span></button><input id="date" type="date" tabindex="-1" aria-hidden="true">
-        <button type="button" class="arr" data-step="1" data-unit="date" aria-label="יום אחרי"><span class="ms">chevron_left</span></button>
+        <button type="button" class="arr" data-step="-1" data-unit="date" aria-label="יום קודם" data-en-aria-label="Previous day"><span class="ms">chevron_right</span></button>
+        <button type="button" id="dateBtn" aria-label="בחירת תאריך" data-en-aria-label="Pick a date"><span class="ms">calendar_today</span><span id="dateTxt"></span></button><input id="date" type="date" tabindex="-1" aria-hidden="true">
+        <button type="button" class="arr" data-step="1" data-unit="date" aria-label="יום אחרי" data-en-aria-label="Next day"><span class="ms">chevron_left</span></button>
       </span>
     </div>
-    <label class="chip"><span class="ms">timer</span><select id="dur" aria-label="משך החניה">
-      <option value="60">שעה</option><option value="120" selected>שעתיים</option><option value="180">3 שעות</option>
-      <option value="240">4 שעות</option><option value="480">8 שעות</option><option value="720">12 שעות</option><option value="1440">יממה</option>
+    <label class="chip"><span class="ms">timer</span><select id="dur" aria-label="משך החניה" data-en-aria-label="Parking duration">
+      <option value="60" data-en="1 hour">שעה</option><option value="120" selected data-en="2 hours">שעתיים</option><option value="180" data-en="3 hours">3 שעות</option>
+      <option value="240" data-en="4 hours">4 שעות</option><option value="480" data-en="8 hours">8 שעות</option><option value="720" data-en="12 hours">12 שעות</option><option value="1440" data-en="24 hours">יממה</option>
     </select></label>
     <span class="sep" aria-hidden="true"></span>
-    <label class="chip tog res"><input type="checkbox" id="res"><span class="ms">home</span>תושב/ת ת״א</label>
-    <label class="chip res" id="zoneChip" hidden title="חניה בכחול-לבן חינם באזור התו שלך"><span class="ms">badge</span><select id="zone" aria-label="אזור תו החניה שלך">
-      <option value="">אזור התו?</option><option value="1">אזור 1</option><option value="2">אזור 2</option><option value="4">אזור 4</option><option value="6">אזור 6</option>
-      <option value="7">אזור 7</option><option value="9">אזור 9</option><option value="10">אזור 10</option><option value="12">אזור 12</option><option value="13">אזור 13</option>
+    <label class="chip tog res"><input type="checkbox" id="res"><span class="ms">home</span><span data-en="Tel Aviv resident">תושב/ת ת״א</span></label>
+    <label class="chip res" id="zoneChip" hidden title="חניה בכחול-לבן חינם באזור התו שלך" data-en-title="Blue-white street parking is free in your permit zone"><span class="ms">badge</span><select id="zone" aria-label="אזור תו החניה שלך" data-en-aria-label="Your parking permit zone">
+      <option value="" data-en="Permit zone?">אזור התו?</option><option value="1" data-en="Zone 1">אזור 1</option><option value="2" data-en="Zone 2">אזור 2</option><option value="4" data-en="Zone 4">אזור 4</option><option value="6" data-en="Zone 6">אזור 6</option>
+      <option value="7" data-en="Zone 7">אזור 7</option><option value="9" data-en="Zone 9">אזור 9</option><option value="10" data-en="Zone 10">אזור 10</option><option value="12" data-en="Zone 12">אזור 12</option><option value="13" data-en="Zone 13">אזור 13</option>
     </select></label>
-    <label class="chip tog bus" title="פנגו או סלו + נסיעה באוטובוס בת״א באותו יום"><input type="checkbox" id="bus"><span class="ms">directions_bus</span>פנגו/סלו + אוטובוס</label>
-    <label class="chip tog cpa" title="מחיר מוזל בחניוני סנטרל פארק למשלמים באפליקציה שלהם"><input type="checkbox" id="cp"><span class="ms">smartphone</span>אפליקציית סנטרל פארק</label>
+    <label class="chip tog bus" title="פנגו או סלו + נסיעה באוטובוס בת״א באותו יום" data-en-title="Pango or Cello + a Tel Aviv bus ride the same day"><input type="checkbox" id="bus"><span class="ms">directions_bus</span><span data-en="Pango/Cello + bus">פנגו/סלו + אוטובוס</span></label>
+    <label class="chip tog cpa" title="מחיר מוזל בחניוני סנטרל פארק למשלמים באפליקציה שלהם" data-en-title="Discounted price at Central Park lots when paying in their app"><input type="checkbox" id="cp"><span class="ms">smartphone</span><span data-en="Central Park app">אפליקציית סנטרל פארק</span></label>
+    <span class="sep" aria-hidden="true"></span>
+    <label class="chip tog" title="רק חניונים עם עמדות טעינה ידועות" data-en-title="Only lots known to have EV chargers"><input type="checkbox" id="ev"><span class="ms">ev_station</span><span data-en="EV charging">טעינה</span></label>
+    <label class="chip tog" title="רק חניונים שידוע שהם מקורים (נגזר מהגבלת גובה)" data-en-title="Only lots known to be covered (inferred from a height limit)"><input type="checkbox" id="cov"><span class="ms">garage</span><span data-en="Covered">מקורה</span></label>
+    <label class="chip tog" title="רק חניונים שידוע שהם מונגשים לנכים" data-en-title="Only lots known to be accessible"><input type="checkbox" id="acc"><span class="ms">accessible</span><span data-en="Accessible">נגיש</span></label>
+    <label class="chip" title="מסתיר חניונים עם הגבלת גובה נמוכה יותר. חניונים בלי נתון נשארים." data-en-title="Hides lots with a lower height limit. Lots with no published limit stay."><span class="ms">height</span><select id="h" aria-label="גובה הרכב" data-en-aria-label="Car height">
+      <option value="" data-en="Car height">גובה רכב</option><option value="1.8" data-en="up to 1.8 m">עד 1.8 מ׳</option><option value="1.9" data-en="up to 1.9 m">עד 1.9 מ׳</option><option value="2" data-en="up to 2.0 m">עד 2.0 מ׳</option>
+      <option value="2.1" data-en="up to 2.1 m">עד 2.1 מ׳</option><option value="2.2" data-en="up to 2.2 m">עד 2.2 מ׳</option>
+    </select></label>
+    <label class="chip tog" title="חניות אופנועים ברחוב (מהעירייה)" data-en-title="Street motorcycle bays (from the city)"><input type="checkbox" id="moto"><span class="ms">two_wheeler</span><span data-en="Motorcycles">אופנועים</span></label>
   </div>
 </header>
-<main id="map" aria-label="מפת חניונים"></main>
+<main id="map" aria-label="מפת חניונים" data-en-aria-label="Parking map"></main>
 <aside id="panel" hidden aria-live="polite"></aside>
-<section id="list" hidden aria-label="חניונים לפי מחיר"><ol></ol></section>
+<section id="list" hidden aria-label="חניונים לפי מחיר" data-en-aria-label="Lots by price"><ol></ol></section>
 <div id="legend" aria-hidden="true">
-  <span class="cap">מחיר בש״ח לזמן שבחרתם</span>
-  <span class="plate t1">עד 20</span><span class="plate t2">עד 40</span><span class="plate t3">עד 80</span><span class="plate t4">80+</span>
-  <span class="plate t1 unv">חינם?</span><span class="plate sign">P</span><span>לפי השילוט</span>
+  <span class="cap" data-en="Price in ₪ for your time">מחיר בש״ח לזמן שבחרתם</span>
+  <span class="plate t1" data-en="up to 20">עד 20</span><span class="plate t2" data-en="up to 40">עד 40</span><span class="plate t3" data-en="up to 80">עד 80</span><span class="plate t4">80+</span>
+  <span class="plate t1 unv" data-en="Free?">חינם?</span><span class="plate sign">P</span><span data-en="per the sign">לפי השילוט</span>
 </div>
 <script type="module" src="app.js"></script>
 </body>
