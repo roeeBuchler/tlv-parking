@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=accessible,account_circle,add,badge,block,calendar_today,check_circle,chevron_left,chevron_right,close,delete,directions,directions_bus,edit,ev_station,format_list_bulleted,garage,height,home,info,link,local_offer,local_parking,logout,map,place,schedule,search,smartphone,star,timer,two_wheeler&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=accessible,account_circle,add,badge,block,calendar_today,check_circle,chevron_left,chevron_right,close,delete,directions,directions_bus,edit,ev_station,format_list_bulleted,garage,height,home,info,link,local_offer,local_parking,logout,map,place,schedule,search,smartphone,star,timer,tune,two_wheeler&display=block">
 <style>
   /* Google Maps feel: floating white cards over a colourful map; Google's four colours carry meaning (price band, status, chip). */
   :root {
@@ -61,9 +61,6 @@
   .chip input:focus, .chip select:focus { outline: none; }
   .chip:has(:focus-visible) { outline: 2px solid var(--blue); outline-offset: 2px; }
   .tog input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-  .res { --k: var(--green); --kb: var(--green-bg); --kf: var(--green-fg); }
-  .bus { --k: var(--red); --kb: var(--red-bg); --kf: var(--red-fg); }
-  .cpa { --k: var(--orange); --kb: var(--yellow-bg); --kf: var(--yellow-fg); }
   .chip[aria-pressed=true], .tog:has(input:checked) { background: var(--kb, var(--blue-bg)); color: var(--kf, var(--blue-fg)); }
   .tog:has(input:checked) .ms { font-variation-settings: "FILL" 1; }
   /* when: "now / enter at" chip, then time and date chips with step arrows (after Google Maps) */
@@ -125,13 +122,20 @@
   #list .street { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 4px 12px; padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--blue-bg); }
   #list .street details { grid-column: 1 / -1; margin: 0; font-size: 13px; }
   #list .street details p { margin: 4px 0; }
-  #list .street .who { grid-column: 1 / -1; border-collapse: collapse; font-size: 13px; width: 100%; }
-  #list .street .who caption { text-align: start; font-weight: 600; padding: 4px 0; }
-  #list .street .who th, #list .street .who td { text-align: start; font-weight: 400; padding: 3px 0; vertical-align: top; }
-  #list .street .who th { padding-inline-end: 8px; }
-  #list .street .who tr.mine { font-weight: 600; }
-  #list .street .who tr.mine th { font-weight: 600; }
-  #list .street .rules { grid-column: 1 / -1; margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+  #list .street .mine { color: var(--green-fg); font-weight: 600; }
+  #list .street .row-sub { display: block; }
+  .link { all: unset; color: var(--blue-fg); font-weight: 500; cursor: pointer; }
+  .link:focus-visible { outline: 2px solid var(--blue); }
+  #setBtn.on { background: var(--blue-bg); color: var(--blue-fg); }
+  /* my settings */
+  .prefs fieldset { border: 0; padding: 0; margin: 18px 0 0; }
+  .prefs legend { font-weight: 600; padding: 0; margin-bottom: 4px; }
+  .prefs label { display: flex; align-items: center; gap: 10px; min-height: 48px; cursor: pointer; }
+  .prefs label > .ms { color: var(--blue); font-size: 20px; }
+  .prefs small { display: block; color: var(--muted); font-size: 13px; }
+  .prefs select { margin-inline-start: auto; height: 36px; padding: 0 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); font-size: 15px; }
+  .prefs input[type=checkbox] { order: 1; flex: none; width: 18px; height: 18px; margin: 0; margin-inline-start: auto; accent-color: var(--blue); }
+  .prefs label:has(input:disabled) { opacity: .6; cursor: default; }
   .plate.bw { --c: var(--paper); --on: var(--blue-fg); border-color: var(--blue); padding-bottom: 3px;
     background: linear-gradient(90deg, var(--blue) 50%, #fff 0) bottom / 12px 4px repeat-x, var(--paper); }
 
@@ -267,22 +271,10 @@
       <optgroup label="מנוי חודשי (לא לחניה חד-פעמית)" data-en-label="Monthly subscription (not a one-off stay)"><option value="night" data-en="Night subscription">מנוי לילה</option><option value="full" data-en="24/7 subscription">מנוי 24/7</option></optgroup>
     </select></label>
     <span class="sep" aria-hidden="true"></span>
-    <label class="chip tog res"><input type="checkbox" id="res"><span class="ms">home</span><span data-en="Tel Aviv resident">תושב/ת ת״א</span></label>
-    <label class="chip res" id="zoneChip" hidden title="חניה בכחול-לבן חינם באזור התו שלך" data-en-title="Blue-white street parking is free in your permit zone"><span class="ms">badge</span><select id="zone" aria-label="אזור תו החניה שלך" data-en-aria-label="Your parking permit zone">
-      <option value="" data-en="Permit zone?">אזור התו?</option><option value="1" data-en="Zone 1">אזור 1</option><option value="2" data-en="Zone 2">אזור 2</option><option value="4" data-en="Zone 4">אזור 4</option><option value="6" data-en="Zone 6">אזור 6</option>
-      <option value="7" data-en="Zone 7">אזור 7</option><option value="9" data-en="Zone 9">אזור 9</option><option value="10" data-en="Zone 10">אזור 10</option><option value="12" data-en="Zone 12">אזור 12</option><option value="13" data-en="Zone 13">אזור 13</option>
-    </select></label>
-    <label class="chip tog bus" title="פנגו או סלו + נסיעה באוטובוס בת״א באותו יום" data-en-title="Pango or Cello + a Tel Aviv bus ride the same day"><input type="checkbox" id="bus"><span class="ms">directions_bus</span><span data-en="Pango/Cello + bus">פנגו/סלו + אוטובוס</span></label>
-    <label class="chip tog cpa" title="מחיר מוזל בחניוני סנטרל פארק למשלמים באפליקציה שלהם" data-en-title="Discounted price at Central Park lots when paying in their app"><input type="checkbox" id="cp"><span class="ms">smartphone</span><span data-en="Central Park app">אפליקציית סנטרל פארק</span></label>
+    <button type="button" class="chip" id="setBtn" aria-controls="panel" title="הנחות ופרטי הרכב: המחירים והמסננים לפיהם" data-en-title="Discounts and car details: prices and filters follow them"><span class="ms">tune</span><span id="setTxt"></span></button>
     <span class="sep" aria-hidden="true"></span>
     <label class="chip tog" title="רק חניונים עם עמדות טעינה ידועות" data-en-title="Only lots known to have EV chargers"><input type="checkbox" id="ev"><span class="ms">ev_station</span><span data-en="EV charging">טעינה</span></label>
     <label class="chip tog" title="רק חניונים שידוע שהם מקורים (נגזר מהגבלת גובה)" data-en-title="Only lots known to be covered (inferred from a height limit)"><input type="checkbox" id="cov"><span class="ms">garage</span><span data-en="Covered">מקורה</span></label>
-    <label class="chip tog" title="רק חניונים שידוע שהם מונגשים לנכים" data-en-title="Only lots known to be accessible"><input type="checkbox" id="acc"><span class="ms">accessible</span><span data-en="Accessible">נגיש</span></label>
-    <label class="chip" title="מסתיר חניונים עם הגבלת גובה נמוכה יותר. חניונים בלי נתון נשארים." data-en-title="Hides lots with a lower height limit. Lots with no published limit stay."><span class="ms">height</span><select id="h" aria-label="גובה הרכב" data-en-aria-label="Car height">
-      <option value="" data-en="Car height">גובה רכב</option><option value="1.8" data-en="up to 1.8 m">עד 1.8 מ׳</option><option value="1.9" data-en="up to 1.9 m">עד 1.9 מ׳</option><option value="2" data-en="up to 2.0 m">עד 2.0 מ׳</option>
-      <option value="2.1" data-en="up to 2.1 m">עד 2.1 מ׳</option><option value="2.2" data-en="up to 2.2 m">עד 2.2 מ׳</option>
-    </select></label>
-    <label class="chip tog" title="חניות אופנועים ברחוב (מהעירייה)" data-en-title="Street motorcycle bays (from the city)"><input type="checkbox" id="moto"><span class="ms">two_wheeler</span><span data-en="Motorcycles">אופנועים</span></label>
   </div>
 </header>
 <main id="map" aria-label="מפת חניונים" data-en-aria-label="Parking map"></main>

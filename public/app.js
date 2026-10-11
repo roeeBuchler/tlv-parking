@@ -13,8 +13,12 @@ if (EN) {
 }
 const panel = $("#panel"), list = $("#list");
 const P = new URL(location.href).searchParams;
-const state = { lot: P.get("lot"), when: P.get("when") ?? "", dur: P.get("dur") ?? "120", res: P.get("res") === "1", bus: P.get("bus") === "1", cp: P.get("cp") === "1", zone: P.get("zone") ?? "",
-  ev: P.get("ev") === "1", cov: P.get("cov") === "1", acc: P.get("acc") === "1", h: P.get("h") ?? "", moto: P.get("moto") === "1", center: null, results: [], street: null, alts: [] };
+// "my settings" (discounts: resident, permit zone, Central Park app, Pango/Cello + bus; my car: height, disabled badge, motorcycle)
+// belong to the user, not the search: saved in this browser; a link's res/zone/... override them for that visit only
+const SAVED = (() => { try { return JSON.parse(localStorage.settings ?? "{}"); } catch { return {}; } })();
+const mine = (k) => (P.has(k) ? P.get(k) : SAVED[k] ?? "");
+const state = { lot: P.get("lot"), when: P.get("when") ?? "", dur: P.get("dur") ?? "120", res: mine("res") === "1" || !!mine("zone"), bus: mine("bus") === "1", cp: mine("cp") === "1", zone: mine("zone"),
+  ev: P.get("ev") === "1", cov: P.get("cov") === "1", acc: mine("acc") === "1", h: mine("h"), moto: mine("moto") === "1", center: null, results: [], street: null, alts: [] };
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`); // scraped text: never raw HTML
 const LIVE = { free: L("פנוי", "Free"), few: L("מעט מקומות", "Few spaces"), full: L("מלא", "Full"), closed: L("סגור", "Closed") }; // "open" / "unknown" carry no occupancy
@@ -67,8 +71,7 @@ function qs(extra = {}) {
 }
 function sync() {
   const u = new URLSearchParams();
-  for (const [k, v] of [["lot", state.lot], ["when", state.when], ["dur", state.dur !== "120" && state.dur], ["res", state.res && 1], ["zone", state.res && state.zone], ["bus", state.bus && 1], ["cp", state.cp && 1],
-    ["ev", state.ev && 1], ["cov", state.cov && 1], ["acc", state.acc && 1], ["h", state.h], ["moto", state.moto && 1], ["lang", EN && "en"]]) if (v) u.set(k, v);
+  for (const [k, v] of [["lot", state.lot], ["when", state.when], ["dur", state.dur !== "120" && state.dur], ["ev", state.ev && 1], ["cov", state.cov && 1], ["lang", EN && "en"]]) if (v) u.set(k, v);
   history.replaceState(null, "", u.size ? `?${u}` : location.pathname);
 }
 
@@ -136,7 +139,6 @@ function showList() {
   $("#listBtn").setAttribute("aria-pressed", "true");
 }
 // blue-white parking at the searched point (src/street.ts): price for the stay and a rough chance of finding a spot
-const AREA = { center: L("מרכז העיר", "city center"), city: L("רחבי העיר", "rest of the city") };
 const HOURS = { center: L("א׳–ה׳ 08:00–21:00", "Sun–Thu 08:00–21:00"), city: L("א׳–ה׳ 08:00–19:00", "Sun–Thu 08:00–19:00") };
 // the zones along the searched street, by side (GET /api/street); fetched after the search, once per place
 let zonesFor = null;
@@ -149,36 +151,45 @@ async function loadZones(c) {
   if (!list.hidden) showList();
 }
 const runs = (rs) => rs.map((r) => `${L("אזור", "zone")} ${r.zone} (<bdi dir="ltr">${r.from === r.to ? r.from : `${r.from}–${r.to}`}</bdi>)`).join(", ");
+const nums = (r) => `<bdi dir="ltr">${r.from === r.to ? r.from : `${r.from}–${r.to}`}</bdi>`;
 function zonesText(z) {
   const all = [...new Set([...z.odd, ...z.even].map((r) => r.zone))], name = esc(L(z.street, z.street_en));
   return all.length === 1 ? L(`כל רחוב ${name} באזור ${all[0]}.`, `All of ${name} is in zone ${all[0]}.`)
     : L(`רחוב ${name} עובר בכמה אזורים.<br>צד אי-זוגי: ${runs(z.odd)}.<br>צד זוגי: ${runs(z.even)}.`,
       `${name} crosses several zones.<br>Odd numbers: ${runs(z.odd)}.<br>Even numbers: ${runs(z.even)}.`);
 }
-// who may park here and what this stay costs them, the user's own case marked
-const whoRows = (s) => [
-  ["own_zone", L(`תו חניה לאזור ${s.zone}`, `Permit for zone ${s.zone}`), L("חינם, בכל שעה", "free, at any hour")],
-  ["other_zone", L("תו חניה לאזור אחר (תושבי העיר)", "Permit for another zone (city residents)"),
-    `${ils(s.who.other_zone.price_ils)}: ${L(`שעתיים ביום חינם, אחר כך ₪${s.who.other_zone.rate_ils_per_hour} לשעה`, `2 free hours a day, then ₪${s.who.other_zone.rate_ils_per_hour} per hour`)}`],
-  ["none", L("בלי תו (אורחים)", "No permit (visitors)"), `${ils(s.who.visitor.price_ils)}: ${L(`₪${s.who.visitor.rate_ils_per_hour} לשעה`, `₪${s.who.visitor.rate_ils_per_hour} per hour`)}`],
-].map(([k, who, what]) => `<tr${k === s.permit ? ' class="mine"' : ""}><th scope="row">${who}${k === s.permit ? L(" (אתם)", " (you)") : ""}</th><td>${what}</td></tr>`).join("");
+// the stretches of this street in the user's own permit zone, when the street crosses zones: "free for you: even side 2–40"
+function myStretch(z) {
+  if (!state.zone || new Set([...z.odd, ...z.even].map((r) => r.zone)).size < 2) return "";
+  const side = (rs, he, en) => rs.filter((r) => r.zone === +state.zone).map((r) => `${L(he, en)} ${nums(r)}`);
+  const parts = [...side(z.odd, "צד אי-זוגי", "odd side"), ...side(z.even, "צד זוגי", "even side")];
+  return parts.length ? L(`חינם עבורך ברחוב הזה: ${parts.join(", ")}`, `Free for you on this street: ${parts.join(", ")}`) : "";
+}
+const setUp = () => `<button class="link" data-settings>${state.res ? L("מה אזור התו שלך?", "What's your permit zone?") : L("יש לך תו חניה?", "Have a parking permit?")}</button>`;
+// one line: what this stay costs the user, per "my discounts"
+function streetLine(s) {
+  if (s.permit === "own_zone") return L("חינם עם התו שלך, בכל שעה", "Free with your permit, at any hour");
+  if (!s.paid_minutes) return L("ללא תשלום בשעות האלה", "No charge at these hours");
+  if (s.permit === "other_zone") return L(`שעתיים ביום חינם, אחר כך ₪${esc(s.rate_ils_per_hour)} לשעה`, `2 free hours a day, then ₪${esc(s.rate_ils_per_hour)} per hour`) + (state.zone ? "" : ` · ${setUp()}`);
+  return L(`₪${esc(s.rate_ils_per_hour)} לשעה`, `₪${esc(s.rate_ils_per_hour)} per hour`) + ` · ${setUp()}`;
+}
 const streetRow = (s) => `<li class="street">
   <span class="plate bw" dir="ltr">${esc(ils(s.price_ils))}</span>
-  <span><span class="row-name">${L("חניה ברחוב, כחול-לבן", "Street parking, blue-white")}</span><span class="row-sub">${L("אזור", "Zone")} ${esc(s.zone)}, ${AREA[s.area]}${s.permit === "own_zone" ? L(", חינם עם התו שלך", ", free with your permit")
-    : s.paid_minutes ? L(`, ₪${esc(s.rate_ils_per_hour)} לשעה`, `, ₪${esc(s.rate_ils_per_hour)} per hour`) : L(", ללא תשלום בשעות האלה", ", no charge at these hours")}</span></span>
+  <span><span class="row-name">${L("חניה ברחוב, כחול-לבן", "Street parking, blue-white")} · ${L("אזור", "zone")} ${esc(s.zone)}</span><span class="row-sub">${streetLine(s)}</span>
+    ${state.zones && myStretch(state.zones) ? `<span class="row-sub mine">${myStretch(state.zones)}</span>` : ""}</span>
   <span class="row-end"><span class="status ${s.chance_pct >= 50 ? "free" : s.chance_pct >= 25 ? "few" : "full"}">${L("סיכוי", "Chance")} ~${esc(s.chance_pct)}%</span>${L("הערכה", "estimate")}</span>
-  <table class="who"><caption>${L("מי יכול לחנות כאן, ובכמה לחניה הזו", "Who can park here, and what this stay costs")}</caption>${whoRows(s)}</table>
-  <p class="rules">${L(`בתשלום ${HOURS[s.area]}, ו׳ וערבי חג 08:00–17:00. בשבת ובחג חינם לכולם.`, `Paid ${HOURS[s.area]}, Fri and holiday eves 08:00–17:00. Free for everyone on Shabbat and holidays.`)}${state.zones ? `<br>${zonesText(state.zones)}` : ""}</p>
-  <details><summary>${L("איך זה מחושב", "How this is estimated")}</summary>
+  <details><summary>${L("פרטים", "Details")}</summary>
+    <p>${L(`בתשלום ${HOURS[s.area]}, ו׳ וערבי חג 08:00–17:00. בשבת ובחג חינם לכולם.`, `Paid ${HOURS[s.area]}, Fri and holiday eves 08:00–17:00. Free for everyone on Shabbat and holidays.`)}</p>
+    ${state.zones ? `<p>${zonesText(state.zones)}</p>` : ""}
     <p>${L(`הסיכוי למצוא מקום הוא הערכה לפי היום והשעה${s.live_lots ? `, ולפי התפוסה עכשיו ב-${esc(s.live_lots)} חניוני אחוזות החוף הקרובים` : ""}. זה לא נתון חי מהרחוב.`,
       `The chance of finding a spot is an estimate from the day and time${s.live_lots ? `, and from how full the ${esc(s.live_lots)} nearest Ahuzot HaHof lots are right now` : ""}. It is not live street data.`)}</p>
-    ${s.permit === "other_zone" ? `<p>${L("בעלי תו מאזור אחר: שעתיים ביום חינם, ואחריהן 30% הנחה.", "Permit holders from another zone: 2 free hours a day, then 30% off.")}${state.zone ? "" : L(" בחרו את אזור התו שלכם כדי לראות אם החניה כאן חינם.", " Pick your permit zone to see whether parking here is free for you.")}</p>` : ""}
     <p>${L("משלמים בפנגו או בסלו מהדקה הראשונה. חלק מרחובות הכחול-לבן מיועדים לבעלי תו האזור בלבד, והתמרור בתחילת הרחוב קובע.", "Pay with Pango or Cello from the first minute. Some blue-white streets are for zone permit holders only; the sign at the start of the street decides.")}</p>
   </details>
 </li>`;
 list.addEventListener("click", (e) => {
   const b = e.target.closest("[data-id]"), a = e.target.closest("[data-alt]");
   if (b) openLot(b.dataset.id);
+  if (e.target.closest("[data-settings]")) showSettings();
   if (e.target.closest("#savePlace")) addPlace(state.center).then(() => me && showList());
   if (a) { e.preventDefault(); const pick = state.alts[+a.dataset.alt]; state.alts = [state.center, ...state.alts.filter((x) => x !== pick)]; goTo(pick); }
 });
@@ -193,7 +204,7 @@ function features(d) {
 // street motorcycle bays (city GIS layer 951, public/moto.json): a map layer, not lots
 let moto;
 async function drawMoto() {
-  if (state.moto && !moto) moto = await (await fetch("/moto.json")).json().catch(() => ((state.moto = $("#moto").checked = false), undefined));
+  if (state.moto && !moto) moto = await (await fetch("/moto.json")).json().catch(() => ((state.moto = false), undefined));
   const on = () => {
     if (map.getLayer("moto")) return map.setLayoutProperty("moto", "visibility", state.moto ? "visible" : "none");
     if (!state.moto || !moto) return;
@@ -233,9 +244,9 @@ async function openLot(id, fly = true) {
     <p class="sub">${esc(d.address)}<br>${esc(op)}${d.spaces ? `, ${d.spaces} ${L("מקומות", "spaces")}` : ""}</p>
     ${subBoard || `<div class="board ${tier(q)}">
       ${q.price_ils == null ? `<div class="board-price small">${L("לפי השילוט", "Per the sign")}</div>` : `<div class="board-price" dir="ltr">${esc(price(q))}</div>`}
-      <div class="board-when">${whenText(q.start)}, <span dir="ltr">${q.start.slice(11)}–${endOf(q.start, q.duration_minutes)}</span> (${esc(dur)})${state.res ? `<br>${L("כולל הנחת תושב/ת ת״א", "Includes Tel Aviv resident discount")}` : ""}</div>
+      <div class="board-when">${whenText(q.start)}, <span dir="ltr">${q.start.slice(11)}–${endOf(q.start, q.duration_minutes)}</span> (${esc(dur)})${state.res && (d.resident_discount_pct || d.resident_tariffs) ? `<br>${L("כולל הנחת תושב/ת ת״א", "Includes Tel Aviv resident discount")}` : ""}</div>
     </div>
-    ${q.app_price_ils != null ? `<div class="split"><div class="${state.cp ? "" : "on"}">${L("בקופה", "At the gate")}<b dir="ltr">${ils(q.gate_price_ils)}</b></div><div class="${state.cp ? "on" : ""}">${L(`באפליקציית ${esc(op)}`, `In the ${esc(op)} app`)}<b dir="ltr">${ils(q.app_price_ils)}</b></div></div>` : ""}
+    ${q.app_price_ils != null && state.cp ? `<div class="split"><div class="${state.cp ? "" : "on"}">${L("בקופה", "At the gate")}<b dir="ltr">${ils(q.gate_price_ils)}</b></div><div class="${state.cp ? "on" : ""}">${L(`באפליקציית ${esc(op)}`, `In the ${esc(op)} app`)}<b dir="ltr">${ils(q.app_price_ils)}</b></div></div>` : ""}
     <div class="facts">
       ${liveOf(d) ? `<p><span class="status ${liveOf(d)}" style="display:inline">${LIVE[liveOf(d)]}</span> ${L("עכשיו, עודכן ב-", "now, updated at ")}${esc(d.live.updated.slice(11))}${d.live.source === "crowd" ? L(" (דווח על ידי נהגים)", " (reported by drivers)") : ""}</p>` : ""}
       ${q.breakdown.length > 1 ? q.breakdown.map((b) => `<p>${b.from.slice(11)}–${b.to.slice(11)}: ${KIND[b.kind]}, ₪${b.price}</p>`).join("") : q.breakdown.map((b) => `<p>${L("תשלום ", "Billing: ")}${KIND[b.kind]}</p>`).join("")}
@@ -253,10 +264,10 @@ async function openLot(id, fly = true) {
     <div id="attach"></div>
     ${subsHtml}
     <div id="report"></div>
-    ${d.tariffs ? `<h3>${L("תעריף", "Tariff")}</h3>${tariffTable(d.tariffs, d.app_tariffs)}
+    ${d.tariffs ? `<h3>${L("תעריף", "Tariff")}</h3>${tariffTable(d.tariffs, state.cp && d.app_tariffs)}
       ${d.grace_minutes ? `<p class="tariff-note">${L(`עד ${d.grace_minutes} דקות בחניון: חינם`, `Free for up to ${d.grace_minutes} minutes`)}</p>` : ""}
-      ${d.resident_discount_pct ? `<p class="tariff-note">${d.resident_discount_pct}% ${L("הנחה לתושבי תל אביב-יפו", "discount for Tel Aviv-Yafo residents")}</p>` : ""}
-      ${d.resident_tariffs ? `<h3>${L("לתושבי תל אביב-יפו", "For Tel Aviv-Yafo residents")}</h3>${tariffTable(d.resident_tariffs)}` : ""}
+      ${d.resident_discount_pct && state.res ? `<p class="tariff-note">${d.resident_discount_pct}% ${L("הנחה לתושבי תל אביב-יפו", "discount for Tel Aviv-Yafo residents")}</p>` : ""}
+      ${d.resident_tariffs && state.res ? `<h3>${L("לתושבי תל אביב-יפו", "For Tel Aviv-Yafo residents")}</h3>${tariffTable(d.resident_tariffs)}` : ""}
       ${d.tariff_text ? `<details><summary>${L("הנוסח המפורסם", "Published text (Hebrew)")}</summary><pre>${esc(d.tariff_text)}</pre></details>` : ""}`
     : d.tariff_text ? `<h3>${L("התעריף המפורסם", "Published tariff (Hebrew)")}</h3><pre>${esc(d.tariff_text)}</pre>` : ""}
     ${d.hours_text ? `<h3>${L("שעות פעילות", "Opening hours (Hebrew)")}</h3><p>${esc(d.hours_text)}</p>` : ""}
@@ -356,13 +367,7 @@ document.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("clic
 }));
 $("#dateBtn").addEventListener("click", () => { try { $("#date").showPicker(); } catch { $("#date").focus(); } });
 $("#dur").addEventListener("change", (e) => { state.dur = e.target.value; showWhen(); sync(); load(); });
-$("#res").addEventListener("change", (e) => { state.res = e.target.checked; $("#zoneChip").hidden = !state.res; sync(); load(); });
-$("#zone").addEventListener("change", (e) => { state.zone = e.target.value; sync(); load(); });
-$("#bus").addEventListener("change", (e) => { state.bus = e.target.checked; sync(); load(); });
-$("#cp").addEventListener("change", (e) => { state.cp = e.target.checked; sync(); load(); });
-for (const k of ["ev", "cov", "acc"]) $("#" + k).addEventListener("change", (e) => { state[k] = e.target.checked; sync(); load(); });
-$("#h").addEventListener("change", (e) => { state.h = e.target.value; sync(); load(); });
-$("#moto").addEventListener("change", (e) => { state.moto = e.target.checked; sync(); drawMoto(); });
+for (const k of ["ev", "cov"]) $("#" + k).addEventListener("change", (e) => { state[k] = e.target.checked; sync(); load(); });
 $("#listBtn").addEventListener("click", () => (list.hidden ? showList() : ((list.hidden = true), $("#listBtn").setAttribute("aria-pressed", "false"))));
 new ResizeObserver(() => document.documentElement.style.setProperty("--bar-h", `${$("#bar").offsetHeight}px`)).observe($("#bar"));
 
@@ -501,6 +506,49 @@ panel.addEventListener("click", async (e) => {
   if (t("del") && confirm(L(`למחוק את "${f("del").label}" ואת החניונים ששמרתם לידה?`, `Delete "${f("del").label}" and the lots you saved for it?`))) { await api(`/api/favorites/${f("del").id}`, "DELETE"); await loadMe(); showAccount(); }
   if (t("unpin")) { await api(`/api/favorites/${f("unpin").id}/lots/${encodeURIComponent(t("unpin").lotId)}`, "DELETE"); await loadMe(); showAccount(); }
 });
+// --- my settings: discounts and car, saved in this browser; prices, lots and the street card follow them
+const PREFS = ["res", "zone", "cp", "bus", "h", "acc", "moto"], ZONES = [1, 2, 4, 6, 7, 9, 10, 12, 13], HEIGHTS = ["1.8", "1.9", "2", "2.1", "2.2"];
+function setLabel() {
+  const parts = [state.zone ? `${L("אזור", "Zone")} ${state.zone}` : state.res && L("תושב/ת", "Resident"), state.cp && L("סנטרל פארק", "Central Park"),
+    state.bus && L("פנגו + אוטובוס", "Pango + bus"), state.h && L(`עד ${(+state.h).toFixed(1)} מ׳`, `≤ ${(+state.h).toFixed(1)} m`), state.acc && L("תג נכה", "Disabled badge"), state.moto && L("אופנוע", "Motorcycle")].filter(Boolean);
+  $("#setTxt").textContent = parts.length ? parts.join(" · ") : L("ההגדרות שלי", "My settings");
+  $("#setBtn").classList.toggle("on", parts.length > 0);
+}
+function showSettings() {
+  state.lot = null; sync(); select(null);
+  const opt = (v, t, cur) => `<option value="${v}"${String(cur) === String(v) ? " selected" : ""}>${t}</option>`;
+  const box = (k, icon, t, sub) => `<label><input type="checkbox" name="${k}"${state[k] ? " checked" : ""}${k === "res" && state.zone ? " disabled" : ""}><span class="ms">${icon}</span><span>${t}<small>${sub}</small></span></label>`;
+  panel.innerHTML = `<button id="close" class="icon-btn" aria-label="${L("סגירה", "Close")}"><span class="ms">close</span></button>
+    <h2>${L("ההגדרות שלי", "My settings")}</h2>
+    <p class="sub">${L("המחירים והחניונים מוצגים לפיהן. נשמר בדפדפן הזה.", "Prices and lots are shown for these. Saved in this browser.")}</p>
+    <form class="prefs" id="prefs">
+      <fieldset><legend>${L("ההנחות שלי", "My discounts")}</legend>
+        <label><span class="ms">badge</span><span>${L("תו חניה אזורי", "Residential parking permit")}<small>${L("כחול-לבן חינם באזור התו", "Blue-white parking is free in your zone")}</small></span>
+          <select name="zone">${opt("", L("אין", "None"), state.zone)}${ZONES.map((z) => opt(z, `${L("אזור", "Zone")} ${z}`, state.zone)).join("")}</select></label>
+        ${box("res", "home", L("תושב/ת תל אביב-יפו", "Tel Aviv-Yafo resident"), L("מחיר תושב בחניוני אחוזות החוף", "Resident prices at Ahuzot HaHof lots"))}
+        ${box("cp", "smartphone", L("אפליקציית סנטרל פארק", "Central Park app"), L("מחיר מוזל בחניוני סנטרל פארק", "Lower prices at Central Park lots"))}
+        ${box("bus", "directions_bus", L("פנגו/סלו + אוטובוס", "Pango/Cello + bus"), L("הנחה בחניונים כשנוסעים באוטובוס בת״א באותו יום", "Lot discounts when you ride a Tel Aviv bus the same day"))}
+      </fieldset>
+      <fieldset><legend>${L("הרכב שלי", "My car")}</legend>
+        <label><span class="ms">height</span><span>${L("גובה הרכב", "Car height")}<small>${L("מסתיר חניונים נמוכים יותר", "Hides lots with a lower limit")}</small></span>
+          <select name="h">${opt("", L("לא משנה", "Any"), state.h)}${HEIGHTS.map((h) => opt(h, L(`עד ${(+h).toFixed(1)} מ׳`, `up to ${(+h).toFixed(1)} m`), state.h)).join("")}</select></label>
+        ${box("acc", "accessible", L("תג נכה", "Disabled parking badge"), L("רק חניונים מונגשים", "Only accessible lots"))}
+        ${box("moto", "two_wheeler", L("אופנוע", "Motorcycle"), L("חניות אופנועים ברחוב על המפה", "Street motorcycle bays on the map"))}
+      </fieldset>
+    </form>`;
+  panel.hidden = false; list.hidden = true; panel.dataset.view = "settings";
+  $("#listBtn").setAttribute("aria-pressed", "false");
+  $("#close").onclick = () => (panel.hidden = true);
+  $("#prefs").addEventListener("change", (e) => {
+    const t = e.target, f = t.form;
+    state[t.name] = t.type === "checkbox" ? t.checked : t.value;
+    if (t.name === "zone") { state.res = f.res.checked = f.res.checked || !!state.zone; f.res.disabled = !!state.zone; } // a permit means a resident
+    try { localStorage.settings = JSON.stringify(Object.fromEntries(PREFS.map((k) => [k, state[k] === true ? "1" : state[k] || ""]))); } catch {}
+    setLabel();
+    t.name === "moto" ? drawMoto() : load();
+  });
+}
+$("#setBtn").addEventListener("click", () => (panel.hidden || panel.dataset.view !== "settings" ? showSettings() : (panel.hidden = true)));
 $("#meBtn").addEventListener("click", () => (panel.hidden || panel.dataset.view !== "me" ? showAccount() : (panel.hidden = true)));
 
 // language: reload with the other one, so every view is rebuilt from the same code path
@@ -515,13 +563,8 @@ $("#langBtn").addEventListener("click", () => {
 // --- init from URL (deep links from the MCP land here)
 showWhen();
 $("#dur").value = [...$("#dur").options].some((o) => o.value === state.dur) ? state.dur : ($("#dur").add(new Option(`${state.dur} ${L("דק׳", "min")}`, state.dur)), state.dur);
-$("#res").checked = state.res;
-$("#zoneChip").hidden = !state.res;
-$("#zone").value = state.zone;
-$("#bus").checked = state.bus;
-$("#cp").checked = state.cp;
-for (const k of ["ev", "cov", "acc", "moto"]) $("#" + k).checked = state[k];
-$("#h").value = state.h;
+for (const k of ["ev", "cov"]) $("#" + k).checked = state[k];
+setLabel();
 state.moto && drawMoto();
 load();
 loadMe().then(() => state.lot && openLot(state.lot)); // after loadMe: the lot card shows the user's places
