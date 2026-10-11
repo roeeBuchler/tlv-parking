@@ -139,7 +139,7 @@ function showList() {
   $("#listBtn").setAttribute("aria-pressed", "true");
 }
 // blue-white parking at the searched point (src/street.ts): price for the stay and a rough chance of finding a spot
-const HOURS = { center: L("א׳–ה׳ 08:00–21:00", "Sun–Thu 08:00–21:00"), city: L("א׳–ה׳ 08:00–19:00", "Sun–Thu 08:00–19:00") };
+const PAID_TO = { center: "21:00", city: "19:00" }; // Sun–Thu, by area (src/street.ts)
 // the zones along the searched street, by side (GET /api/street); fetched after the search, once per place
 let zonesFor = null;
 async function loadZones(c) {
@@ -150,13 +150,25 @@ async function loadZones(c) {
   state.zones = await r.json();
   if (!list.hidden) showList();
 }
-const runs = (rs) => rs.map((r) => `${L("אזור", "zone")} ${r.zone} (<bdi dir="ltr">${r.from === r.to ? r.from : `${r.from}–${r.to}`}</bdi>)`).join(", ");
 const nums = (r) => `<bdi dir="ltr">${r.from === r.to ? r.from : `${r.from}–${r.to}`}</bdi>`;
-function zonesText(z) {
-  const all = [...new Set([...z.odd, ...z.even].map((r) => r.zone))], name = esc(L(z.street, z.street_en));
-  return all.length === 1 ? L(`כל רחוב ${name} באזור ${all[0]}.`, `All of ${name} is in zone ${all[0]}.`)
-    : L(`רחוב ${name} עובר בכמה אזורים.<br>צד אי-זוגי: ${runs(z.odd)}.<br>צד זוגי: ${runs(z.even)}.`,
-      `${name} crosses several zones.<br>Odd numbers: ${runs(z.odd)}.<br>Even numbers: ${runs(z.even)}.`);
+// "details" of the street card: short sections with an icon each, coloured pills instead of sentences
+const sec = (icon, title, body) => `<section class="sec"><h4><span class="ms">${icon}</span>${title}</h4>${body}</section>`;
+const pill = (cls, text) => `<span class="pill ${cls}">${text}</span>`;
+function hoursBlock(s) {
+  const free = pill("free", L("חינם", "Free"));
+  if (s.permit === "own_zone") return `<p>${free} ${L("עם התו שלך, בכל יום ובכל שעה", "with your permit, every day, at any hour")}</p>`;
+  const paid = pill("paid", L(`₪${s.rate_ils_per_hour.toFixed(2)} לשעה`, `₪${s.rate_ils_per_hour.toFixed(2)} / hour`));
+  const rows = [[L("א׳–ה׳", "Sun–Thu"), `08:00–${PAID_TO[s.area]}`, paid], [L("ו׳ וערבי חג", "Fri, holiday eves"), "08:00–17:00", paid], [L("שבת וחג", "Shabbat, holidays"), L("כל היום", "all day"), free]];
+  return `<table class="hrs">${rows.map(([d, t, p]) => `<tr><th scope="row">${d}</th><td><bdi dir="ltr">${t}</bdi></td><td>${p}</td></tr>`).join("")}</table>
+    <p class="muted">${s.permit === "other_zone" ? L("עם תו לאזור אחר: שעתיים ביום חינם, ואז המחיר הזה. ", "With a permit for another zone: 2 free hours a day, then this price. ") : ""}${L("מחוץ לשעות האלה החניה חינם.", "Outside these hours parking is free.")}</p>`;
+}
+function zonesBlock(z) {
+  const all = new Set([...z.odd, ...z.even].map((r) => r.zone)), name = esc(L(z.street, z.street_en));
+  const chip = (r) => `<span class="zc${r.zone === +state.zone ? " me" : ""}">${L("אזור", "Zone")} ${r.zone}${all.size > 1 ? ` · ${nums(r)}` : ""}</span>`;
+  if (all.size === 1) return `<p>${L(`כל רחוב ${name} נמצא ב`, `All of ${name} is in `)}${chip((z.odd[0] ?? z.even[0]))}</p>`;
+  const side = (rs, label) => (rs.length ? `<div class="side"><span>${label}</span><span class="zcs">${rs.map(chip).join("")}</span></div>` : "");
+  return `<p class="muted">${L(`רחוב ${name} עובר בכמה אזורים:`, `${name} crosses several zones:`)}</p>${side(z.odd, L("צד אי-זוגי", "Odd side"))}${side(z.even, L("צד זוגי", "Even side"))}
+    ${state.zone && all.has(+state.zone) ? `<p class="muted">${L("בירוק: אזור התו שלך, שם החניה חינם עבורך.", "Green: your permit zone, where parking is free for you.")}</p>` : ""}`;
 }
 // the stretches of this street in the user's own permit zone, when the street crosses zones: "free for you: even side 2–40"
 function myStretch(z) {
@@ -170,20 +182,22 @@ const setUp = () => `<button class="link" data-settings>${state.res ? L("מה א
 function streetLine(s) {
   if (s.permit === "own_zone") return L("חינם עם התו שלך, בכל שעה", "Free with your permit, at any hour");
   if (!s.paid_minutes) return L("ללא תשלום בשעות האלה", "No charge at these hours");
-  if (s.permit === "other_zone") return L(`שעתיים ביום חינם, אחר כך ₪${esc(s.rate_ils_per_hour)} לשעה`, `2 free hours a day, then ₪${esc(s.rate_ils_per_hour)} per hour`) + (state.zone ? "" : ` · ${setUp()}`);
-  return L(`₪${esc(s.rate_ils_per_hour)} לשעה`, `₪${esc(s.rate_ils_per_hour)} per hour`) + ` · ${setUp()}`;
+  if (s.permit === "other_zone") return L(`שעתיים ביום חינם, אחר כך ₪${s.rate_ils_per_hour.toFixed(2)} לשעה`, `2 free hours a day, then ₪${s.rate_ils_per_hour.toFixed(2)} per hour`) + (state.zone ? "" : ` · ${setUp()}`);
+  return L(`₪${s.rate_ils_per_hour.toFixed(2)} לשעה`, `₪${s.rate_ils_per_hour.toFixed(2)} per hour`) + ` · ${setUp()}`;
 }
 const streetRow = (s) => `<li class="street">
   <span class="plate bw" dir="ltr">${esc(ils(s.price_ils))}</span>
   <span><span class="row-name">${L("חניה ברחוב, כחול-לבן", "Street parking, blue-white")} · ${L("אזור", "zone")} ${esc(s.zone)}</span><span class="row-sub">${streetLine(s)}</span>
     ${state.zones && myStretch(state.zones) ? `<span class="row-sub mine">${myStretch(state.zones)}</span>` : ""}</span>
   <span class="row-end"><span class="status ${s.chance_pct >= 50 ? "free" : s.chance_pct >= 25 ? "few" : "full"}">${L("סיכוי", "Chance")} ~${esc(s.chance_pct)}%</span>${L("הערכה", "estimate")}</span>
-  <details><summary>${L("פרטים", "Details")}</summary>
-    <p>${L(`בתשלום ${HOURS[s.area]}, ו׳ וערבי חג 08:00–17:00. בשבת ובחג חינם לכולם.`, `Paid ${HOURS[s.area]}, Fri and holiday eves 08:00–17:00. Free for everyone on Shabbat and holidays.`)}</p>
-    ${state.zones ? `<p>${zonesText(state.zones)}</p>` : ""}
-    <p>${L(`הסיכוי למצוא מקום הוא הערכה לפי היום והשעה${s.live_lots ? `, ולפי התפוסה עכשיו ב-${esc(s.live_lots)} חניוני אחוזות החוף הקרובים` : ""}. זה לא נתון חי מהרחוב.`,
-      `The chance of finding a spot is an estimate from the day and time${s.live_lots ? `, and from how full the ${esc(s.live_lots)} nearest Ahuzot HaHof lots are right now` : ""}. It is not live street data.`)}</p>
-    <p>${L("משלמים בפנגו או בסלו מהדקה הראשונה. חלק מרחובות הכחול-לבן מיועדים לבעלי תו האזור בלבד, והתמרור בתחילת הרחוב קובע.", "Pay with Pango or Cello from the first minute. Some blue-white streets are for zone permit holders only; the sign at the start of the street decides.")}</p>
+  <details><summary>${L("פרטים", "Details")}</summary><div class="more">
+    ${sec("schedule", L("מתי משלמים", "When you pay"), hoursBlock(s))}
+    ${state.zones ? sec("place", L("אזורים לאורך הרחוב", "Zones along the street"), zonesBlock(state.zones)) : ""}
+    ${s.permit === "own_zone" ? "" : sec("smartphone", L("איך משלמים", "How to pay"), `<p>${L("בפנגו או בסלו, לפי דקה, מהדקה הראשונה.", "With Pango or Cello, per minute, from the first minute.")}${s.permit === "other_zone" ? L(" גם בשעתיים החינמיות צריך להפעיל חניה.", " Start a parking session even in your 2 free hours.") : ""}</p>`)}
+    ${sec("info", L("הסיכוי למצוא מקום", "Chance of a spot"), `<p>${L(`הערכה לפי היום והשעה${s.live_lots ? `, ולפי התפוסה עכשיו ב-${esc(s.live_lots)} חניונים קרובים` : ""}. לא נתון חי מהרחוב.`,
+      `An estimate from the day and time${s.live_lots ? `, and from how full ${esc(s.live_lots)} nearby lots are right now` : ""}. Not live street data.`)}</p>`)}
+    <p class="note warn">${L("התמרור בתחילת הרחוב קובע: חלק מהרחובות מיועדים לבעלי תו האזור בלבד, ובחלק השעות שונות.", "The sign at the start of the street decides: some streets are for zone permit holders only, and some have other hours.")}</p>
+  </div>
   </details>
 </li>`;
 list.addEventListener("click", (e) => {
