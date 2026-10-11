@@ -45,17 +45,12 @@ function sync() {
 }
 
 // --- map
-// flat, Google-like: no tilt/rotate, positron recoloured (green parks, blue water, white streets, blue-grey highways)
-const map = new Map({ container: "map", style: "https://tiles.openfreemap.org/styles/positron", center: [34.78, 32.075], zoom: 13, maxPitch: 0, dragRotate: false, pitchWithRotate: false, touchPitch: false, attributionControl: { compact: true } });
+// flat, Google-like: liberty's colours, but no tilt/rotate, no 3D buildings and no shop/café icons
+const map = new Map({ container: "map", style: "https://tiles.openfreemap.org/styles/liberty", center: [34.78, 32.075], zoom: 13, maxPitch: 0, dragRotate: false, pitchWithRotate: false, touchPitch: false, attributionControl: { compact: true } });
 map.touchZoomRotate.disableRotation();
 map.on("style.load", () => {
-  for (const [id, prop, v] of [
-    ["background", "background-color", "#eff0ee"], ["landuse_residential", "fill-color", "#eff0ee"], ["building", "fill-color", "#e7e8e5"],
-    ["park", "fill-color", "#cdecd2"], ["landcover_wood", "fill-color", "#cdecd2"], ["water", "fill-color", "#a6d5f2"],
-    ["highway_minor", "line-color", "#fff"], ["highway_major_casing", "line-color", "#d6d9de"],
-    ["highway_motorway_casing", "line-color", "#8fa4bf"], ["highway_motorway_inner", "line-color", "#a9bad0"],
-    ["highway-name-minor", "text-color", "#5f6368"], ["highway-name-major", "text-color", "#3c4043"],
-  ]) map.setPaintProperty(id, prop, v);
+  for (const id of ["building-3d", "poi_r1", "poi_r7", "poi_r20"]) if (map.getLayer(id)) map.removeLayer(id);
+  for (const [id, prop, v] of [["park", "fill-color", "#c8e6c0"], ["park", "fill-opacity", 1], ["water", "fill-color", "#9ccbf2"]]) map.setPaintProperty(id, prop, v);
 });
 map.addControl(new NavigationControl({ showCompass: false }), "bottom-left");
 const geo = new GeolocateControl({ positionOptions: { enableHighAccuracy: true } });
