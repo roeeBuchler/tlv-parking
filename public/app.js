@@ -45,8 +45,19 @@ function sync() {
 }
 
 // --- map
-const map = new Map({ container: "map", style: "https://tiles.openfreemap.org/styles/positron", center: [34.78, 32.075], zoom: 13, attributionControl: { compact: true } });
-map.addControl(new NavigationControl(), "bottom-left");
+// flat, Google-like: no tilt/rotate, positron recoloured (green parks, blue water, white streets, blue-grey highways)
+const map = new Map({ container: "map", style: "https://tiles.openfreemap.org/styles/positron", center: [34.78, 32.075], zoom: 13, maxPitch: 0, dragRotate: false, pitchWithRotate: false, touchPitch: false, attributionControl: { compact: true } });
+map.touchZoomRotate.disableRotation();
+map.on("style.load", () => {
+  for (const [id, prop, v] of [
+    ["background", "background-color", "#eff0ee"], ["landuse_residential", "fill-color", "#eff0ee"], ["building", "fill-color", "#e7e8e5"],
+    ["park", "fill-color", "#cdecd2"], ["landcover_wood", "fill-color", "#cdecd2"], ["water", "fill-color", "#a6d5f2"],
+    ["highway_minor", "line-color", "#fff"], ["highway_major_casing", "line-color", "#d6d9de"],
+    ["highway_motorway_casing", "line-color", "#8fa4bf"], ["highway_motorway_inner", "line-color", "#a9bad0"],
+    ["highway-name-minor", "text-color", "#5f6368"], ["highway-name-major", "text-color", "#3c4043"],
+  ]) map.setPaintProperty(id, prop, v);
+});
+map.addControl(new NavigationControl({ showCompass: false }), "bottom-left");
 const geo = new GeolocateControl({ positionOptions: { enableHighAccuracy: true } });
 map.addControl(geo, "bottom-left");
 geo.on("geolocate", (e) => { state.center = { lat: e.coords.latitude, lng: e.coords.longitude, label: "המיקום שלי" }; state.alts = []; load().then(showList); });
@@ -107,12 +118,12 @@ async function openLot(id, fly = true) {
   const r = await fetch(`/api/lots/${encodeURIComponent(id)}?${qs()}`);
   if (!r.ok) return;
   const d = await r.json(), q = d.quote;
-  const offer = (o) => q.applied_offers.includes(o.id) ? `<p class="note">ההטבה חלה עליכם: ${esc(o.title.he)}</p>`
-    : q.potential_offers.includes(o.id) ? `<p class="note">אפשר לחסוך: ${esc(o.title.he)}</p>` : "";
+  const offer = (o) => q.applied_offers.includes(o.id) ? `<p class="note green">ההטבה חלה עליכם: ${esc(o.title.he)}</p>`
+    : q.potential_offers.includes(o.id) ? `<p class="note yellow">אפשר לחסוך: ${esc(o.title.he)}</p>` : "";
   const restricted = d.sign && !d.sign.free && d.operator === "ahuzot", op = OPERATOR[d.operator] ?? d.operator;
   const dur = $("#dur").selectedOptions[0]?.text ?? `${q.duration_minutes} דק׳`;
   panel.innerHTML = `
-    <button id="close" aria-label="סגירה">×</button>
+    <button id="close" class="icon-btn" aria-label="סגירה"><span class="ms">close</span></button>
     <h2>${esc(d.name)}</h2>
     <p class="sub">${esc(d.address)}<br>${esc(op)}${d.spaces ? `, ${d.spaces} מקומות` : ""}</p>
     <div class="board ${tier(q)}">
@@ -128,9 +139,9 @@ async function openLot(id, fly = true) {
     ${!q.can_enter ? `<p class="note red">אין כניסה לחניון בשעה הזו.</p>` : !q.open_whole_stay ? `<p class="note red">החניון סגור בחלק מזמן החניה, וייתכן שלא תוכלו לצאת.</p>` : ""}
     ${d.offers.map(offer).join("")}
     <div class="actions">
-      <a class="btn primary" href="${esc(d.links.waze)}" target="_blank" rel="noopener">ניווט ב-Waze</a>
-      <a class="btn" href="${esc(d.links.google_maps)}" target="_blank" rel="noopener">Google Maps</a>
-      <button class="btn" id="share">העתקת קישור</button>
+      <a class="act primary" href="${esc(d.links.waze)}" target="_blank" rel="noopener"><span class="ms">directions</span>ניווט ב-Waze</a>
+      <a class="act" href="${esc(d.links.google_maps)}" target="_blank" rel="noopener"><span class="ms">map</span>Google Maps</a>
+      <button class="act" id="share"><span class="ms">link</span><span>העתקת קישור</span></button>
     </div>
     ${d.tariff_text ? `<h3>התעריף המפורסם</h3><pre>${esc(d.tariff_text)}</pre>` : ""}
     ${d.hours_text ? `<h3>שעות פעילות</h3><p>${esc(d.hours_text)}</p>` : ""}
@@ -140,20 +151,20 @@ async function openLot(id, fly = true) {
   panel.hidden = false; list.hidden = true;
   $("#listBtn").setAttribute("aria-pressed", "false");
   $("#close").onclick = () => { panel.hidden = true; state.lot = null; sync(); select(null); };
-  $("#share").onclick = () => navigator.clipboard.writeText(location.href).then(() => ($("#share").textContent = "הועתק ✓"));
+  $("#share").onclick = () => navigator.clipboard.writeText(location.href).then(() => ($("#share span:last-child").textContent = "הועתק ✓"));
   if (fly) map.easeTo({ center: [d.lng, d.lat], zoom: Math.max(map.getZoom(), 15), padding: sidePad() });
 }
 
 // keep the focused point visible beside the sheet (right side on desktop, bottom sheet on mobile)
 const sidePad = () => {
   const top = $("#bar").offsetHeight;
-  return innerWidth > 700 ? { top, right: 380, left: 0, bottom: 0 } : { top, bottom: innerHeight * 0.62, left: 0, right: 0 };
+  return innerWidth > 700 ? { top, right: 424, left: 0, bottom: 0 } : { top, bottom: innerHeight * 0.62, left: 0, right: 0 };
 };
 
 function goTo(c) {
   state.center = c;
   pin?.remove();
-  pin = new Marker({ color: "#2e3338" }).setLngLat([c.lng, c.lat]).addTo(map);
+  pin = new Marker({ color: "#ea4335" }).setLngLat([c.lng, c.lat]).addTo(map);
   showList();
   map.flyTo({ center: [c.lng, c.lat], zoom: 15, padding: sidePad() });
   load();
@@ -164,8 +175,8 @@ $("#search").addEventListener("submit", async (e) => {
   e.preventDefault();
   const q = $("#q").value.trim();
   if (!q) return;
-  const { candidates = [] } = await (await fetch(`/api/places?q=${encodeURIComponent(q)}`)).json();
-  if (!candidates.length) { $("#q").setCustomValidity("לא נמצא. נסו שם רחוב ומספר בית."); $("#q").reportValidity(); return; }
+  const { candidates = [], error } = await (await fetch(`/api/places?q=${encodeURIComponent(q)}`)).json().catch(() => ({ error: true }));
+  if (!candidates.length) { $("#q").setCustomValidity(error ? "שירות החיפוש לא זמין כרגע. נסו שוב בעוד רגע." : "לא נמצא. נסו שם מקום, או רחוב ומספר בית."); $("#q").reportValidity(); return; }
   state.alts = candidates.slice(1);
   goTo(candidates[0]);
 });
@@ -190,7 +201,7 @@ document.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("clic
   const t = Date.parse(state.when + ":00Z"), d = +b.dataset.step;
   setWhen(fmt(b.dataset.unit === "date" ? t + d * DAY : Math[d > 0 ? "floor" : "ceil"](t / STEP) * STEP + d * STEP));
 }));
-for (const k of ["time", "date"]) $(`#${k}Btn`).addEventListener("click", () => { try { $(`#${k}`).showPicker(); } catch { $(`#${k}`).focus(); } });
+$("#dateBtn").addEventListener("click", () => { try { $("#date").showPicker(); } catch { $("#date").focus(); } });
 $("#dur").addEventListener("change", (e) => { state.dur = e.target.value; sync(); load(); });
 $("#res").addEventListener("change", (e) => { state.res = e.target.checked; sync(); load(); });
 $("#bus").addEventListener("change", (e) => { state.bus = e.target.checked; sync(); load(); });
