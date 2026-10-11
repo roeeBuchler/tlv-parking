@@ -1,14 +1,15 @@
-// One Worker: static site (./public, served before this runs), JSON API, and MCP at /mcp.
+// One Worker: static site (./public, served before this runs), JSON API, accounts + favorites, and MCP at /mcp.
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import { createServer } from "./mcp.ts";
 import { search, lotDetails, resolveStart, placeOut } from "./search.ts";
 import { resolvePlace } from "./places.ts";
+import { handleUsers, type Env as UsersEnv } from "./users.ts";
 
 const json = (data: unknown, status = 200) => Response.json(data, {
   status, headers: { "access-control-allow-origin": "*", "cache-control": "no-store" },
 });
 
-type Env = { ASSETS: { fetch: (u: URL) => Promise<Response> } };
+type Env = UsersEnv & { ASSETS: { fetch: (u: URL) => Promise<Response> } };
 let poisText: Promise<string> | undefined; // public/pois.tsv, once per isolate; a failed load is retried next time
 const loadPois = (env: Env, url: URL) => (poisText ??= env.ASSETS.fetch(new URL("/pois.tsv", url))
   .then((r) => (r.ok ? r.text() : Promise.reject(new Error(`pois.tsv: HTTP ${r.status}`))))
@@ -19,6 +20,8 @@ export default {
     const url = new URL(req.url), p = url.searchParams, origin = url.origin;
     const pois = () => loadPois(env, url);
     if (url.pathname === "/mcp") return createMcpHandler(() => createServer(origin, pois)).fetch(req);
+    const u = await handleUsers(req, env, url.pathname).catch((e) => json({ error: String(e?.message ?? e) }, 500));
+    if (u) return u;
 
     const num = (k: string) => (p.get(k) ? Number(p.get(k)) : undefined);
     const bool = (k: string) => ["1", "true"].includes(p.get(k) ?? "");

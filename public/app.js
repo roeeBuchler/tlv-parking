@@ -92,7 +92,8 @@ async function load() {
 function showList() {
   const near = state.center ? state.results.filter((l) => l.distance_m != null && l.distance_m <= 1000) : state.results;
   const head = state.center
-    ? `<li class="head">חניונים עד 1 ק״מ מ${esc(state.center.label)}, מהזול ליקר.${state.alts.length ? `<br>התכוונתם ל${state.alts.map((a, i) => `<a href="#" data-alt="${i}">${esc(a.label)}</a>`).join(" או ")}?` : ""}</li>`
+    ? `<li class="head">חניונים עד 1 ק״מ מ${esc(state.center.label)}, מהזול ליקר.<br>${savedPlace(state.center)
+      ? `<span class="save"><span class="ms">place</span>שמור בנקודות הציון שלך</span>` : `<button class="save" id="savePlace"><span class="ms">add</span>שמירה כנקודת ציון</button>`}${state.alts.length ? `<br>התכוונתם ל${state.alts.map((a, i) => `<a href="#" data-alt="${i}">${esc(a.label)}</a>`).join(" או ")}?` : ""}</li>`
     : `<li class="head">כל החניונים, מהזול ליקר. חפשו כתובת כדי לראות מה קרוב אליה.</li>`;
   list.querySelector("ol").innerHTML = head + (near.map((l) => `<li><button data-id="${esc(l.id)}" aria-label="${esc(`${l.name}, ${price(l)}`)}">
     ${plateHtml(l)}
@@ -105,6 +106,7 @@ function showList() {
 list.addEventListener("click", (e) => {
   const b = e.target.closest("[data-id]"), a = e.target.closest("[data-alt]");
   if (b) openLot(b.dataset.id);
+  if (e.target.closest("#savePlace")) addPlace(state.center).then(() => me && showList());
   if (a) { e.preventDefault(); const pick = state.alts[+a.dataset.alt]; state.alts = [state.center, ...state.alts.filter((x) => x !== pick)]; goTo(pick); }
 });
 
@@ -138,6 +140,7 @@ async function openLot(id, fly = true) {
       <a class="act" href="${esc(d.links.google_maps)}" target="_blank" rel="noopener"><span class="ms">map</span>Google Maps</a>
       <button class="act" id="share"><span class="ms">link</span><span>העתקת קישור</span></button>
     </div>
+    <div id="attach"></div>
     ${d.tariffs ? `<h3>תעריף</h3>${tariffTable(d.tariffs, d.app_tariffs)}
       ${d.grace_minutes ? `<p class="tariff-note">עד ${d.grace_minutes} דקות בחניון: חינם</p>` : ""}
       ${d.resident_discount_pct ? `<p class="tariff-note">${d.resident_discount_pct}% הנחה לתושבי תל אביב-יפו</p>` : ""}
@@ -148,8 +151,9 @@ async function openLot(id, fly = true) {
     ${d.serves ? `<p class="sub">משרת את ${esc(d.serves)}</p>` : ""}
     <p class="fine">המחיר הוא הערכה לפי התעריף שפורסם, והשילוט בחניון קובע. נבדק ב-${esc(d.verified_at)}.
       <a href="${esc(d.source_url)}" target="_blank" rel="noopener">למקור</a>, <a href="${esc(d.links.report)}" target="_blank" rel="noopener">דיווח על מחיר שגוי</a></p>`;
-  panel.hidden = false; list.hidden = true;
+  panel.hidden = false; list.hidden = true; panel.dataset.view = "lot";
   $("#listBtn").setAttribute("aria-pressed", "false");
+  drawAttach(d);
   $("#close").onclick = () => { panel.hidden = true; state.lot = null; sync(); select(null); };
   $("#share").onclick = () => navigator.clipboard.writeText(location.href).then(() => ($("#share span:last-child").textContent = "הועתק ✓"));
   if (fly) map.easeTo({ center: [d.lng, d.lat], zoom: Math.max(map.getZoom(), 15), padding: sidePad() });
@@ -241,6 +245,104 @@ $("#cp").addEventListener("change", (e) => { state.cp = e.target.checked; sync()
 $("#listBtn").addEventListener("click", () => (list.hidden ? showList() : ((list.hidden = true), $("#listBtn").setAttribute("aria-pressed", "false"))));
 new ResizeObserver(() => document.documentElement.style.setProperty("--bar-h", `${$("#bar").offsetHeight}px`)).observe($("#bar"));
 
+// --- account: favorite places (נקודות ציון), each with its own favorite lots
+let me = null, favs = [];
+async function api(path, method = "GET", body) {
+  const r = await fetch(path, { method, headers: body ? { "content-type": "application/json" } : {}, body: body && JSON.stringify(body) });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(d.error), { status: r.status });
+  return d;
+}
+async function loadMe() {
+  me = (await api("/api/me").catch(() => ({}))).user ?? null;
+  favs = me ? (await api("/api/favorites")).favorites : [];
+  $("#meBtn").classList.toggle("on", !!me);
+}
+const savedPlace = (c) => favs.find((f) => f.lat === c.lat && f.lng === c.lng);
+async function addPlace(c, label = c.label) {
+  if (!me) return showAccount("התחברו כדי לשמור נקודות ציון.");
+  await api("/api/favorites", "POST", { label, lat: c.lat, lng: c.lng });
+  await loadMe();
+}
+
+// lot details: tick the places this lot is a favorite for
+function drawAttach(d) {
+  const box = $("#attach");
+  box.innerHTML = `<h3>חניון מועדף ליד</h3>` + (!me ? `<button class="save" id="signin">התחברו כדי לשמור חניונים מועדפים</button>`
+    : !favs.length ? `<p class="sub">עוד אין לכם נקודות ציון. חפשו מקום ולחצו "שמירה כנקודת ציון".</p>`
+    : `<div class="attach">${favs.map((f) => `<label class="chip tog"><input type="checkbox" data-attach="${f.id}"${f.lots.some((l) => l.lot_id === d.id) ? " checked" : ""}><span class="ms">place</span>${esc(f.label)}</label>`).join("")}</div>`);
+  box.onclick = (e) => e.target.closest("#signin") && showAccount();
+  box.onchange = (e) => {
+    const id = e.target.dataset.attach, on = e.target.checked;
+    (on ? api(`/api/favorites/${id}/lots`, "POST", { lot_id: d.id }) : api(`/api/favorites/${id}/lots/${encodeURIComponent(d.id)}`, "DELETE"))
+      .then(loadMe, () => (e.target.checked = !on));
+  };
+}
+
+const AUTH_ERR = { 401: "שם משתמש או סיסמה שגויים.", 409: "שם המשתמש הזה תפוס." };
+function showAccount(msg = "") {
+  state.lot = null; sync(); select(null);
+  panel.innerHTML = `<button id="close" class="icon-btn" aria-label="סגירה"><span class="ms">close</span></button>` + (me ? `
+    <h2>שלום, ${esc(me.username)}</h2>
+    <h3>נקודות הציון שלי</h3>
+    ${favs.length ? `<ol class="favs">${favs.map((f, i) => `<li>
+      <div class="row">
+        <button class="go" data-place="${i}"><span class="ms">place</span>${esc(f.label)}</button>
+        <button class="icon-btn" data-rename="${i}" aria-label="${esc(`שינוי השם של ${f.label}`)}" title="שינוי שם"><span class="ms">edit</span></button>
+        <button class="icon-btn" data-del="${i}" aria-label="${esc(`מחיקת ${f.label}`)}" title="מחיקה"><span class="ms">delete</span></button>
+      </div>
+      ${f.lots.length ? `<ul class="lots">${f.lots.map((l) => `<li class="lot">
+        <button class="go" data-lot="${esc(l.lot_id)}"><span class="ms">local_parking</span>${esc(l.name)}</button>
+        <button class="icon-btn" data-unpin="${i}" data-lot-id="${esc(l.lot_id)}" aria-label="${esc(`הסרת ${l.name} מ${f.label}`)}"><span class="ms">close</span></button></li>`).join("")}</ul>`
+        : `<p class="hint">אין עדיין חניונים מועדפים. פתחו חניון וסמנו את "${esc(f.label)}".</p>`}
+    </li>`).join("")}</ol>` : `<p class="sub">עוד אין לכם נקודות ציון. הוסיפו כתובת, למשל הבית או העבודה.</p>`}
+    <form class="add" id="addPlace">
+      <input name="q" required placeholder="כתובת או מקום, למשל דיזנגוף 50" aria-label="הוספת נקודת ציון: כתובת או מקום">
+      <button class="btn primary"><span class="ms">add</span>הוספה</button>
+    </form>
+    <p class="note red" id="err" hidden></p>
+    <div class="btns"><button class="btn" id="logout"><span class="ms">logout</span>התנתקות</button></div>` : `
+    <h2>החשבון שלי</h2>
+    <p class="sub">${esc(msg || "התחברו כדי לשמור נקודות ציון וחניונים מועדפים לכל אחת.")}</p>
+    <form class="form" id="auth">
+      <label>שם משתמש<input name="username" required minlength="3" maxlength="32" pattern="[\\p{L}\\p{N}_.\\-]+" title="אותיות, ספרות, _ . -" autocomplete="username"></label>
+      <label>סיסמה<input name="password" type="password" required minlength="8" maxlength="200" autocomplete="current-password"></label>
+      <p class="note red" id="err" hidden></p>
+      <div class="btns"><button class="btn primary" value="login">התחברות</button><button class="btn" value="register">הרשמה</button></div>
+    </form>`);
+  panel.hidden = false; list.hidden = true; panel.dataset.view = "me";
+  $("#listBtn").setAttribute("aria-pressed", "false");
+  const fail = (text) => Object.assign($("#err"), { hidden: false, textContent: text });
+  $("#close").onclick = () => (panel.hidden = true);
+  $("#logout")?.addEventListener("click", async () => { await api("/api/auth/logout", "POST"); await loadMe(); showAccount(); });
+  $("#auth")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try { await api(`/api/auth/${e.submitter.value}`, "POST", Object.fromEntries(new FormData(e.target))); await loadMe(); showAccount(); }
+    catch (err) { fail(AUTH_ERR[err.status] ?? "משהו השתבש. נסו שוב."); }
+  });
+  $("#addPlace")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const q = e.target.q.value.trim();
+    const { candidates = [] } = await api(`/api/places?q=${encodeURIComponent(q)}`).catch(() => ({}));
+    if (!candidates.length) return fail("לא נמצא. נסו שם מקום, או רחוב ומספר בית.");
+    await addPlace(candidates[0], q); // named as typed; rename any time
+    showAccount();
+  });
+}
+panel.addEventListener("click", async (e) => {
+  const t = (k) => e.target.closest(`[data-${k}]`)?.dataset;
+  const f = (k) => favs[+t(k)[k]];
+  if (t("place")) { state.alts = []; const p = f("place"); goTo({ label: p.label, lat: p.lat, lng: p.lng }); }
+  if (t("lot")) openLot(t("lot").lot);
+  if (t("rename")) {
+    const name = prompt("שם חדש לנקודת הציון", f("rename").label)?.trim();
+    if (name) { await api(`/api/favorites/${f("rename").id}`, "PATCH", { label: name }); await loadMe(); showAccount(); }
+  }
+  if (t("del") && confirm(`למחוק את "${f("del").label}" ואת החניונים ששמרתם לידה?`)) { await api(`/api/favorites/${f("del").id}`, "DELETE"); await loadMe(); showAccount(); }
+  if (t("unpin")) { await api(`/api/favorites/${f("unpin").id}/lots/${encodeURIComponent(t("unpin").lotId)}`, "DELETE"); await loadMe(); showAccount(); }
+});
+$("#meBtn").addEventListener("click", () => (panel.hidden || panel.dataset.view !== "me" ? showAccount() : (panel.hidden = true)));
+
 // --- init from URL (deep links from the MCP land here)
 showWhen();
 $("#dur").value = [...$("#dur").options].some((o) => o.value === state.dur) ? state.dur : ($("#dur").add(new Option(`${state.dur} דק׳`, state.dur)), state.dur);
@@ -248,4 +350,4 @@ $("#res").checked = state.res;
 $("#bus").checked = state.bus;
 $("#cp").checked = state.cp;
 load();
-if (state.lot) openLot(state.lot);
+loadMe().then(() => state.lot && openLot(state.lot)); // after loadMe: the lot card shows the user's places
