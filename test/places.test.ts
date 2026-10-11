@@ -11,6 +11,18 @@ test("a pasted Google Maps link resolves to the pin, not the viewport", async ()
   assert.equal(fromMapsLink("nachmani"), null);
 });
 
+test("share links (maps.app.goo.gl) follow one redirect; other URLs are never fetched", async (t) => {
+  const fetched: string[] = [];
+  t.mock.method(globalThis, "fetch", async (u: string | URL) => {
+    fetched.push(String(u));
+    return new Response(null, { status: 302, headers: { location: LINK } });
+  });
+  const pin = [{ label: "Nachmani", lat: 32.0651024, lng: 34.7776611, source: "link" }];
+  assert.deepEqual(await resolvePlace("Nachmani https://maps.app.goo.gl/4dkgUdWsT1NzTkLB8"), pin);
+  assert.deepEqual(await resolvePlace("https://evil.example/x"), []);
+  assert.deepEqual(fetched, ["https://maps.app.goo.gl/4dkgUdWsT1NzTkLB8"]);
+});
+
 test("business names: the index first; OSM down doesn't fail a search the index answered", async (t) => {
   const pois = async () => "pilates nachmani\tPilates Nachmani, Nachmani St 39\t32.06526\t34.777849\n";
   t.mock.method(globalThis, "fetch", async () => new Response("", { status: 503 })); // Nominatim down
