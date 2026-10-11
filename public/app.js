@@ -141,7 +141,12 @@ async function openLot(id, fly = true) {
       <button class="act" id="share"><span class="ms">link</span><span>העתקת קישור</span></button>
     </div>
     <div id="attach"></div>
-    ${d.app_tariffs ? `<h3>התעריף המפורסם</h3>${tariffTable(d.tariffs, d.app_tariffs)}` : d.tariff_text ? `<h3>התעריף המפורסם</h3><pre>${esc(d.tariff_text)}</pre>` : ""}
+    ${d.tariffs ? `<h3>תעריף</h3>${tariffTable(d.tariffs, d.app_tariffs)}
+      ${d.grace_minutes ? `<p class="tariff-note">עד ${d.grace_minutes} דקות בחניון: חינם</p>` : ""}
+      ${d.resident_discount_pct ? `<p class="tariff-note">${d.resident_discount_pct}% הנחה לתושבי תל אביב-יפו</p>` : ""}
+      ${d.resident_tariffs ? `<h3>לתושבי תל אביב-יפו</h3>${tariffTable(d.resident_tariffs)}` : ""}
+      ${d.tariff_text ? `<details><summary>הנוסח המפורסם</summary><pre>${esc(d.tariff_text)}</pre></details>` : ""}`
+    : d.tariff_text ? `<h3>התעריף המפורסם</h3><pre>${esc(d.tariff_text)}</pre>` : ""}
     ${d.hours_text ? `<h3>שעות פעילות</h3><p>${esc(d.hours_text)}</p>` : ""}
     ${d.serves ? `<p class="sub">משרת את ${esc(d.serves)}</p>` : ""}
     <p class="fine">המחיר הוא הערכה לפי התעריף שפורסם, והשילוט בחניון קובע. נבדק ב-${esc(d.verified_at)}.
@@ -154,21 +159,36 @@ async function openLot(id, fly = true) {
   if (fly) map.easeTo({ center: [d.lng, d.lat], zoom: Math.max(map.getZoom(), 15), padding: sidePad() });
 }
 
-// operator's own rule list (Central Park) as a day ▸ hours ▸ price table; app_tariffs[i] is the app price of tariffs[i]
-const WEEK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-const daysText = (ds) => { const [a, b] = [ds[0], ds.at(-1)].map((x) => DAYS[WEEK.indexOf(x)]); return a === b ? `יום ${a}` : `${a} עד ${b}`; };
+// a lot's rules (same shape as src/engine.ts Rule) as a day ▸ hours ▸ price table; app[i] is the app price of rules[i]
+const DAYKEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat", "holiday_eve", "holiday"];
+function daysText(ds) {
+  const w = ds.map((x) => DAYKEYS.indexOf(x)).filter((i) => i < 7);
+  if (w.length === 7) return "כל יום";
+  const wk = !w.length ? "" : w.length === 1 ? `יום ${DAYS[w[0]]}` : w.every((x, i) => !i || x === w[i - 1] + 1) ? `${DAYS[w[0]]} ${w.length === 2 ? "ו" : "עד "}${DAYS[w.at(-1)]}` : w.map((i) => DAYS[i]).join(", ");
+  const eve = ds.includes("holiday_eve"), hol = ds.includes("holiday");
+  return [wk, eve && hol ? "ערבי חג וחגים" : eve ? "ערבי חג" : hol ? "חגים" : ""].filter(Boolean).join(", ");
+}
+const STEP_TEXT = { 15: "כל רבע שעה נוספת", 30: "כל חצי שעה נוספת", 60: "כל שעה נוספת" };
+// [label, ₪] rows; app rules share the shape, so their rows zip by index
+const ruleRows = (r) => [
+  ...(r.kind === "flat" ? [[`כניסה חד פעמית${r.valid_hours ? `, תקף ${r.valid_hours} שעות` : r.valid_until ? `, תקף עד ${r.valid_until}` : ""}`, r.price]]
+    : r.kind === "step" ? [["שעה ראשונה", r.first_hour], [STEP_TEXT[r.step_minutes] ?? `כל ${r.step_minutes} דק׳ נוספות`, r.step_price]]
+    : r.tiers?.length ? [...r.tiers.map(([upTo, rate], i) => [`לשעה, דקות ${i ? r.tiers[i - 1][0] + 1 : 1}–${upTo}`, rate]), [`לשעה, מהדקה ה-${r.tiers.at(-1)[0] + 1}`, r.rate]]
+    : [["לשעה (חיוב לפי דקה)", r.rate]]),
+  ...(r.daily_max != null ? [["מקסימום ליום", r.daily_max]] : []),
+];
 function tariffTable(rules, app) {
-  const rows = (r, a) => r.kind === "flat"
-    ? [[`כניסה חד פעמית${r.valid_until ? ` (יציאה עד למחרת ב-${r.valid_until})` : ""}`, r.price, a.price]]
-    : [["שעה ראשונה", r.first_hour, a.first_hour], [r.step_minutes === 60 ? "כל שעה נוספת" : `כל ${r.step_minutes} דק׳ נוספות`, r.step_price, a.step_price],
-       ...(r.daily_max != null ? [["חניה יומית", r.daily_max, a.daily_max]] : [])];
-  const groups = [];
-  rules.forEach((r, i) => { const k = r.days.join(); (groups.at(-1)?.k === k ? groups.at(-1).items : (groups.push({ k, days: r.days, items: [] }), groups.at(-1).items)).push([r, app[i]]); });
-  return groups.map((g) => `<table class="tariff"><caption>${daysText(g.days)}</caption>
-    <thead><tr><th scope="col"><span class="sr">פריט</span></th><th scope="col">מחיר מלא</th><th scope="col">באפליקציה</th></tr></thead>
-    ${g.items.map(([r, a]) => `<tbody><tr><th colspan="3" scope="rowgroup" dir="ltr">${r.from === r.to ? "כל היום" : `${r.from}–${r.to}`}</th></tr>
-      ${rows(r, a).map(([t, p, ap]) => `<tr><td>${t}</td><td>${ils(p)}</td><td class="app">${ils(ap)}</td></tr>`).join("")}</tbody>`).join("")}
-  </table>`).join("");
+  const groups = {};
+  rules.forEach((r, i) => (groups[r.days.join()] ??= []).push([r, app?.[i]]));
+  return Object.values(groups).sort((a, b) => DAYKEYS.indexOf(a[0][0].days[0]) - DAYKEYS.indexOf(b[0][0].days[0])).map((items) => {
+    items.sort(([a], [b]) => a.from.localeCompare(b.from));
+    const allDay = items.length === 1 && items[0][0].from === items[0][0].to; // nothing to split by hour
+    return `<table class="tariff"><caption>${daysText(items[0][0].days)}</caption>
+    ${app ? `<thead><tr><th scope="col"><span class="sr">פריט</span></th><th scope="col">מחיר מלא</th><th scope="col">באפליקציה</th></tr></thead>` : ""}
+    ${items.map(([r, a]) => { const ar = a && ruleRows(a); return `<tbody>${allDay ? "" : `<tr><th colspan="3" scope="rowgroup" dir="ltr">${r.from === r.to ? "כל היום" : `${r.from}–${r.to}`}</th></tr>`}
+      ${ruleRows(r).map(([t, p], i) => `<tr><td>${t}</td><td>${ils(p)}</td>${ar ? `<td class="app">${ils(ar[i]?.[1])}</td>` : ""}</tr>`).join("")}</tbody>`; }).join("")}
+  </table>`;
+  }).join("");
 }
 
 // keep the focused point visible beside the sheet (right side on desktop, bottom sheet on mobile)
