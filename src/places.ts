@@ -1,9 +1,10 @@
-// Place resolution: hand-picked landmarks first, then TLV GIS address layer 527 (no third-party geocoder).
+// Place resolution: hand-picked landmarks first, then OpenStreetMap (Nominatim) for addresses, POIs and businesses.
+// geocode() below (TLV GIS layer 527) is only for the data pipeline, which depends on the city's GIS anyway.
 import landmarks from "../data/places.json" with { type: "json" };
 
 export const GIS = "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer";
 export const UA = "tlv-parking-bot/1.0 (+https://github.com/roeeBuchler/tlv-parking)";
-export type Place = { label: string; lat: number; lng: number; source: "landmark" | "address" };
+export type Place = { label: string; lat: number; lng: number; source: "landmark" | "address" | "osm" };
 
 const norm = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 
@@ -47,6 +48,18 @@ export async function geocode(q: string): Promise<Place[]> {
   });
 }
 
+// biased toward TLV (viewbox), not limited to it
+// ponytail: public Nominatim is ~1 req/s, no heavy use; for real traffic swap the host for LocationIQ or a self-hosted Nominatim (same API)
+async function osmSearch(q: string): Promise<Place[]> {
+  const params = { q, format: "jsonv2", addressdetails: "1", limit: "5", countrycodes: "il", "accept-language": "he", viewbox: "34.74,32.15,34.85,32.03" };
+  const r = await fetch(`https://nominatim.openstreetmap.org/search?${new URLSearchParams(params)}`, { headers: { "user-agent": UA }, signal: AbortSignal.timeout(8000) });
+  if (!r.ok) throw new Error(`Nominatim: HTTP ${r.status}`);
+  return ((await r.json()) as any[]).map(({ name, address: a, lat, lon }) => {
+    const street = [a.road, a.house_number].filter(Boolean).join(" ");
+    return { label: [...new Set([name, street, a.city ?? a.town ?? a.village])].filter(Boolean).join(", "), lat: +lat, lng: +lon, source: "osm" as const };
+  });
+}
+
 export async function resolvePlace(q: string): Promise<Place[]> {
   const n = norm(q);
   if (!n) return [];
@@ -54,5 +67,5 @@ export async function resolvePlace(q: string): Promise<Place[]> {
     .filter((l) => [l.he, l.en, ...(l.aliases ?? [])].some((name) => { const x = norm(name); return x.includes(n) || n.includes(x); }))
     .map((l) => ({ label: `${l.he} (${l.en})`, lat: l.lat, lng: l.lng, source: "landmark" as const }));
   if (hits.length && !/\d/.test(q)) return hits;
-  return [...hits, ...(await geocode(q))];
+  return [...hits, ...(await osmSearch(q))];
 }
