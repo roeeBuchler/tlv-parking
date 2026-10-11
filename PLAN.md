@@ -37,7 +37,7 @@ Research findings and build plan, written 2026-10-04.
 - **Ahuzot resident discount**: 75% at 42 lots, 50% at 8, not stated at 38. **15 minutes free** at every Ahuzot lot.
 - **"Near-home" lots** (44 in layer 488): free on nights and weekends for residents with a matching zone permit.
 - **App-price discounts** at Central Park: 25–50% off the gate price. Example: Motzkin 8 on Saturday is 40₪ for the first hour at the gate and 20₪ in the app; daily max is 160₪ at the gate and 110₪ in the app.
-- Central Park night-and-weekend subscriptions from 180₪/month (low priority).
+- **Subscriptions (done 2026-10-11).** Central Park pages list monthly 24/7, night, Sun–Thu, motorcycle and reserved passes per lot; the city's GIS layer 488 type 4 lists night passes at private lots (₪180–645). Both are stored as `Lot.subscriptions` and ranked by `sub=night|full|…` in the API/MCP and the site (duration menu). Ahuzot publishes terms but no prices. City phone numbers and contact names are never copied.
 
 ### 1.3 Gotchas that shape the design
 

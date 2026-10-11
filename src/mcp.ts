@@ -3,6 +3,7 @@ import { McpServer } from "@modelcontextprotocol/server";
 import * as z from "zod/v4";
 import { search, lotDetails, resolveStart, placeOut, CAVEATS } from "./search.ts";
 import { resolvePlace, type LoadPois } from "./places.ts";
+import { SUB_TYPES } from "./engine.ts";
 
 const readOnly = { readOnlyHint: true, openWorldHint: false };
 const out = (data: unknown, summary: string) => ({
@@ -42,6 +43,7 @@ export function createServer(origin: string, pois?: LoadPois) {
       ...when,
       max_walk_m: z.number().int().min(100).max(5000).default(800).describe("Max straight-line distance in meters."),
       sort_by: z.enum(["price", "distance"]).default("price"),
+      subscription: z.enum(SUB_TYPES).optional().describe("For regular parkers, not one-off visits: only lots selling this monthly pass (night = evenings and nights, full = 24/7, weekdays = Sun-Thu, motorcycle, reserved), ranked by the pass price. Time and duration are ignored. Prices come from the operator or from city data that may be stale: tell the user to confirm with the lot."),
       limit: z.number().int().min(1).max(50).default(10),
     }),
     annotations: readOnly,
@@ -58,10 +60,10 @@ export function createServer(origin: string, pois?: LoadPois) {
     try { start = resolveStart(a.start, a.weekday, a.time); } catch (e) { return fail(String(e)); }
     const r = await search({
       lat: at.lat, lng: at.lng, start, minutes: a.duration_minutes, max_walk_m: a.max_walk_m, sort_by: a.sort_by, limit: a.limit,
-      resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, origin,
+      resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, origin, sub: a.subscription,
     });
     const data = { resolved_location: places?.resolved ?? at, alternatives: places?.alternatives ?? [], ...r };
-    const top = r.results.slice(0, 3).map((x) => `${x.name} ${priceText(x)} ${x.distance_m}m`).join("; ");
+    const top = r.results.slice(0, 3).map((x) => `${x.name} ${x.subscription ? `₪${x.subscription.price_ils}/${x.subscription.period}` : priceText(x)} ${x.distance_m}m`).join("; ");
     return out(data, `${r.count} lots within ${a.max_walk_m}m, ${r.query.start}→${r.query.end} (${r.query.day_type}). Top: ${top || "none"}`);
   });
 

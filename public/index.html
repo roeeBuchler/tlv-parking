@@ -62,7 +62,7 @@
   .tog:has(input:checked) .ms { font-variation-settings: "FILL" 1; }
   /* when: "now / enter at" chip, then time and date chips with step arrows (after Google Maps) */
   #at { display: contents; }
-  #at[hidden] { display: none; }
+  #at[hidden], .chip[hidden] { display: none; }
   .step { gap: 2px; padding: 0 4px; cursor: default; }
   .step:hover { background: var(--paper); }
   .step button { display: flex; align-items: center; gap: 6px; height: 28px; min-width: 28px; justify-content: center; padding: 0 4px; border: 0; border-radius: 14px; background: none; cursor: pointer; }
@@ -238,6 +238,7 @@
     <label class="chip"><span class="ms">timer</span><select id="dur" aria-label="משך החניה">
       <option value="60">שעה</option><option value="120" selected>שעתיים</option><option value="180">3 שעות</option>
       <option value="240">4 שעות</option><option value="480">8 שעות</option><option value="720">12 שעות</option><option value="1440">יממה</option>
+      <optgroup label="מנוי חודשי (לא לחניה חד-פעמית)"><option value="night">מנוי לילה</option><option value="full">מנוי 24/7</option></optgroup>
     </select></label>
     <span class="sep" aria-hidden="true"></span>
     <label class="chip tog res"><input type="checkbox" id="res"><span class="ms">home</span>תושב/ת ת״א</label>

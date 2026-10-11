@@ -1,11 +1,14 @@
 // The one ranking both the API/site and the MCP tools use.
 import lotsJson from "../data/lots.json" with { type: "json" };
 import offersJson from "../data/offers.json" with { type: "json" };
-import { WEEK, quote, distanceM, parseLocal, fmtLocal, localNow, dayOf, DAY, type Day, type Lot, type Offer, type Profile } from "./engine.ts";
+import { WEEK, quote, distanceM, parseLocal, fmtLocal, localNow, dayOf, DAY, type Day, type Lot, type Offer, type Profile, type Sub } from "./engine.ts";
 import { gisQuery, type Place } from "./places.ts";
 
 export const lots = lotsJson as unknown as Lot[];
 export const offers = offersJson as unknown as Offer[];
+// A weekly plan counts as 4.33 weeks, so plans of both periods rank on one scale.
+export const monthly = (s: Sub) => (s.period === "week" ? Math.round(s.price_ils * 4.33) : s.price_ils);
+export const cheapestSub = (l: Lot, type: Sub["type"]) => l.subscriptions?.filter((s) => s.type === type).sort((a, b) => monthly(a) - monthly(b))[0];
 export const REPO = "https://github.com/roeeBuchler/tlv-parking";
 
 const n = (op: string) => lots.filter((l) => l.operator === op).length;
@@ -14,6 +17,7 @@ export const CAVEATS = [
   "Times are Asia/Jerusalem. Shabbat, holiday and holiday-eve tariffs differ from weekdays.",
   "price_ils null = the lot publishes no tariff ('as per the sign at the lot'); see notes.",
   "price_basis 'municipal_data_unverified' = an open municipal lot the city lists as free (price_ils 0); say it is unverified and to check the traffic sign.",
+  "subscriptions (monthly/weekly passes) are not part of price_ils. With subscription=night|full|weekdays the results are ranked by that plan's monthly price. source 'operator' = the operator's own site; 'city' = the city's open data, possibly out of date: confirm with the lot before buying.",
   "Central Park lots: price_ils is the gate price unless apps includes 'centralpark'; gate_price_ils and app_price_ils give both.",
   `Coverage, Tel Aviv-Yafo: ${n("ahuzot")} Ahuzot HaHof (municipal), ${n("centralpark")} Central Park, ${n("green")} Green Parking and ` +
     `${n("azrieli") + n("dizengoff-center") + n("sarona")} mall lots (Azrieli, Dizengoff Center, Sarona) with prices, plus ` +
@@ -58,6 +62,7 @@ export async function live() {
 export type SearchInput = Profile & {
   lat?: number; lng?: number; start: number; minutes: number;
   max_walk_m?: number; sort_by?: "price" | "distance"; limit?: number; origin: string;
+  sub?: Sub["type"]; // only lots selling this plan, ranked by its monthly price instead of the price of the stay
 };
 
 export async function search(s: SearchInput) {
@@ -67,18 +72,21 @@ export async function search(s: SearchInput) {
   const results = lots
     .map((l) => ({ l, distance_m: here ? distanceM(here, l) : null }))
     .filter((x) => x.distance_m == null || x.distance_m <= (s.max_walk_m ?? 800))
+    .filter((x) => !s.sub || cheapestSub(x.l, s.sub))
     .map(({ l, distance_m }) => ({
       id: l.id, name: l.name, operator: l.operator, address: l.address, lat: l.lat, lng: l.lng, distance_m,
       ...quote(l, s.start, s.minutes, profile, offers),
       live: (l.live_key != null && status[l.live_key]) || null,
+      subscriptions: l.subscriptions, subscription: s.sub && cheapestSub(l, s.sub),
       spaces: l.spaces ?? null, verified_at: l.verified_at, source_url: l.source_url,
-      map_url: mapUrl(s.origin, l.id, s.start, s.minutes, s.resident),
+      map_url: mapUrl(s.origin, l.id, s.start, s.sub ?? s.minutes, s.resident),
     }))
     .sort((a, b) => s.sort_by === "distance"
       ? (a.distance_m ?? 0) - (b.distance_m ?? 0)
+      : s.sub ? monthly(a.subscription!) - monthly(b.subscription!) || (a.distance_m ?? 0) - (b.distance_m ?? 0)
       : (a.price_ils ?? Infinity) - (b.price_ils ?? Infinity) || (a.distance_m ?? 0) - (b.distance_m ?? 0));
   return {
-    query: { start: fmtLocal(s.start), end: fmtLocal(s.start + s.minutes * 60_000), duration_minutes: s.minutes, day_type: dayOf(s.start), ...profile },
+    query: { start: fmtLocal(s.start), end: fmtLocal(s.start + s.minutes * 60_000), duration_minutes: s.minutes, day_type: dayOf(s.start), subscription: s.sub, ...profile },
     count: results.length,
     results: results.slice(0, s.limit ?? results.length),
     caveats: CAVEATS,
@@ -104,7 +112,7 @@ export async function lotDetails(id: string, s: Omit<SearchInput, "lat" | "lng">
   };
 }
 
-const mapUrl = (origin: string, id: string, start: number, minutes: number, resident?: boolean) =>
+const mapUrl = (origin: string, id: string, start: number, minutes: number | string, resident?: boolean) =>
   `${origin}/?lot=${id}&when=${fmtLocal(start)}&dur=${minutes}${resident ? "&res=1" : ""}`;
 
 export const placeOut = (p: Place[]) => ({ resolved: p[0] ?? null, alternatives: p.slice(1) });

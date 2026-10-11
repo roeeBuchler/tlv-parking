@@ -1,6 +1,7 @@
 // One Worker: static site (./public, served before this runs), JSON API, accounts + favorites, and MCP at /mcp.
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import { createServer } from "./mcp.ts";
+import { SUB_TYPES, type Sub } from "./engine.ts";
 import { search, lotDetails, resolveStart, placeOut } from "./search.ts";
 import { resolvePlace } from "./places.ts";
 import { handleUsers, type Env as UsersEnv } from "./users.ts";
@@ -39,8 +40,10 @@ export default {
             if (!place.resolved) return json({ error: `Place not found: ${p.get("near")}` }, 404);
             ({ lat, lng } = place.resolved);
           }
+          const sub = p.get("sub") as Sub["type"] | null;
+          if (sub && !SUB_TYPES.includes(sub)) return json({ error: `sub must be one of ${SUB_TYPES.join(", ")}` }, 400);
           const sort = p.get("sort") === "distance" ? "distance" : "price";
-          const r = await search({ ...common(), lat, lng, max_walk_m: num("max_walk") ?? (lat == null ? Infinity : 800), sort_by: sort, limit: num("limit") });
+          const r = await search({ ...common(), lat, lng, max_walk_m: num("max_walk") ?? (lat == null ? Infinity : 800), sort_by: sort, limit: num("limit"), sub: sub ?? undefined });
           return json({ resolved_location: place?.resolved ?? null, alternatives: place?.alternatives ?? [], ...r });
         }
         case url.pathname.startsWith("/api/lots/"): {

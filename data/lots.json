@@ -4037,7 +4037,16 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/6",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1180,
+    "text": "1000 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-5",
@@ -4136,7 +4145,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/5",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1062,
+    "text": "900 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "week",
+    "price_ils": 180,
+    "text": "מנוי לילה, 153 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-24",
@@ -4235,7 +4260,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/24",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1180,
+    "text": "1000 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 180,
+    "text": "מנוי לילה, 153 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-48",
@@ -4423,7 +4464,16 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/20",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "week",
+    "price_ils": 354,
+    "text": "300 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-46",
@@ -4526,7 +4576,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/46",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1534,
+    "text": "1300 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 283,
+    "text": "240 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-53",
@@ -4747,7 +4813,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/53",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1475,
+    "text": "1250 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "weekdays",
+    "period": "month",
+    "price_ils": 1240,
+    "text": "1050 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-60",
@@ -5075,7 +5157,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/45",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1475,
+    "text": "1250 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 250,
+    "text": "212 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-14",
@@ -5225,7 +5323,16 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/14",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1600,
+    "text": "1355 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-23",
@@ -5342,7 +5449,16 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/23",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 472,
+    "text": "400 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-9",
@@ -5485,7 +5601,16 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/9",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1416,
+    "text": "1200 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-80",
@@ -5670,7 +5795,30 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/80",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "weekdays",
+    "period": "month",
+    "price_ils": 1003,
+    "text": "מנוי לימים ראשון עד חמישי - 850 ש\"ח לא כולל מע\"מ",
+    "source": "operator"
+   },
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1180,
+    "text": "מנוי לכל ימות השבוע - 1000 ש\"ח לא כולל מע\"מ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 180,
+    "text": "מנוי לילה וסופ\"ש - מחיר מבצע 153 ש\"ח לא כולל מע\"מ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-22",
@@ -5787,7 +5935,16 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/22",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 472,
+    "text": "400 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-26",
@@ -5930,7 +6087,16 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/26",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "weekdays",
+    "period": "month",
+    "price_ils": 1121,
+    "text": "950 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-43",
@@ -6029,7 +6195,16 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/43",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1180,
+    "text": "1000 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-66",
@@ -6328,7 +6503,16 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/15",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1357,
+    "text": "1150 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-17",
@@ -6475,7 +6659,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/17",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1062,
+    "text": "900 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 180,
+    "text": "מנוי לילה, 153 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-54",
@@ -6696,7 +6896,37 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/54",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1800,
+    "text": "מנוי 24/7 ראשון עד שבת: 1525 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 750,
+    "text": "מנוי לילה: 635 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "motorcycle",
+    "period": "month",
+    "price_ils": 180,
+    "text": "153 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "weekdays",
+    "period": "month",
+    "price_ils": 1070,
+    "text": "מנוי 24/5 ראשון עד חמישי: 907 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-12",
@@ -6843,7 +7073,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/12",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1298,
+    "text": "1100 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 300,
+    "text": "מנוי לילה, 254 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-41",
@@ -6990,7 +7236,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/41",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1534,
+    "text": "1300 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 425,
+    "text": "360 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-18",
@@ -7375,7 +7637,30 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/10",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 3540,
+    "text": "מנוי 24/7, 3000 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 540,
+    "text": "מנוי לילה, 457 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "weekdays",
+    "period": "month",
+    "price_ils": 1770,
+    "text": "מנוי ראשון-חמישי, 1500 ש\"ח לא כולל מע\"מ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-8",
@@ -7511,7 +7796,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/8",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1180,
+    "text": "1000 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 290,
+    "text": "מנוי לילה, 246 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-16",
@@ -7658,7 +7959,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/16",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1062,
+    "text": "900 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 425,
+    "text": "מנוי לילה, 360 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-11",
@@ -7863,7 +8180,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/11",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1593,
+    "text": "1350 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 425,
+    "text": "מנוי לילה, 360 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-83",
@@ -7962,7 +8295,16 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/83",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 700,
+    "text": "מנוי לכל ימות השבוע - 594 ש\"ח לא כולל מע\"מ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-44",
@@ -8105,7 +8447,16 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/44",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1534,
+    "text": "1300 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-49",
@@ -8206,7 +8557,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/49",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 767,
+    "text": "650 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "weekdays",
+    "period": "month",
+    "price_ils": 590,
+    "text": "500 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-13",
@@ -8305,7 +8672,16 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/13",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 885,
+    "text": "750 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-84",
@@ -8662,7 +9038,37 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/47",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1475,
+    "text": "1250 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 413,
+    "text": "350 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "motorcycle",
+    "period": "month",
+    "price_ils": 177,
+    "text": "150 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "weekdays",
+    "period": "month",
+    "price_ils": 1115,
+    "text": "945 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-27",
@@ -8809,7 +9215,37 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/27",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1593,
+    "text": "1350ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 590,
+    "text": "500ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "motorcycle",
+    "period": "month",
+    "price_ils": 177,
+    "text": "150 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "weekdays",
+    "period": "month",
+    "price_ils": 1239,
+    "text": "1050ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "centralpark-21",
@@ -8952,7 +9388,23 @@
    }
   ],
   "source_url": "https://centralpark.co.il/he/parking/21",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "full",
+    "period": "month",
+    "price_ils": 1062,
+    "text": "900 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   },
+   {
+    "type": "reserved",
+    "period": "month",
+    "price_ils": 1534,
+    "text": "1300 ש\"ח לא כולל מעמ",
+    "source": "operator"
+   }
+  ]
  },
  {
   "id": "green-2353",
@@ -9865,7 +10317,16 @@
    "en": "We don't have this lot's price list: price as per the sign at the entrance."
   },
   "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 250,
+    "hours": "17:00-08:00",
+    "source": "city"
+   }
+  ]
  },
  {
   "id": "registry-10",
@@ -10013,7 +10474,15 @@
    "en": "We don't have this lot's price list: price as per the sign at the entrance."
   },
   "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 200,
+    "source": "city"
+   }
+  ]
  },
  {
   "id": "registry-26",
@@ -10143,7 +10612,16 @@
    "en": "We don't have this lot's price list: price as per the sign at the entrance."
   },
   "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 250,
+    "hours": "17:00-08:00",
+    "source": "city"
+   }
+  ]
  },
  {
   "id": "registry-36",
@@ -10831,7 +11309,16 @@
    "en": "We don't have this lot's price list: price as per the sign at the entrance."
   },
   "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 250,
+    "hours": "17:00-08:00",
+    "source": "city"
+   }
+  ]
  },
  {
   "id": "registry-117",
@@ -11728,7 +12215,16 @@
    "en": "We don't have this lot's price list: price as per the sign at the entrance."
   },
   "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/556",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-06",
+  "subscriptions": [
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 250,
+    "hours": "17:00-08:00",
+    "source": "city"
+   }
+  ]
  },
  {
   "id": "registry-223",
@@ -12655,5 +13151,186 @@
   },
   "source_url": "https://www.openstreetmap.org/way/1085295551",
   "verified_at": "2026-10-06"
+ },
+ {
+  "id": "night-110",
+  "name": "חניון הברזל 22",
+  "operator": "private",
+  "address": "הברזל 22",
+  "lat": 32.108608,
+  "lng": 34.83968,
+  "spaces": 250,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "subscriptions": [
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 250,
+    "hours": "17:00-08:00",
+    "source": "city"
+   }
+  ],
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/488",
+  "verified_at": "2026-10-11"
+ },
+ {
+  "id": "night-121",
+  "name": "חניון אלרם",
+  "operator": "private",
+  "address": "אבא אחימאיר 27",
+  "lat": 32.125092,
+  "lng": 34.80377,
+  "spaces": 300,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "subscriptions": [
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 280,
+    "hours": "17:00-08:00",
+    "source": "city"
+   }
+  ],
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/488",
+  "verified_at": "2026-10-11"
+ },
+ {
+  "id": "night-123",
+  "name": "חניון אחד העם",
+  "operator": "private",
+  "address": "אחד העם 54",
+  "lat": 32.064555,
+  "lng": 34.774037,
+  "spaces": 60,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "subscriptions": [
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 250,
+    "hours": "17:00-08:00",
+    "source": "city"
+   }
+  ],
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/488",
+  "verified_at": "2026-10-11"
+ },
+ {
+  "id": "night-124",
+  "name": "חניון ויצמן",
+  "operator": "private",
+  "address": "ויצמן 14",
+  "lat": 32.081662,
+  "lng": 34.789169,
+  "spaces": 600,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "subscriptions": [
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 250,
+    "hours": "17:00-08:00",
+    "source": "city"
+   }
+  ],
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/488",
+  "verified_at": "2026-10-11"
+ },
+ {
+  "id": "night-125",
+  "name": "חניון סונול",
+  "operator": "private",
+  "address": "מנחם בגין 52",
+  "lat": 32.06408,
+  "lng": 34.781392,
+  "spaces": 400,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "subscriptions": [
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 250,
+    "hours": "17:00-08:00",
+    "source": "city"
+   }
+  ],
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/488",
+  "verified_at": "2026-10-11"
+ },
+ {
+  "id": "night-127",
+  "name": "חניון עמגר",
+  "operator": "private",
+  "address": "ריב\"ל 7",
+  "lat": 32.062849,
+  "lng": 34.782151,
+  "spaces": 150,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "subscriptions": [
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 250,
+    "hours": "17:00-08:00",
+    "source": "city"
+   }
+  ],
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/488",
+  "verified_at": "2026-10-11"
+ },
+ {
+  "id": "night-129",
+  "name": "חניון מגדלי אביב",
+  "operator": "private",
+  "address": "נחלת יצחק 9",
+  "lat": 32.075132,
+  "lng": 34.796895,
+  "spaces": 200,
+  "tariffs": null,
+  "sign": {
+   "free": false,
+   "he": "אין לנו את המחירון של החניון הזה. המחיר לפי השילוט בכניסה.",
+   "en": "We don't have this lot's price list: price as per the sign at the entrance."
+  },
+  "subscriptions": [
+   {
+    "type": "night",
+    "period": "month",
+    "price_ils": 316,
+    "source": "city"
+   }
+  ],
+  "source_url": "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer/488",
+  "verified_at": "2026-10-11"
  }
 ]

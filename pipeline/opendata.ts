@@ -66,3 +66,31 @@ export async function osm(have: Lot[], today: string): Promise<Lot[] | null> {
   }
   return lots;
 }
+
+// Night subscriptions of private lots, from the city's GIS layer 488 (type 4: "private lots offering a discounted night
+// subscription"). Attaches the plan to a lot we already have within 40 m, or adds the lot, unpriced per visit.
+// Central Park lots are skipped: their own site is the authority (the city still lists the old prices, and some no longer sell).
+// The layer also carries a contact person and phone: never copied.
+export async function nightSubs(lots: Lot[], today: string, problems: string[]): Promise<Lot[]> {
+  const rows = await gisQuery(488, { where: "k_sug_chenyon=4", outFields: "OBJECTID,shem,ktovet,num_vehicles,taarif_layla,heaarot", returnGeometry: "true", outSR: "4326" });
+  if (rows.length < 15) problems.push(`night subscriptions: only ${rows.length} lots in GIS layer 488 type 4 (expected ~29)`);
+  const added: Lot[] = [];
+  for (const r of rows) {
+    const price_ils = +r.taarif_layla;
+    if (!(price_ils > 0)) continue;
+    const p = { lat: +r.y.toFixed(6), lng: +r.x.toFixed(6) };
+    const hours = /^\d\d:\d\d-\d\d:\d\d$/.test(r.heaarot?.trim()) ? r.heaarot.trim() : undefined;
+    const sub = { type: "night" as const, period: "month" as const, price_ils, hours, source: "city" as const };
+    const all = [...lots, ...added];
+    if (all.some((l) => l.operator === "centralpark" && distanceM(p, l) < 100)) continue;
+    const at = all.find((l) => l.operator !== "ahuzot" && distanceM(p, l) < 40); // same address; a looser radius pairs neighbours
+    if (at) { if (!at.subscriptions?.some((x) => x.type === "night")) (at.subscriptions ??= []).push(sub); continue; }
+    const address = r.ktovet.trim(), n = r.shem.replace(/\s*בע["'״]+מ/g, "").trim();
+    added.push({
+      id: `night-${r.OBJECTID}`, name: /^חניון/.test(n) ? n : `חניון ${n}`, operator: "private", address, ...p,
+      spaces: r.num_vehicles || undefined, tariffs: null, sign: { free: false, ...SIGN }, subscriptions: [sub],
+      source_url: `${GIS}/488`, verified_at: today,
+    });
+  }
+  return added;
+}

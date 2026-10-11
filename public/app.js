@@ -11,13 +11,21 @@ const liveOf = (l) => (l.live && LIVE[l.live.status] ? l.live.status : null);
 const KIND = { flat: "כניסה חד-פעמית", per_minute: "לפי דקה", step: "לפי שעה" };
 const DAYS = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 const OPERATOR = { ahuzot: "אחוזות החוף", centralpark: "סנטרל פארק", green: "גרין פרקינג", "dizengoff-center": "דיזנגוף סנטר", sarona: "חניון שרונה (גינדי)",
-  azrieli: "עזריאלי", registry: "מרשם רישוי העסקים של העירייה", osm: "OpenStreetMap" };
+  azrieli: "עזריאלי", private: "חניון פרטי (נתוני העירייה)", registry: "מרשם רישוי העסקים של העירייה", osm: "OpenStreetMap" };
 const ils = (n) => (n == null ? "לפי השילוט" : n === 0 ? "חינם" : `₪${+n.toFixed(2)}`);
 const price = (q) => (q.price_basis === "municipal_data_unverified" ? "חינם?" : ils(q.price_ils));
 // a lot's sign plate: colour = price band for the chosen time, dashed border = unverified, plain P = price per the sign
-const tier = (q) => q.price_ils == null ? "sign" : q.price_basis === "municipal_data_unverified" ? "t1 unv"
+const tier = (q) => subOf() && q.price_ils != null ? subTier(q.price_ils) : q.price_ils == null ? "sign" : q.price_basis === "municipal_data_unverified" ? "t1 unv"
   : q.price_ils <= 20 ? "t1" : q.price_ils <= 40 ? "t2" : q.price_ils <= 80 ? "t3" : "t4";
 const face = (q) => q.price_ils == null ? "P" : price({ ...q, price_ils: Math.round(q.price_ils) });
+
+// Monthly passes (dur=night|full): the plate shows the pass price, per month (a weekly pass counts 4.33 weeks, as in src/search.ts)
+const subOf = () => (state.dur === "night" || state.dur === "full" ? state.dur : null);
+const SUBNAME = { full: "מנוי 24/7", night: "מנוי לילה", weekdays: "מנוי א׳–ה׳", motorcycle: "מנוי אופנוע", reserved: "מקום שמור" };
+const monthly = (s) => (s.period === "week" ? Math.round(s.price_ils * 4.33) : s.price_ils);
+const subTier = (n) => (n <= 300 ? "t1" : n <= 600 ? "t2" : n <= 1200 ? "t3" : "t4");
+const LEGEND = document.querySelector("#legend").innerHTML;
+const LEGEND_SUB = `<span class="cap">מחיר מנוי לחודש, בש״ח</span><span class="plate t1">עד 300</span><span class="plate t2">עד 600</span><span class="plate t3">עד 1,200</span><span class="plate t4">1,200+</span>`;
 
 // Asia/Jerusalem wall clock as fake-UTC ms, same convention as the API
 const DAY = 864e5, HOUR = 36e5;
@@ -30,7 +38,7 @@ const whenText = (s) => { const d = new Date(Date.parse(s + ":00Z")); return `י
 const endOf = (s, mins) => fmt(Date.parse(s + ":00Z") + mins * 6e4).slice(11);
 
 function qs(extra = {}) {
-  const o = { duration: state.dur, ...extra };
+  const o = { duration: subOf() ? "120" : state.dur, ...(subOf() && { sub: subOf() }), ...extra };
   if (state.when) o.start = state.when;
   if (state.res) o.resident = 1;
   const apps = [...(state.bus ? ["pango", "cello"] : []), ...(state.cp ? ["centralpark"] : [])];
@@ -83,7 +91,8 @@ async function load() {
   const extra = state.center ? { lat: state.center.lat, lng: state.center.lng, max_walk: 100000 } : {};
   const r = await (await fetch(`/api/search?${qs(extra)}`)).json();
   if (n !== loads) return;
-  state.results = r.results ?? [];
+  // in pass mode the result's "price" is the pass, so plates, colours and the list need no second code path
+  state.results = (r.results ?? []).map((x) => (x.subscription ? { ...x, price_ils: monthly(x.subscription), price_basis: "tariff", open_whole_stay: true } : x));
   drawPins();
   if (!list.hidden) showList();
   if (state.lot && !panel.hidden) openLot(state.lot, false);
@@ -119,11 +128,19 @@ async function openLot(id, fly = true) {
     : q.potential_offers.includes(o.id) ? `<p class="note yellow">אפשר לחסוך: ${esc(o.title.he)}</p>` : "";
   const restricted = d.sign && !d.sign.free && d.operator === "ahuzot", op = OPERATOR[d.operator] ?? d.operator;
   const dur = $("#dur").selectedOptions[0]?.text ?? `${q.duration_minutes} דק׳`;
+  const ms = subOf() && d.subscriptions?.filter((s) => s.type === subOf()).sort((a, b) => monthly(a) - monthly(b))[0]; // pass mode: the pass is the headline
+  const subBoard = ms && `<div class="board ${subTier(monthly(ms))}"><div class="board-price" dir="ltr">${ils(monthly(ms))}</div>
+      <div class="board-when">${SUBNAME[ms.type]}, לחודש${ms.hours ? `, <span dir="ltr">${esc(ms.hours)}</span>` : ""}</div></div>`;
+  const subRows = (d.subscriptions ?? []).map((s) => `<tr><td>${SUBNAME[s.type]}${s.hours ? ` <span dir="ltr">${esc(s.hours)}</span>` : ""}${s.text ? `<br><small>${esc(s.text)}</small>` : ""}</td>
+      <td>${ils(s.price_ils)} ${s.period === "week" ? "לשבוע" : "לחודש"}</td></tr>`).join("");
+  const subsHtml = subRows ? `<h3>מנויים</h3><table class="tariff"><tbody>${subRows}</tbody></table>
+      <p class="tariff-note">${d.subscriptions.some((s) => s.source === "city") ? "המחיר לפי נתוני העירייה וייתכן שאינו עדכני: כדאי לוודא מול החניון." : "המחיר לפי אתר המפעיל, כולל מע״מ."}</p>`
+    : d.operator === "ahuzot" ? `<h3>מנויים</h3><p class="tariff-note">אחוזות החוף מציעה הסדר מנוי חודשי בחניוניה (על בסיס מקום פנוי). המחיר אינו מפורסם באתר. <a href="https://www.ahuzot.co.il/Parking/?ID=7" target="_blank" rel="noopener">לפרטים</a></p>` : "";
   panel.innerHTML = `
     <button id="close" class="icon-btn" aria-label="סגירה"><span class="ms">close</span></button>
     <h2>${esc(d.name)}</h2>
     <p class="sub">${esc(d.address)}<br>${esc(op)}${d.spaces ? `, ${d.spaces} מקומות` : ""}</p>
-    <div class="board ${tier(q)}">
+    ${subBoard || `<div class="board ${tier(q)}">
       ${q.price_ils == null ? `<div class="board-price small">לפי השילוט</div>` : `<div class="board-price" dir="ltr">${esc(price(q))}</div>`}
       <div class="board-when">${whenText(q.start)}, <span dir="ltr">${q.start.slice(11)}–${endOf(q.start, q.duration_minutes)}</span> (${esc(dur)})${state.res ? "<br>כולל הנחת תושב/ת ת״א" : ""}</div>
     </div>
@@ -132,6 +149,7 @@ async function openLot(id, fly = true) {
       ${liveOf(d) ? `<p><span class="status ${liveOf(d)}" style="display:inline">${LIVE[liveOf(d)]}</span> עכשיו, עודכן ב-${esc(d.live.updated.slice(11))}</p>` : ""}
       ${q.breakdown.length > 1 ? q.breakdown.map((b) => `<p>${b.from.slice(11)}–${b.to.slice(11)}: ${KIND[b.kind]}, ₪${b.price}</p>`).join("") : q.breakdown.map((b) => `<p>תשלום ${KIND[b.kind]}</p>`).join("")}
     </div>
+    </div>`}
     ${d.sign ? `<p class="note${restricted ? " red" : ""}">${esc(d.sign.he)}</p>` : ""}
     ${!q.can_enter ? `<p class="note red">אין כניסה לחניון בשעה הזו.</p>` : !q.open_whole_stay ? `<p class="note red">החניון סגור בחלק מזמן החניה, וייתכן שלא תוכלו לצאת.</p>` : ""}
     ${d.offers.map(offer).join("")}
@@ -141,6 +159,7 @@ async function openLot(id, fly = true) {
       <button class="act" id="share"><span class="ms">link</span><span>העתקת קישור</span></button>
     </div>
     <div id="attach"></div>
+    ${subsHtml}
     ${d.tariffs ? `<h3>תעריף</h3>${tariffTable(d.tariffs, d.app_tariffs)}
       ${d.grace_minutes ? `<p class="tariff-note">עד ${d.grace_minutes} דקות בחניון: חינם</p>` : ""}
       ${d.resident_discount_pct ? `<p class="tariff-note">${d.resident_discount_pct}% הנחה לתושבי תל אביב-יפו</p>` : ""}
@@ -222,7 +241,9 @@ const STEP = 15 * 6e4;
 const dateFmt = new Intl.DateTimeFormat("he-IL", { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" });
 function showWhen() {
   $("#mode").value = state.when ? "at" : "now";
-  $("#at").hidden = !state.when;
+  $("#mode").closest(".chip").hidden = !!subOf(); // a pass has no entry time
+  $("#at").hidden = !state.when || !!subOf();
+  $("#legend").innerHTML = subOf() ? LEGEND_SUB : LEGEND;
   if (!state.when) return;
   $("#time").value = state.when.slice(11);
   $("#date").value = state.when.slice(0, 10);
@@ -238,7 +259,7 @@ document.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("clic
   setWhen(fmt(b.dataset.unit === "date" ? t + d * DAY : Math[d > 0 ? "floor" : "ceil"](t / STEP) * STEP + d * STEP));
 }));
 $("#dateBtn").addEventListener("click", () => { try { $("#date").showPicker(); } catch { $("#date").focus(); } });
-$("#dur").addEventListener("change", (e) => { state.dur = e.target.value; sync(); load(); });
+$("#dur").addEventListener("change", (e) => { state.dur = e.target.value; showWhen(); sync(); load(); });
 $("#res").addEventListener("change", (e) => { state.res = e.target.checked; sync(); load(); });
 $("#bus").addEventListener("change", (e) => { state.bus = e.target.checked; sync(); load(); });
 $("#cp").addEventListener("change", (e) => { state.cp = e.target.checked; sync(); load(); });
