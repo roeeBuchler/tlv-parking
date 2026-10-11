@@ -2,6 +2,7 @@
 // Session = random token in an HttpOnly cookie; only its SHA-256 is stored.
 // ponytail: no login rate limit in code; add a Cloudflare rate-limiting rule on /api/auth/* (PBKDF2 already slows guessing)
 import { lots } from "./search.ts";
+import { DAY } from "./engine.ts";
 
 export type Env = { DB: any }; // D1Database
 
@@ -27,8 +28,8 @@ export async function verifyPassword(pw: string, stored: string) {
   return diff === 0;
 }
 
-const DAYS30 = 30 * 864e5;
-const json = (data: unknown, status = 200, headers: Record<string, string> = {}) => Response.json(data, { status, headers: { "cache-control": "no-store", ...headers } });
+const DAYS30 = 30 * DAY;
+export const json = (data: unknown, status = 200, headers: Record<string, string> = {}) => Response.json(data, { status, headers: { "cache-control": "no-store", ...headers } });
 const cookie = (token: string, maxAge: number) => ({ "set-cookie": `sid=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}` });
 const sid = (req: Request) => req.headers.get("cookie")?.match(/(?:^|;\s*)sid=([0-9a-f]{64})/)?.[1];
 
@@ -51,8 +52,6 @@ async function startSession(env: Env, user: { id: number; username: string }) {
 export async function handleUsers(req: Request, env: Env, path: string): Promise<Response | null> {
   if (!path.startsWith("/api/auth/") && path !== "/api/me" && !path.startsWith("/api/favorites")) return null;
   const m = req.method;
-  // the cookie is SameSite=Lax; also refuse cross-site writes outright
-  if (m !== "GET" && req.headers.get("origin") && req.headers.get("origin") !== new URL(req.url).origin) return json({ error: "Bad origin" }, 403);
   const body = m === "POST" || m === "PATCH" ? await req.json().catch(() => ({})) as Record<string, unknown> : {};
   const str = (k: string) => (typeof body[k] === "string" ? (body[k] as string).trim() : "");
 

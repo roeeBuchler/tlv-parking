@@ -10,7 +10,7 @@ export const offers = offersJson as unknown as Offer[];
 // A weekly plan counts as 4.33 weeks, so plans of both periods rank on one scale.
 export const monthly = (s: Sub) => (s.period === "week" ? Math.round(s.price_ils * 4.33) : s.price_ils);
 export const cheapestSub = (l: Lot, type: Sub["type"]) => l.subscriptions?.filter((s) => s.type === type).sort((a, b) => monthly(a) - monthly(b))[0];
-export const REPO = "https://github.com/roeeBuchler/tlv-parking";
+const REPO = "https://github.com/roeeBuchler/tlv-parking";
 
 const n = (op: string) => lots.filter((l) => l.operator === op).length;
 export const CAVEATS = [
@@ -74,7 +74,7 @@ export function liveFor(l: Lot, gis: Record<number, { status: string; updated: s
 }
 
 export type Features = { ev?: boolean; covered?: boolean; accessible?: boolean; height_m?: number };
-export type SearchInput = Profile & Features & {
+type SearchInput = Profile & Features & {
   crowd?: Crowd; lat?: number; lng?: number; start: number; minutes: number;
   max_walk_m?: number; sort_by?: "price" | "distance"; limit?: number; origin: string;
   sub?: Sub["type"]; // only lots selling this plan, ranked by its monthly price instead of the price of the stay

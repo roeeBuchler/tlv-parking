@@ -3,9 +3,10 @@
 // the build flags any change in a lot's text, and any new lot.
 import { setTimeout as sleep } from "node:timers/promises";
 import { WEEK, type Day, type Lot, type Rule, type Sub } from "../src/engine.ts";
+import { SUN_THU } from "./parse.ts";
 
 type Get = (url: string) => Promise<string>;
-const ALL = WEEK, SUN_THU: Day[] = WEEK.slice(0, 5), FRI_SAT: Day[] = ["fri", "sat"];
+const FRI_SAT: Day[] = ["fri", "sat"];
 const DAYNAME = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const HEB = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
 
@@ -97,43 +98,43 @@ type G = Pick<Lot, "name" | "address" | "lat" | "lng" | "tariffs" | "sign"> & { 
 const GREEN: Record<number, G | null> = {
   2353: { name: "חניון עין יעקב", address: "עין יעקב 25", lat: 32.06344, lng: 34.76441,
     text: "דקה 1-180 - ₪0.25 / דקה 181-220 - ₪0.25 / חניה יומית / ₪55 / אובדן כרטיס / 100 ₪ / שישי שבת",
-    tariffs: [{ days: ALL, from: "00:00", to: "00:00", kind: "per_minute", rate: 15, daily_max: 55 }] },
+    tariffs: [{ days: WEEK, from: "00:00", to: "00:00", kind: "per_minute", rate: 15, daily_max: 55 }] },
   2288: { name: "חניון האופרה", address: "הירדן 2", lat: 32.07418, lng: 34.76561,
     text: "דקה 1-60 - ₪0.50 / דקה 61-240 - ₪0.50 / חניה יומית / ₪120 / אובדן כרטיס / 300 ₪ / שישי שבת",
-    tariffs: [{ days: ALL, from: "00:00", to: "00:00", kind: "per_minute", rate: 30, daily_max: 120 }] },
+    tariffs: [{ days: WEEK, from: "00:00", to: "00:00", kind: "per_minute", rate: 30, daily_max: 120 }] },
   2142: { name: "חניון בן יהודה 11", address: "בן יהודה 11", lat: 32.07468, lng: 34.76791,
     text: "שעה ראשונה או חלק ממנה - ₪25 / כל רבע שעה נוספת או חלק ממנה - ₪7 / חניה יומית / ₪90 / אובדן כרטיס / 100 ₪ / שישי שבת",
-    tariffs: [step(ALL, "00:00", "00:00", 25, 7, 90)] },
+    tariffs: [step(WEEK, "00:00", "00:00", 25, 7, 90)] },
   1969: { name: "חניון דוד חכמי 16", address: "דוד חכמי 16", lat: 32.06335, lng: 34.78201,
     text: "שעה ראשונה או חלק ממנה - ₪18 / כל רבע שעה נוספת או חלק ממנה - ₪6 / חניה יומית / ₪70 / אובדן כרטיס / 100 ליום ₪ / שישי שבת / שישי או שבת מהשעה 6:00 ועד השעה 6:00 למחרת. 25 ש\"ח ₪ / בימי חול, כניסה משעה 19:00: מחיר קבוע 20 ש״ח",
     tariffs: [flat(FRI_SAT, "06:00", "06:00", 25), flat(SUN_THU, "19:00", "06:00", 20), step(SUN_THU, "06:00", "19:00", 18, 6, 70)] },
   1966: { name: "חניון בית גאון", address: "יחזקאל קויפמן 6", lat: 32.064, lng: 34.76248,
     text: "שעה ראשונה או חלק ממנה - ₪18 / כל רבע שעה נוספת או חלק ממנה - ₪6 / חניה יומית / ₪64 / אובדן כרטיס / 100 ₪ / שישי שבת / 25 ₪ / החל משעה 18:00 - 30 ₪ (עד השעה 06:00 בבוקר)",
-    tariffs: [flat(FRI_SAT, "06:00", "06:00", 25), flat(ALL, "18:00", "06:00", 30), step(SUN_THU, "06:00", "18:00", 18, 6, 64)] },
+    tariffs: [flat(FRI_SAT, "06:00", "06:00", 25), flat(WEEK, "18:00", "06:00", 30), step(SUN_THU, "06:00", "18:00", 18, 6, 64)] },
   1594: { name: "חניון בלומפילד משטרה", address: "עציון גבר 7", lat: 32.0539, lng: 34.76155,
     text: "שעה ראשונה או חלק ממנה - ₪20 / כל רבע שעה נוספת או חלק ממנה - ₪6 / חניה יומית / ₪54 / אובדן כרטיס / 100 ₪ / שישי שבת / החל משעה 18:00 - ₪25",
-    tariffs: [flat(ALL, "18:00", "06:00", 25), step(ALL, "06:00", "18:00", 20, 6, 54)] },
+    tariffs: [flat(WEEK, "18:00", "06:00", 25), step(WEEK, "06:00", "18:00", 20, 6, 54)] },
   541: { name: "חניון התלמי (נווה צדק)", address: "יהושע התלמי 16", lat: 32.06268, lng: 34.76863,
     text: "דקה 1-60 - ₪0.35 / דקה 61-180 - ₪0.40 / דקה 181-240 - ₪0.30 / חניה יומית / ₪87 / אובדן כרטיס / 300 ₪ / שישי שבת / - ביום שישי תשלום כמו ביום רגיל, בשבת 30 ₪ / כניסה משעה 19:00: 0.35 ש״ח לדקה, מקסימום לערב 50 ש״ח",
     tariffs: [flat(["sat"], "06:00", "06:00", 30),
-      { days: ALL, from: "19:00", to: "06:00", kind: "per_minute", rate: 21, daily_max: 50 }, // ponytail: "max per evening" modelled as a 24h cap from entry
-      { days: ALL, from: "06:00", to: "19:00", kind: "per_minute", tiers: [[60, 21], [180, 24]], rate: 18, daily_max: 87 }] },
+      { days: WEEK, from: "19:00", to: "06:00", kind: "per_minute", rate: 21, daily_max: 50 }, // ponytail: "max per evening" modelled as a 24h cap from entry
+      { days: WEEK, from: "06:00", to: "19:00", kind: "per_minute", tiers: [[60, 21], [180, 24]], rate: 18, daily_max: 87 }] },
   537: { name: "חניון גינת השרון / גן החשמל", address: "לבונטין 10", lat: 32.06159, lng: 34.77487,
     text: "שעה ראשונה או חלק ממנה - ₪28 / כל רבע שעה נוספת או חלק ממנה - ₪7 / חניה יומית / ₪93 / אובדן כרטיס / 100 ליום ₪ / שישי שבת / כניסה משעה 19:00: שעה ראשונה 28 ש״ח, מקסימום לערב 50 ש״ח",
-    tariffs: [step(ALL, "19:00", "06:00", 28, 7, 50), step(ALL, "06:00", "19:00", 28, 7, 93)] }, // ponytail: evening step rate assumed = daytime rate; "max per evening" = 24h cap from entry
+    tariffs: [step(WEEK, "19:00", "06:00", 28, 7, 50), step(WEEK, "06:00", "19:00", 28, 7, 93)] }, // ponytail: evening step rate assumed = daytime rate; "max per evening" = 24h cap from entry
   440: { name: "חניון סינמטק – קרליבך", address: "קרליבך 37", lat: 32.06994, lng: 34.78253,
     text: "שעה ראשונה או חלק ממנה - ₪22 / כל רבע שעה נוספת או חלק ממנה - ₪7 / חניה יומית / ₪80 / אובדן כרטיס / 300 ₪ / שישי שבת / 25 ₪ / כניסה משעה 20:00 (עד 06:00 למחרת) 30ש\"ח",
-    tariffs: [flat(FRI_SAT, "06:00", "06:00", 25), flat(ALL, "20:00", "06:00", 30), step(SUN_THU, "06:00", "20:00", 22, 7, 80)] },
+    tariffs: [flat(FRI_SAT, "06:00", "06:00", 25), flat(WEEK, "20:00", "06:00", 30), step(SUN_THU, "06:00", "20:00", 22, 7, 80)] },
   433: { name: "חניון אומנויות הבמה / לויד ג'ורג'", address: "לויד ג'ורג' 5", lat: 32.06615, lng: 34.78155,
     text: "דקה 1-30 - ₪0.50 / דקה 31-180 - ₪0.40 / דקה 181-240 - ₪0.20 / חניה יומית / ₪87 / אובדן כרטיס / 300 ₪ / שישי שבת / 25 ₪ / כניסה משעה 20:00 (עד למחרת ב 06:00) - 32 ש\"ח",
-    tariffs: [flat(FRI_SAT, "06:00", "06:00", 25), flat(ALL, "20:00", "06:00", 32),
+    tariffs: [flat(FRI_SAT, "06:00", "06:00", 25), flat(WEEK, "20:00", "06:00", 32),
       { days: SUN_THU, from: "06:00", to: "20:00", kind: "per_minute", tiers: [[30, 30], [180, 24]], rate: 12, daily_max: 87 }] },
   424: { name: "חניון הכרמל", address: "סמטת הכרמל 1", lat: 32.06741, lng: 34.76731,
     text: "חניה יומית / אובדן כרטיס / שישי שבת / המחיר משתנה לפי השילוט בכניסה * 30-80ש\"ח",
     tariffs: null, sign: { free: false, he: "המחיר לפי השילוט בכניסה (₪30–80 לפי אתר המפעיל).", en: "Price per the sign at the entrance (₪30-80 per the operator's site)." } },
   421: { name: "חניון המסגר", address: "חומה ומגדל 21", lat: 32.0633, lng: 34.78631,
     text: "שעה ראשונה 20 ₪ / כל רבע שעה 6 ₪ / חניה יומית / ₪50 / אובדן כרטיס / 100 ₪ / שישי שבת / כניסה משעה 18:00 עד 06:00 למחרת 25 ש\"ח",
-    tariffs: [flat(ALL, "18:00", "06:00", 25), step(ALL, "06:00", "18:00", 20, 6, 50)] },
+    tariffs: [flat(WEEK, "18:00", "06:00", 25), step(WEEK, "06:00", "18:00", 20, 6, 50)] },
   2246: null, // "נווה צדק 2": same corner as 2353 (older listing, daily price only)
   1513: null, // בר כוכבא 4 is in Bnei Brak
   2252: null, 2167: null, 2147: null, 2105: null, 1471: null, 1350: null, 1054: null, 418: null, 413: null, 406: null, 324: null, // other cities
@@ -180,7 +181,7 @@ const SINGLE: (Omit<Lot, "verified_at"> & { says: string[] })[] = [
   { id: "sarona-gindi", name: "חניון שרונה (גינדי)", operator: "sarona", address: "אלוף קלמן מגן 3", lat: 32.07134, lng: 34.7876,
     source_url: "https://www.saronaparking.co.il/",
     says: ["תעריף לדקה בין הדקות 1-30 ₪0.60", "החל מהדקה ה-31 ₪0.50", "חנייה יומית/אובדן כרטיס ₪115"],
-    tariffs: [per_min(ALL, "00:00", "00:00", 30, 115, [[30, 36]])] },
+    tariffs: [per_min(WEEK, "00:00", "00:00", 30, 115, [[30, 36]])] },
   { id: "azrieli-center", name: "חניון מרכז עזריאלי", operator: "azrieli", address: "דרך מנחם בגין 132", lat: 32.07387, lng: 34.79107,
     source_url: AZRIELI,
     says: ["תעריף לכל דקה: 40 אגורות. תעריף מקסימום ליום שלם: 100 ₪. לנכנסים בשעות 17:00-24:00, 40 אגורות לדקה עד מקסימום 25 ₪. שישי /שבת /חג -40 אגורות לדקה עד מקסימום 25 ₪."],

@@ -86,7 +86,7 @@ function hourly(r: Rule, minutes: number): number {
   return full * one(1440) + one(minutes - full * 1440);
 }
 
-export type Part = { from: string; to: string; kind: Rule["kind"]; price: number };
+type Part = { from: string; to: string; kind: Rule["kind"]; price: number };
 
 // Walk the stay: the rule is picked by ENTRY time. Hourly entry pays hourly to exit;
 // a flat entry covers until its validity ends, after which it is treated as a fresh entry.

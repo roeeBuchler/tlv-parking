@@ -3,7 +3,6 @@
 // -> data/lots.json, plus data/holidays.json from hebcal. Exits non-zero when something needs a human (CI then fails loudly).
 import { readFileSync, writeFileSync } from "node:fs";
 import { setTimeout as sleep } from "node:timers/promises";
-import { HebrewCalendar, flags } from "@hebcal/core";
 import { parseTariff, ALL_DAYS } from "./parse.ts";
 import { overrides } from "./overrides.ts";
 import { centralPark, green, single, text as clean } from "./operators.ts";
@@ -14,16 +13,13 @@ import type { Lot } from "../src/engine.ts";
 const today = new Date().toISOString().slice(0, 10);
 const problems: string[] = [];
 
-// 1. holidays (Israel): CHAG days, and the day before each as its eve
-const year = new Date().getFullYear();
-const holidays: Record<string, string> = {};
-const iso = (d: Date) => d.toLocaleDateString("en-CA");
-for (const e of HebrewCalendar.calendar({ start: new Date(year, 0, 1), end: new Date(year + 2, 0, 1), il: true })) {
-  if (!(e.getFlags() & flags.CHAG)) continue;
-  const d = e.getDate().greg();
-  holidays[iso(d)] = "holiday";
-  const eve = iso(new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1));
-  holidays[eve] ??= "holiday_eve";
+// 1. holidays (Israel): the 8 chag days, fixed Hebrew dates, and the day before each as its eve
+const CHAG = new Set(["1 Tishri", "2 Tishri", "10 Tishri", "15 Tishri", "22 Tishri", "15 Nisan", "21 Nisan", "6 Sivan"]);
+const hebrew = new Intl.DateTimeFormat("en-u-ca-hebrew", { timeZone: "UTC", month: "long", day: "numeric" });
+const holidays: Record<string, string> = {}, year = new Date().getUTCFullYear(), iso = (t: number) => new Date(t).toISOString().slice(0, 10);
+for (let t = Date.UTC(year, 0, 1); t < Date.UTC(year + 2, 0, 1); t += 864e5) if (CHAG.has(hebrew.format(t))) {
+  holidays[iso(t)] = "holiday";
+  holidays[iso(t - 864e5)] ??= "holiday_eve";
 }
 writeFileSync("data/holidays.json", JSON.stringify(holidays, null, 1) + "\n");
 const { quote, parseLocal, inWindow } = await import("../src/engine.ts"); // after holidays.json is fresh

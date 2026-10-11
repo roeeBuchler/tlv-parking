@@ -6,7 +6,7 @@ import { dayOf, distanceM, DAY, HOUR, MIN, type Day, type Profile } from "./engi
 import { gisQuery } from "./places.ts";
 
 const zones = zonesJson as { zone: number; rings: [number, number][][] }[];
-export const STREET_SOURCE = "https://www.tel-aviv.gov.il/Residents/Transportation/Pages/ParkingArrangements.aspx";
+const STREET_SOURCE = "https://www.tel-aviv.gov.il/Residents/Transportation/Pages/ParkingArrangements.aspx";
 // the 9 parking zones (GIS layer 544): "מרכז העיר" or "רחבי העיר"; area sets the rate and how late paid hours run
 export const AREA: Record<number, "center" | "city"> = { 6: "center", 7: "center", 9: "center", 10: "center", 1: "city", 2: "city", 4: "city", 12: "city", 13: "city" };
 const RATE = { center: 12.4, city: 7 }; // ₪/h for visitors, billed by the minute (Pango / Cello)
