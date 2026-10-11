@@ -125,6 +125,13 @@
   #list .street { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 4px 12px; padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--blue-bg); }
   #list .street details { grid-column: 1 / -1; margin: 0; font-size: 13px; }
   #list .street details p { margin: 4px 0; }
+  #list .street .who { grid-column: 1 / -1; border-collapse: collapse; font-size: 13px; width: 100%; }
+  #list .street .who caption { text-align: start; font-weight: 600; padding: 4px 0; }
+  #list .street .who th, #list .street .who td { text-align: start; font-weight: 400; padding: 3px 0; vertical-align: top; }
+  #list .street .who th { padding-inline-end: 8px; }
+  #list .street .who tr.mine { font-weight: 600; }
+  #list .street .who tr.mine th { font-weight: 600; }
+  #list .street .rules { grid-column: 1 / -1; margin: 2px 0 0; font-size: 13px; color: var(--muted); }
   .plate.bw { --c: var(--paper); --on: var(--blue-fg); border-color: var(--blue); padding-bottom: 3px;
     background: linear-gradient(90deg, var(--blue) 50%, #fff 0) bottom / 12px 4px repeat-x, var(--paper); }
 

@@ -116,6 +116,7 @@ async function load() {
   state.results = (r.results ?? []).map((x) => (x.subscription ? { ...x, price_ils: monthly(x.subscription), price_basis: "tariff", open_whole_stay: true } : x));
   state.street = r.street ?? null;
   drawPins();
+  if (state.street && state.center) loadZones(state.center);
   if (!list.hidden) showList();
   if (state.lot && !panel.hidden) openLot(state.lot, false);
 }
@@ -136,11 +137,38 @@ function showList() {
 }
 // blue-white parking at the searched point (src/street.ts): price for the stay and a rough chance of finding a spot
 const AREA = { center: L("מרכז העיר", "city center"), city: L("רחבי העיר", "rest of the city") };
+const HOURS = { center: L("א׳–ה׳ 08:00–21:00", "Sun–Thu 08:00–21:00"), city: L("א׳–ה׳ 08:00–19:00", "Sun–Thu 08:00–19:00") };
+// the zones along the searched street, by side (GET /api/street); fetched after the search, once per place
+let zonesFor = null;
+async function loadZones(c) {
+  if (zonesFor === c) return;
+  zonesFor = c; state.zones = null;
+  const r = await fetch(`/api/street?lat=${c.lat}&lng=${c.lng}`).catch(() => null);
+  if (zonesFor !== c || !r?.ok) return;
+  state.zones = await r.json();
+  if (!list.hidden) showList();
+}
+const runs = (rs) => rs.map((r) => `${L("אזור", "zone")} ${r.zone} (<bdi dir="ltr">${r.from === r.to ? r.from : `${r.from}–${r.to}`}</bdi>)`).join(", ");
+function zonesText(z) {
+  const all = [...new Set([...z.odd, ...z.even].map((r) => r.zone))], name = esc(L(z.street, z.street_en));
+  return all.length === 1 ? L(`כל רחוב ${name} באזור ${all[0]}.`, `All of ${name} is in zone ${all[0]}.`)
+    : L(`רחוב ${name} עובר בכמה אזורים.<br>צד אי-זוגי: ${runs(z.odd)}.<br>צד זוגי: ${runs(z.even)}.`,
+      `${name} crosses several zones.<br>Odd numbers: ${runs(z.odd)}.<br>Even numbers: ${runs(z.even)}.`);
+}
+// who may park here and what this stay costs them, the user's own case marked
+const whoRows = (s) => [
+  ["own_zone", L(`תו חניה לאזור ${s.zone}`, `Permit for zone ${s.zone}`), L("חינם, בכל שעה", "free, at any hour")],
+  ["other_zone", L("תו חניה לאזור אחר (תושבי העיר)", "Permit for another zone (city residents)"),
+    `${ils(s.who.other_zone.price_ils)}: ${L(`שעתיים ביום חינם, אחר כך ₪${s.who.other_zone.rate_ils_per_hour} לשעה`, `2 free hours a day, then ₪${s.who.other_zone.rate_ils_per_hour} per hour`)}`],
+  ["none", L("בלי תו (אורחים)", "No permit (visitors)"), `${ils(s.who.visitor.price_ils)}: ${L(`₪${s.who.visitor.rate_ils_per_hour} לשעה`, `₪${s.who.visitor.rate_ils_per_hour} per hour`)}`],
+].map(([k, who, what]) => `<tr${k === s.permit ? ' class="mine"' : ""}><th scope="row">${who}${k === s.permit ? L(" (אתם)", " (you)") : ""}</th><td>${what}</td></tr>`).join("");
 const streetRow = (s) => `<li class="street">
   <span class="plate bw" dir="ltr">${esc(ils(s.price_ils))}</span>
   <span><span class="row-name">${L("חניה ברחוב, כחול-לבן", "Street parking, blue-white")}</span><span class="row-sub">${L("אזור", "Zone")} ${esc(s.zone)}, ${AREA[s.area]}${s.permit === "own_zone" ? L(", חינם עם התו שלך", ", free with your permit")
     : s.paid_minutes ? L(`, ₪${esc(s.rate_ils_per_hour)} לשעה`, `, ₪${esc(s.rate_ils_per_hour)} per hour`) : L(", ללא תשלום בשעות האלה", ", no charge at these hours")}</span></span>
   <span class="row-end"><span class="status ${s.chance_pct >= 50 ? "free" : s.chance_pct >= 25 ? "few" : "full"}">${L("סיכוי", "Chance")} ~${esc(s.chance_pct)}%</span>${L("הערכה", "estimate")}</span>
+  <table class="who"><caption>${L("מי יכול לחנות כאן, ובכמה לחניה הזו", "Who can park here, and what this stay costs")}</caption>${whoRows(s)}</table>
+  <p class="rules">${L(`בתשלום ${HOURS[s.area]}, ו׳ וערבי חג 08:00–17:00. בשבת ובחג חינם לכולם.`, `Paid ${HOURS[s.area]}, Fri and holiday eves 08:00–17:00. Free for everyone on Shabbat and holidays.`)}${state.zones ? `<br>${zonesText(state.zones)}` : ""}</p>
   <details><summary>${L("איך זה מחושב", "How this is estimated")}</summary>
     <p>${L(`הסיכוי למצוא מקום הוא הערכה לפי היום והשעה${s.live_lots ? `, ולפי התפוסה עכשיו ב-${esc(s.live_lots)} חניוני אחוזות החוף הקרובים` : ""}. זה לא נתון חי מהרחוב.`,
       `The chance of finding a spot is an estimate from the day and time${s.live_lots ? `, and from how full the ${esc(s.live_lots)} nearest Ahuzot HaHof lots are right now` : ""}. It is not live street data.`)}</p>
