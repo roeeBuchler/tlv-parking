@@ -141,7 +141,7 @@ async function openLot(id, fly = true) {
       <button class="act" id="share"><span class="ms">link</span><span>העתקת קישור</span></button>
     </div>
     <div id="attach"></div>
-    ${d.tariff_text ? `<h3>התעריף המפורסם</h3><pre>${esc(d.tariff_text)}</pre>` : ""}
+    ${d.app_tariffs ? `<h3>התעריף המפורסם</h3>${tariffTable(d.tariffs, d.app_tariffs)}` : d.tariff_text ? `<h3>התעריף המפורסם</h3><pre>${esc(d.tariff_text)}</pre>` : ""}
     ${d.hours_text ? `<h3>שעות פעילות</h3><p>${esc(d.hours_text)}</p>` : ""}
     ${d.serves ? `<p class="sub">משרת את ${esc(d.serves)}</p>` : ""}
     <p class="fine">המחיר הוא הערכה לפי התעריף שפורסם, והשילוט בחניון קובע. נבדק ב-${esc(d.verified_at)}.
@@ -152,6 +152,23 @@ async function openLot(id, fly = true) {
   $("#close").onclick = () => { panel.hidden = true; state.lot = null; sync(); select(null); };
   $("#share").onclick = () => navigator.clipboard.writeText(location.href).then(() => ($("#share span:last-child").textContent = "הועתק ✓"));
   if (fly) map.easeTo({ center: [d.lng, d.lat], zoom: Math.max(map.getZoom(), 15), padding: sidePad() });
+}
+
+// operator's own rule list (Central Park) as a day ▸ hours ▸ price table; app_tariffs[i] is the app price of tariffs[i]
+const WEEK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+const daysText = (ds) => { const [a, b] = [ds[0], ds.at(-1)].map((x) => DAYS[WEEK.indexOf(x)]); return a === b ? `יום ${a}` : `${a} עד ${b}`; };
+function tariffTable(rules, app) {
+  const rows = (r, a) => r.kind === "flat"
+    ? [[`כניסה חד פעמית${r.valid_until ? ` (יציאה עד למחרת ב-${r.valid_until})` : ""}`, r.price, a.price]]
+    : [["שעה ראשונה", r.first_hour, a.first_hour], [r.step_minutes === 60 ? "כל שעה נוספת" : `כל ${r.step_minutes} דק׳ נוספות`, r.step_price, a.step_price],
+       ...(r.daily_max != null ? [["חניה יומית", r.daily_max, a.daily_max]] : [])];
+  const groups = [];
+  rules.forEach((r, i) => { const k = r.days.join(); (groups.at(-1)?.k === k ? groups.at(-1).items : (groups.push({ k, days: r.days, items: [] }), groups.at(-1).items)).push([r, app[i]]); });
+  return groups.map((g) => `<table class="tariff"><caption>${daysText(g.days)}</caption>
+    <thead><tr><th scope="col"><span class="sr">פריט</span></th><th scope="col">מחיר מלא</th><th scope="col">באפליקציה</th></tr></thead>
+    ${g.items.map(([r, a]) => `<tbody><tr><th colspan="3" scope="rowgroup" dir="ltr">${r.from === r.to ? "כל היום" : `${r.from}–${r.to}`}</th></tr>
+      ${rows(r, a).map(([t, p, ap]) => `<tr><td>${t}</td><td>${ils(p)}</td><td class="app">${ils(ap)}</td></tr>`).join("")}</tbody>`).join("")}
+  </table>`).join("");
 }
 
 // keep the focused point visible beside the sheet (right side on desktop, bottom sheet on mobile)

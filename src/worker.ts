@@ -3,16 +3,23 @@ import { createMcpHandler } from "@modelcontextprotocol/server";
 import { createServer } from "./mcp.ts";
 import { search, lotDetails, resolveStart, placeOut } from "./search.ts";
 import { resolvePlace } from "./places.ts";
-import { handleUsers, type Env } from "./users.ts";
+import { handleUsers, type Env as UsersEnv } from "./users.ts";
 
 const json = (data: unknown, status = 200) => Response.json(data, {
   status, headers: { "access-control-allow-origin": "*", "cache-control": "no-store" },
 });
 
+type Env = UsersEnv & { ASSETS: { fetch: (u: URL) => Promise<Response> } };
+let poisText: Promise<string> | undefined; // public/pois.tsv, once per isolate; a failed load is retried next time
+const loadPois = (env: Env, url: URL) => (poisText ??= env.ASSETS.fetch(new URL("/pois.tsv", url))
+  .then((r) => (r.ok ? r.text() : Promise.reject(new Error(`pois.tsv: HTTP ${r.status}`))))
+  .catch((e) => { poisText = undefined; throw e; }));
+
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url), p = url.searchParams, origin = url.origin;
-    if (url.pathname === "/mcp") return createMcpHandler(() => createServer(origin)).fetch(req);
+    const pois = () => loadPois(env, url);
+    if (url.pathname === "/mcp") return createMcpHandler(() => createServer(origin, pois)).fetch(req);
     const u = await handleUsers(req, env, url.pathname).catch((e) => json({ error: String(e?.message ?? e) }, 500));
     if (u) return u;
 
@@ -28,7 +35,7 @@ export default {
         case url.pathname === "/api/search": {
           let lat = num("lat"), lng = num("lng"), place = null;
           if (p.get("near") && lat == null) {
-            place = placeOut(await resolvePlace(p.get("near")!));
+            place = placeOut(await resolvePlace(p.get("near")!, pois));
             if (!place.resolved) return json({ error: `Place not found: ${p.get("near")}` }, 404);
             ({ lat, lng } = place.resolved);
           }
@@ -41,7 +48,7 @@ export default {
           return d ? json(d) : json({ error: "No such lot" }, 404);
         }
         case url.pathname === "/api/places":
-          return json({ candidates: await resolvePlace(p.get("q") ?? "") });
+          return json({ candidates: await resolvePlace(p.get("q") ?? "", pois) });
       }
     } catch (e) {
       return json({ error: String(e instanceof Error ? e.message : e) }, 400);

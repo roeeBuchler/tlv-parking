@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "data": "node --experimental-strip-types pipeline/build.ts",
+    "pois": "node --experimental-strip-types pipeline/pois.ts",
     "test": "node --experimental-strip-types --test test/*.test.ts",
     "dev": "wrangler d1 migrations apply tlv-parking --local && wrangler dev",
     "deploy": "wrangler deploy"
@@ -16,6 +17,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@duckdb/node-api": "^1.5.6-r.1",
     "@hebcal/core": "^6.11.1",
     "wrangler": "^4.147.0"
   }
