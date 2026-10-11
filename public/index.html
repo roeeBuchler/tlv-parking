@@ -8,145 +8,179 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@6.12.0/dist/maplibre-gl.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@400;500;700&family=Karantina:wght@700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=block,close,directions,directions_bus,format_list_bulleted,home,info,link,local_offer,map,schedule,search,smartphone,timer&display=block">
 <style>
-  /* Taken from the street: the blue P sign, curb paint, asphalt. Prices are sign plates; everything else stays quiet. */
+  /* Google Maps feel: floating white cards over a colourful map; Google's four colours carry meaning (price band, status, chip). */
   :root {
-    --sign: #1d4e9e; --asphalt: #2e3338; --concrete: #e9ebe8; --paper: #fff; --line: #d3d6d2; --muted: #5d6368;
-    --curb-red: #b3122e; --t1: #217a3c; --t2: #8a6100; --t3: #c2410c; --t4: #a50e2d;
-    --text: "IBM Plex Sans Hebrew", system-ui, sans-serif; --display: "Karantina", "IBM Plex Sans Hebrew", sans-serif;
+    --blue: #1a73e8; --red: #d93025; --yellow: #fbbc04; --green: #188038; --orange: #fa7b17;
+    --ink: #202124; --muted: #5f6368; --line: #dadce0; --paper: #fff; --hover: #f1f3f4;
+    --blue-bg: #e8f0fe; --blue-fg: #1967d2; --green-bg: #e6f4ea; --green-fg: #137333;
+    --red-bg: #fce8e6; --red-fg: #c5221f; --yellow-bg: #fef7e0; --yellow-fg: #b06000;
+    --shadow: 0 1px 2px rgba(60, 64, 67, .3), 0 2px 6px 2px rgba(60, 64, 67, .15);
+    --font: "Heebo", system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; font: 15px/1.5 var(--text); color: var(--asphalt); background: var(--concrete); }
+  html, body { margin: 0; height: 100%; font: 15px/1.5 var(--font); color: var(--ink); background: #e8eaed; }
   button, input, select { font: inherit; color: inherit; }
-  :focus-visible { outline: 2.5px solid var(--sign); outline-offset: 2px; }
-  a { color: var(--sign); }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  a { color: var(--blue-fg); }
+  .ms { font-family: "Material Symbols Rounded"; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; letter-spacing: normal;
+    text-transform: none; white-space: nowrap; direction: ltr; font-feature-settings: "liga"; -webkit-font-smoothing: antialiased; display: inline-block; }
 
-  /* header */
-  #bar { position: fixed; inset: 0 0 auto; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
-    padding: 10px 14px; background: var(--paper); border-bottom: 1px solid var(--line); }
-  .brand { display: flex; align-items: center; gap: 8px; color: var(--asphalt); text-decoration: none; flex: none; }
-  .brand-name { font: 700 27px/1 var(--display); padding-top: 3px; }
-  #search { flex: 1 1 280px; display: flex; }
-  #q { flex: 1; min-width: 0; font-size: 16px; padding: 8px 12px; border: 1.5px solid var(--line); border-radius: 6px; background: var(--paper); }
-  #q:focus { border-color: var(--sign); outline: none; }
-  #opts { display: flex; align-items: center; gap: 8px; width: 100%; overflow-x: auto; scrollbar-width: none; }
-  #opts > * { flex: none; }
-  .seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: 6px; overflow: hidden; }
-  .seg button { border: 0; border-inline-start: 1px solid var(--line); background: var(--paper); padding: 6px 12px; cursor: pointer; }
-  .seg button:first-child { border-inline-start: 0; }
-  #when, #dur, #listBtn { padding: 6px 10px; border: 1.5px solid var(--line); border-radius: 6px; background: var(--paper); }
-  .tog { display: flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1.5px solid var(--line); border-radius: 6px; background: var(--paper); cursor: pointer; white-space: nowrap; }
-  .tog input { accent-color: var(--asphalt); margin: 0; }
-  .seg button[aria-pressed=true], #listBtn[aria-pressed=true], .tog:has(input:checked) { background: var(--asphalt); border-color: var(--asphalt); color: #fff; }
-  #listBtn { cursor: pointer; }
+  /* floating search + chips; the bar itself lets the map through */
+  #bar { position: fixed; inset: 0 0 auto; z-index: 3; display: flex; align-items: center; gap: 8px 12px; padding: 12px 12px 4px; pointer-events: none; }
+  #bar > * { pointer-events: auto; }
+  #search { flex: 0 1 400px; display: flex; align-items: center; gap: 2px; height: 48px; padding: 0 8px 0 4px;
+    background: var(--paper); border-radius: 24px; box-shadow: var(--shadow); }
+  #search:focus-within { box-shadow: 0 1px 3px rgba(60, 64, 67, .3), 0 4px 8px 3px rgba(60, 64, 67, .15); }
+  .logo { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; background: var(--blue); color: #fff;
+    font: 700 20px/1 var(--font); text-decoration: none; }
+  #q { flex: 1; min-width: 0; height: 100%; font-size: 16px; padding: 0 10px; border: 0; background: none; }
+  #q:focus { outline: none; }
+  .icon-btn { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: none; color: var(--muted); cursor: pointer; }
+  .icon-btn:hover { background: var(--hover); }
+  .icon-btn .ms { font-size: 24px; }
+  .icon-btn.go { color: var(--blue); }
+  #listBtn[aria-pressed=true] { background: var(--blue-bg); color: var(--blue-fg); }
 
-  /* the sign plate: map pins, list rows, legend, and (large) the price board */
-  .plate { --c: var(--sign); position: relative; display: inline-grid; place-items: center; min-width: 42px; height: 31px; padding: 3px 8px 0;
-    border: 0; border-radius: 5px; background: var(--c); color: #fff; font: 700 25px/1 var(--display); white-space: nowrap; }
-  .plate::after, .board::after { content: ""; position: absolute; inset: 2px; border: 1.5px solid #fff; border-radius: 3px; pointer-events: none; }
-  .unv::after { border-style: dashed !important; }
-  .t1 { --c: var(--t1); } .t2 { --c: var(--t2); } .t3 { --c: var(--t3); } .t4 { --c: var(--t4); }
+  #opts { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 4px 4px 8px; }
+  .chip { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 0; border-radius: 16px; background: var(--paper);
+    box-shadow: var(--shadow); font-size: 14px; font-weight: 500; color: var(--ink); white-space: nowrap; cursor: pointer; }
+  .chip:hover { background: var(--hover); }
+  .chip .ms { font-size: 18px; color: var(--k, var(--blue)); }
+  .chip input, .chip select { border: 0; background: none; padding: 0; font-weight: 500; font-size: 14px; cursor: pointer; }
+  .chip input:focus, .chip select:focus { outline: none; }
+  .chip:has(:focus-visible) { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .tog input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .res { --k: var(--green); --kb: var(--green-bg); --kf: var(--green-fg); }
+  .bus { --k: var(--red); --kb: var(--red-bg); --kf: var(--red-fg); }
+  .cpa { --k: var(--orange); --kb: var(--yellow-bg); --kf: var(--yellow-fg); }
+  .chip[aria-pressed=true], .tog:has(input:checked) { background: var(--kb, var(--blue-bg)); color: var(--kf, var(--blue-fg)); }
+  .tog:has(input:checked) .ms { font-variation-settings: "FILL" 1; }
+  .sep { flex: none; width: 1px; height: 20px; background: rgba(60, 64, 67, .25); }
+
+  /* price pill: map pins, list rows, legend; the board is its big sibling. Colour = price band, dashed = unverified, blue P = per the sign */
+  .plate, .board { --c: var(--blue); --on: #fff; }
+  .plate { position: relative; display: inline-grid; place-items: center; min-width: 40px; height: 28px; padding: 0 10px;
+    border: 2px solid #fff; border-radius: 14px; background: var(--c); color: var(--on); font: 700 14px/1 var(--font); white-space: nowrap; box-shadow: var(--shadow); }
+  .t1 { --c: var(--green); --on: #fff; } .t2 { --c: var(--yellow); --on: var(--ink); } .t3 { --c: var(--orange); --on: var(--ink); } .t4 { --c: var(--red); --on: #fff; }
+  .unv { --on: var(--green-fg); background: var(--paper); border: 2px dashed var(--green); }
   .pin { padding-bottom: 7px; cursor: pointer; }
   .pin:hover, .pin:has(.sel) { z-index: 5; }
-  .pin .plate::before { content: ""; position: absolute; top: 100%; left: 50%; width: 2px; height: 7px; margin-left: -1px; background: var(--asphalt); }
-  .plate.off { opacity: .4; }
-  /* no price list: a smaller plate, so priced lots stand out */
-  .pin .plate.sign { min-width: 26px; height: 24px; padding: 2px 6px 0; font-size: 19px; }
-  .plate.sel { outline: 2.5px solid var(--asphalt); outline-offset: 1px; }
-  .plate .live { position: absolute; top: -5px; inset-inline-end: -5px; width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--paper); }
-  .live.free { background: #1f9d48; } .live.few { background: #e0a100; } .live.full { background: var(--curb-red); } .live.closed { background: var(--asphalt); }
+  .pin .plate::before { content: ""; position: absolute; z-index: -1; top: calc(100% - 4px); left: 50%; width: 9px; height: 9px; margin-left: -4.5px;
+    background: var(--c); border: 2px solid #fff; border-top: 0; border-left: 0; transform: rotate(45deg); }
+  .pin .plate.unv::before { background: var(--paper); border-color: var(--green); border-style: dashed; }
+  .plate.off { opacity: .45; }
+  .pin .plate.sign { min-width: 26px; height: 26px; padding: 0; border-radius: 8px; font-size: 15px; }
+  .plate.sel { box-shadow: 0 0 0 3px var(--ink), var(--shadow); }
+  .plate .live { position: absolute; top: -5px; inset-inline-end: -5px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; }
+  .live.free { background: #34a853; } .live.few { background: var(--yellow); } .live.full { background: #ea4335; } .live.closed { background: var(--muted); }
   @media (prefers-reduced-motion: no-preference) { .pin .plate { transition: transform .15s; transform-origin: 50% 100%; } }
-  .pin .plate.sel { transform: scale(1.25); }
-  /* zoomed out: plates shrink to coloured pips */
+  .pin .plate.sel, .pin:hover .plate { transform: scale(1.15); }
+  /* zoomed out: pills shrink to coloured dots */
   .far .pin { padding-bottom: 0; }
-  .far .pin .plate { top: 7px; min-width: 0; width: 14px; height: 14px; padding: 0; font-size: 0; border-radius: 3px; }
-  .far .pin .plate::after { border-width: 1px; border-radius: 1px; }
+  .far .pin .plate { top: 7px; min-width: 0; width: 14px; height: 14px; padding: 0; font-size: 0; border-radius: 50%; }
   .far .pin .plate::before, .far .plate .live { display: none; }
-  .far .pin .plate.sign { top: 9px; width: 9px; height: 9px; opacity: .6; }
+  .far .pin .plate.sign { top: 9px; width: 10px; height: 10px; border-width: 1.5px; border-radius: 3px; opacity: .7; }
 
   #map { position: fixed; inset: 0; }
+  .maplibregl-ctrl-group { border-radius: 8px !important; box-shadow: var(--shadow) !important; }
 
-  /* sheet: list and lot details share the start side (right, in Hebrew) */
-  #panel, #list { position: fixed; z-index: 2; top: var(--bar-h, 60px); bottom: 0; inset-inline-start: 0; width: min(380px, 100%);
-    overflow: auto; background: var(--paper); border-inline-end: 1px solid var(--line); }
-  #panel { padding: 18px 20px 24px; }
-  #list ol { list-style: none; margin: 0; padding: 0; }
-  #list .head { padding: 12px 16px; color: var(--muted); font-size: 14px; border-bottom: 1px solid var(--line); }
+  /* side card: list and lot details share the start side (right, in Hebrew) */
+  #panel, #list { position: fixed; z-index: 2; top: var(--bar-h, 64px); bottom: 12px; inset-inline-start: 12px; width: min(400px, calc(100% - 24px));
+    overflow: auto; background: var(--paper); border-radius: 16px; box-shadow: var(--shadow); }
+  #panel { padding: 20px 24px 24px; }
+  #list ol { list-style: none; margin: 0; padding: 0 0 8px; }
+  #list .head { padding: 16px 20px 12px; color: var(--muted); font-size: 14px; border-bottom: 1px solid var(--line); }
   #list li > button { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 12px;
-    width: 100%; padding: 10px 16px; border-bottom: 1px solid var(--line); }
-  #list li > button:hover, #list li > button:focus-visible { background: var(--concrete); }
-  #list .plate { justify-self: start; }
+    width: 100%; padding: 12px 20px; border-bottom: 1px solid var(--line); }
+  #list li > button:hover, #list li > button:focus-visible { background: var(--hover); }
+  #list .plate { justify-self: start; box-shadow: none; }
   .row-name { display: block; font-weight: 500; }
   .row-sub, .row-end { font-size: 13px; color: var(--muted); }
   .row-end { text-align: end; white-space: nowrap; }
   .status { display: block; font-weight: 500; }
-  .status.free { color: #1a7f3c; } .status.few { color: #8a6100; } .status.full, .status.closed { color: var(--curb-red); }
+  .status.free { color: var(--green-fg); } .status.few { color: var(--yellow-fg); } .status.full, .status.closed { color: var(--red-fg); }
 
   /* lot details */
-  #close { float: left; margin: -6px -8px 0 0; width: 36px; height: 36px; border: 0; background: none; font-size: 26px; line-height: 1; cursor: pointer; color: var(--muted); }
-  h2 { margin: 0; font-size: 21px; line-height: 1.3; }
+  #close { float: left; margin: -8px -12px 0 0; }
+  h2 { margin: 0; font-size: 22px; font-weight: 500; line-height: 1.3; }
   .sub { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
-  .board { position: relative; margin: 16px 0 12px; padding: 16px 18px 14px; border-radius: 8px; background: var(--c, var(--sign)); color: #fff; }
-  .board::after { inset: 4px; border-width: 2px; border-radius: 5px; }
-  .board-price { font: 700 68px/.85 var(--display); padding-top: 6px; }
-  .board-price.small { font-size: 44px; }
-  .board-when { margin-top: 8px; font-size: 14px; }
-  .split { display: grid; grid-template-columns: 1fr 1fr; border: 1.5px solid var(--line); border-radius: 6px; margin: 0 0 12px; }
-  .split div { padding: 8px 12px; font-size: 13px; color: var(--muted); }
-  .split div + div { border-inline-start: 1.5px solid var(--line); }
-  .split b { display: block; font: 700 28px/1.1 var(--display); color: var(--asphalt); }
-  .split .on { background: var(--concrete); }
+  .board { margin: 18px 0 14px; padding: 18px 20px 16px; border-radius: 16px; background: var(--c); color: var(--on); }
+  .board.unv { border-width: 3px; }
+  .board-price { font: 700 52px/1 var(--font); letter-spacing: -1px; }
+  .board-price.small { font-size: 32px; letter-spacing: 0; }
+  .board-when { margin-top: 6px; font-size: 14px; opacity: .92; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 14px; }
+  .split div { padding: 10px 14px; font-size: 13px; color: var(--muted); border: 1px solid var(--line); border-radius: 12px; }
+  .split b { display: block; font: 700 22px/1.2 var(--font); color: var(--ink); }
+  .split .on { background: var(--blue-bg); border-color: transparent; color: var(--blue-fg); }
+  .split .on b { color: var(--blue-fg); }
   .facts { margin: 0 0 12px; font-size: 14px; }
   .facts p { margin: 2px 0; }
-  /* curb stripes: blue-white = information or a deal, red-white = a restriction */
-  .note { --s: var(--sign); margin: 10px 0; padding: 9px 18px 9px 12px; font-size: 14px; background: repeating-linear-gradient(180deg, var(--s) 0 9px, #fff 9px 18px) right / 6px 100% no-repeat, #e3e6e2; }
-  .note.red { --s: var(--curb-red); }
-  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 20px; }
-  .btn { padding: 8px 14px; border: 1.5px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--asphalt); text-decoration: none; cursor: pointer; font-weight: 500; }
-  .btn.primary { background: var(--sign); border-color: var(--sign); color: #fff; }
-  h3 { margin: 18px 0 6px; font-size: 15px; }
-  pre { margin: 0; white-space: pre-wrap; font: 14px/1.6 var(--text); background: var(--concrete); padding: 10px 12px; border-radius: 6px; }
-  .fine { margin-top: 18px; font-size: 13px; color: var(--muted); }
+  /* tonal callouts: blue = info, green = a deal that applies, yellow = a deal you could get, red = a restriction */
+  .note { --b: var(--blue-bg); --f: var(--blue-fg); --i: "info"; display: flex; gap: 10px; align-items: flex-start; margin: 8px 0; padding: 10px 14px;
+    border-radius: 12px; background: var(--b); color: var(--f); font-size: 14px; }
+  .note::before { content: var(--i); flex: none; font: 20px/1 "Material Symbols Rounded"; font-feature-settings: "liga"; margin-top: 1px; }
+  .note.green { --b: var(--green-bg); --f: var(--green-fg); --i: "local_offer"; }
+  .note.yellow { --b: var(--yellow-bg); --f: var(--yellow-fg); --i: "local_offer"; }
+  .note.red { --b: var(--red-bg); --f: var(--red-fg); --i: "block"; }
+  .actions { display: flex; gap: 16px; margin: 18px 0; padding: 14px 0; border-block: 1px solid var(--line); }
+  .act { all: unset; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 64px; font-size: 12px; font-weight: 500; color: var(--blue-fg); cursor: pointer; text-align: center; }
+  .act .ms { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--blue-bg); font-size: 22px; }
+  .act.primary .ms { background: var(--blue); color: #fff; }
+  .act:hover .ms { filter: brightness(.94); }
+  .act:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 8px; }
+  h3 { margin: 18px 0 6px; font-size: 15px; font-weight: 500; }
+  pre { margin: 0; white-space: pre-wrap; font: 14px/1.6 var(--font); background: var(--hover); padding: 12px 14px; border-radius: 12px; }
+  .fine { margin-top: 18px; font-size: 12px; color: var(--muted); }
 
   /* legend */
-  #legend { position: fixed; z-index: 1; bottom: 26px; left: 52px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
-    padding: 8px 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; font-size: 13px; }
-  #legend .plate { height: 26px; min-width: 0; font-size: 20px; padding: 2px 6px 0; }
-  #legend .cap { color: var(--muted); margin-inline-end: 4px; }
+  #legend { position: fixed; z-index: 1; bottom: 24px; left: 56px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    padding: 8px 12px; background: var(--paper); border-radius: 12px; box-shadow: var(--shadow); font-size: 13px; color: var(--muted); }
+  #legend .plate { height: 24px; min-width: 0; padding: 0 8px; font-size: 12px; box-shadow: none; border: 0; }
+  #legend .plate.unv { border: 1.5px dashed var(--green); }
+  #legend .plate.sign { width: 24px; padding: 0; border-radius: 6px; }
+  #legend .cap { margin-inline-end: 4px; }
 
   @media (max-width: 700px) {
-    #bar { padding: 8px 10px; gap: 8px; }
-    .brand-name { display: none; }
-    #search { flex-basis: 0; }
-    #panel, #list { top: auto; inset-inline: 0; width: 100%; max-height: 62vh; border: 0; border-top: 1px solid var(--line);
-      border-radius: 12px 12px 0 0; box-shadow: 0 -6px 18px rgba(46, 51, 56, .18); }
-    #legend { bottom: auto; top: calc(var(--bar-h, 96px) + 8px); left: 8px; right: 8px; padding: 6px 8px; gap: 4px; }
+    #bar { flex-wrap: wrap; padding: 8px 8px 0; }
+    #search { flex: 1 1 100%; }
+    #opts { flex-basis: 100%; margin: 0 -8px; padding: 2px 8px 8px; }
+    #panel, #list { top: auto; bottom: 0; inset-inline: 0; width: 100%; max-height: 62vh; border-radius: 28px 28px 0 0;
+      box-shadow: 0 -2px 10px rgba(60, 64, 67, .2); }
+    #panel::before, #list::before { content: ""; display: block; width: 32px; height: 4px; margin: -8px auto 12px; border-radius: 2px; background: var(--line); }
+    #list::before { margin: 10px auto 0; }
+    #legend { bottom: auto; top: var(--bar-h, 104px); left: 8px; right: 8px; justify-content: center; padding: 6px 8px; gap: 4px; }
     #legend .cap { display: none; }
-    #legend .plate { height: 23px; font-size: 17px; padding: 2px 5px 0; }
   }
 </style>
 </head>
 <body>
 <header id="bar">
-  <a class="brand" href="/" aria-label="חניונים בתל אביב, לדף הראשי"><span class="plate sign" aria-hidden="true">P</span><span class="brand-name">חניונים בתל אביב</span></a>
-  <form id="search" role="search"><input id="q" type="search" placeholder="לאן נוסעים? מקום או כתובת, למשל דיזנגוף 50" aria-label="חיפוש מקום או כתובת"></form>
-  <button type="button" id="listBtn" aria-pressed="false" aria-controls="list">רשימה</button>
+  <form id="search" role="search">
+    <a class="logo" href="/" aria-label="חניונים בתל אביב, לדף הראשי">P</a>
+    <input id="q" type="search" placeholder="לאן נוסעים? למשל דיזנגוף 50" aria-label="חיפוש מקום או כתובת">
+    <button type="submit" class="icon-btn go" aria-label="חיפוש"><span class="ms">search</span></button>
+    <button type="button" class="icon-btn" id="listBtn" aria-pressed="false" aria-controls="list" aria-label="רשימת חניונים" title="רשימה"><span class="ms">format_list_bulleted</span></button>
+  </form>
   <div id="opts">
-    <div class="seg" role="group" aria-label="מתי">
-      <button type="button" data-when="now">עכשיו</button>
-      <button type="button" data-when="tonight">הערב</button>
-      <button type="button" data-when="fri">שישי</button>
-      <button type="button" data-when="sat">שבת</button>
+    <div role="group" aria-label="מתי" style="display: contents">
+      <button type="button" class="chip" data-when="now">עכשיו</button>
+      <button type="button" class="chip" data-when="tonight">הערב</button>
+      <button type="button" class="chip" data-when="fri">שישי</button>
+      <button type="button" class="chip" data-when="sat">שבת</button>
     </div>
-    <input id="when" type="datetime-local" aria-label="שעת כניסה">
-    <select id="dur" aria-label="משך החניה">
+    <label class="chip"><span class="ms">schedule</span><input id="when" type="datetime-local" aria-label="שעת כניסה"></label>
+    <label class="chip"><span class="ms">timer</span><select id="dur" aria-label="משך החניה">
       <option value="60">שעה</option><option value="120" selected>שעתיים</option><option value="180">3 שעות</option>
       <option value="240">4 שעות</option><option value="480">8 שעות</option><option value="720">12 שעות</option><option value="1440">יממה</option>
-    </select>
-    <label class="tog"><input type="checkbox" id="res"> תושב/ת ת״א</label>
-    <label class="tog" title="פנגו או סלו + נסיעה באוטובוס בת״א באותו יום"><input type="checkbox" id="bus"> פנגו/סלו + אוטובוס</label>
-    <label class="tog" title="מחיר מוזל בחניוני סנטרל פארק למשלמים באפליקציה שלהם"><input type="checkbox" id="cp"> אפליקציית סנטרל פארק</label>
+    </select></label>
+    <span class="sep" aria-hidden="true"></span>
+    <label class="chip tog res"><input type="checkbox" id="res"><span class="ms">home</span>תושב/ת ת״א</label>
+    <label class="chip tog bus" title="פנגו או סלו + נסיעה באוטובוס בת״א באותו יום"><input type="checkbox" id="bus"><span class="ms">directions_bus</span>פנגו/סלו + אוטובוס</label>
+    <label class="chip tog cpa" title="מחיר מוזל בחניוני סנטרל פארק למשלמים באפליקציה שלהם"><input type="checkbox" id="cp"><span class="ms">smartphone</span>אפליקציית סנטרל פארק</label>
   </div>
 </header>
 <main id="map" aria-label="מפת חניונים"></main>
