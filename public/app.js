@@ -3,8 +3,8 @@ import { Map, Marker, Popup, NavigationControl, GeolocateControl } from "https:/
 const $ = (s) => document.querySelector(s);
 const panel = $("#panel"), list = $("#list");
 const P = new URL(location.href).searchParams;
-const state = { lot: P.get("lot"), when: P.get("when") ?? "", dur: P.get("dur") ?? "120", res: P.get("res") === "1", bus: P.get("bus") === "1", cp: P.get("cp") === "1",
-  ev: P.get("ev") === "1", cov: P.get("cov") === "1", acc: P.get("acc") === "1", h: P.get("h") ?? "", moto: P.get("moto") === "1", center: null, results: [], alts: [] };
+const state = { lot: P.get("lot"), when: P.get("when") ?? "", dur: P.get("dur") ?? "120", res: P.get("res") === "1", bus: P.get("bus") === "1", cp: P.get("cp") === "1", zone: P.get("zone") ?? "",
+  ev: P.get("ev") === "1", cov: P.get("cov") === "1", acc: P.get("acc") === "1", h: P.get("h") ?? "", moto: P.get("moto") === "1", center: null, results: [], street: null, alts: [] };
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`); // scraped text: never raw HTML
 const LIVE = { free: "פנוי", few: "מעט מקומות", full: "מלא", closed: "סגור" }; // "open" / "unknown" carry no occupancy
@@ -34,6 +34,7 @@ function qs(extra = {}) {
   const o = { duration: state.dur, ...extra };
   if (state.when) o.start = state.when;
   if (state.res) o.resident = 1;
+  if (state.res && state.zone) o.zone = state.zone;
   const apps = [...(state.bus ? ["pango", "cello"] : []), ...(state.cp ? ["centralpark"] : [])];
   if (apps.length) o.apps = apps.join(",");
   if (state.bus) o.transit = 1;
@@ -45,7 +46,8 @@ function qs(extra = {}) {
 }
 function sync() {
   const u = new URLSearchParams();
-  for (const [k, v] of [["lot", state.lot], ["when", state.when], ["dur", state.dur !== "120" && state.dur], ["res", state.res && 1], ["bus", state.bus && 1], ["cp", state.cp && 1], ["ev", state.ev && 1], ["cov", state.cov && 1], ["acc", state.acc && 1], ["h", state.h], ["moto", state.moto && 1]]) if (v) u.set(k, v);
+  for (const [k, v] of [["lot", state.lot], ["when", state.when], ["dur", state.dur !== "120" && state.dur], ["res", state.res && 1], ["zone", state.res && state.zone], ["bus", state.bus && 1], ["cp", state.cp && 1],
+    ["ev", state.ev && 1], ["cov", state.cov && 1], ["acc", state.acc && 1], ["h", state.h], ["moto", state.moto && 1]]) if (v) u.set(k, v);
   history.replaceState(null, "", u.size ? `?${u}` : location.pathname);
 }
 
@@ -89,6 +91,7 @@ async function load() {
   const r = await (await fetch(`/api/search?${qs(extra)}`)).json();
   if (n !== loads) return;
   state.results = r.results ?? [];
+  state.street = r.street ?? null;
   drawPins();
   if (!list.hidden) showList();
   if (state.lot && !panel.hidden) openLot(state.lot, false);
@@ -100,7 +103,7 @@ function showList() {
     ? `<li class="head">חניונים עד 1 ק״מ מ${esc(state.center.label)}, מהזול ליקר.<br>${savedPlace(state.center)
       ? `<span class="save"><span class="ms">place</span>שמור בנקודות הציון שלך</span>` : `<button class="save" id="savePlace"><span class="ms">add</span>שמירה כנקודת ציון</button>`}${state.alts.length ? `<br>התכוונתם ל${state.alts.map((a, i) => `<a href="#" data-alt="${i}">${esc(a.label)}</a>`).join(" או ")}?` : ""}</li>`
     : `<li class="head">כל החניונים, מהזול ליקר. חפשו כתובת כדי לראות מה קרוב אליה.</li>`;
-  list.querySelector("ol").innerHTML = head + (near.map((l) => `<li><button data-id="${esc(l.id)}" aria-label="${esc(`${l.name}, ${price(l)}`)}">
+  list.querySelector("ol").innerHTML = head + (state.center && state.street ? streetRow(state.street) : "") + (near.map((l) => `<li><button data-id="${esc(l.id)}" aria-label="${esc(`${l.name}, ${price(l)}`)}">
     ${plateHtml(l)}
     <span><span class="row-name">${esc(l.name)}</span><span class="row-sub">${esc(OPERATOR[l.operator] ?? l.operator)}</span></span>
     <span class="row-end">${l.distance_m != null ? `${l.distance_m} מ׳` : ""}${liveOf(l) ? `<span class="status ${liveOf(l)}">${LIVE[liveOf(l)]}</span>` : ""}</span>
@@ -108,6 +111,19 @@ function showList() {
   list.hidden = false; panel.hidden = true;
   $("#listBtn").setAttribute("aria-pressed", "true");
 }
+// blue-white parking at the searched point (src/street.ts): price for the stay and a rough chance of finding a spot
+const AREA = { center: "מרכז העיר", city: "רחבי העיר" };
+const streetRow = (s) => `<li class="street">
+  <span class="plate bw" dir="ltr">${esc(ils(s.price_ils))}</span>
+  <span><span class="row-name">חניה ברחוב, כחול-לבן</span><span class="row-sub">אזור ${esc(s.zone)}, ${AREA[s.area]}${s.permit === "own_zone" ? ", חינם עם התו שלך"
+    : s.paid_minutes ? `, ₪${esc(s.rate_ils_per_hour)} לשעה` : ", ללא תשלום בשעות האלה"}</span></span>
+  <span class="row-end"><span class="status ${s.chance_pct >= 50 ? "free" : s.chance_pct >= 25 ? "few" : "full"}">סיכוי ~${esc(s.chance_pct)}%</span>הערכה</span>
+  <details><summary>איך זה מחושב</summary>
+    <p>הסיכוי למצוא מקום הוא הערכה לפי היום והשעה${s.live_lots ? `, ולפי התפוסה עכשיו ב-${esc(s.live_lots)} חניוני אחוזות החוף הקרובים` : ""}. זה לא נתון חי מהרחוב.</p>
+    ${s.permit === "other_zone" ? `<p>בעלי תו מאזור אחר: שעתיים ביום חינם, ואחריהן 30% הנחה.${state.zone ? "" : " בחרו את אזור התו שלכם כדי לראות אם החניה כאן חינם."}</p>` : ""}
+    <p>משלמים בפנגו או בסלו מהדקה הראשונה. חלק מרחובות הכחול-לבן מיועדים לבעלי תו האזור בלבד, והתמרור בתחילת הרחוב קובע.</p>
+  </details>
+</li>`;
 list.addEventListener("click", (e) => {
   const b = e.target.closest("[data-id]"), a = e.target.closest("[data-alt]");
   if (b) openLot(b.dataset.id);
@@ -271,7 +287,8 @@ document.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("clic
 }));
 $("#dateBtn").addEventListener("click", () => { try { $("#date").showPicker(); } catch { $("#date").focus(); } });
 $("#dur").addEventListener("change", (e) => { state.dur = e.target.value; sync(); load(); });
-$("#res").addEventListener("change", (e) => { state.res = e.target.checked; sync(); load(); });
+$("#res").addEventListener("change", (e) => { state.res = e.target.checked; $("#zoneChip").hidden = !state.res; sync(); load(); });
+$("#zone").addEventListener("change", (e) => { state.zone = e.target.value; sync(); load(); });
 $("#bus").addEventListener("change", (e) => { state.bus = e.target.checked; sync(); load(); });
 $("#cp").addEventListener("change", (e) => { state.cp = e.target.checked; sync(); load(); });
 for (const k of ["ev", "cov", "acc"]) $("#" + k).addEventListener("change", (e) => { state[k] = e.target.checked; sync(); load(); });
@@ -382,6 +399,8 @@ $("#meBtn").addEventListener("click", () => (panel.hidden || panel.dataset.view 
 showWhen();
 $("#dur").value = [...$("#dur").options].some((o) => o.value === state.dur) ? state.dur : ($("#dur").add(new Option(`${state.dur} דק׳`, state.dur)), state.dur);
 $("#res").checked = state.res;
+$("#zoneChip").hidden = !state.res;
+$("#zone").value = state.zone;
 $("#bus").checked = state.bus;
 $("#cp").checked = state.cp;
 for (const k of ["ev", "cov", "acc", "moto"]) $("#" + k).checked = state[k];

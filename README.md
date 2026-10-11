@@ -5,12 +5,13 @@ A map of Tel Aviv parking lots, plus an MCP server, so an AI can answer *"cheape
 ```
 src/engine.ts      price engine: day types (Shabbat/holidays), quote(), shared by everything
 src/search.ts      ranking used by both the API and MCP; live status (TLV GIS, cached 120 s)
+src/street.ts      blue-white street parking at the searched point: zone (data/zones.json, GIS 544), price, estimated chance of a spot
 src/places.ts      place search: Google Maps links, landmarks, local business index, OpenStreetMap
 src/mcp.ts         MCP tools: search_parking, get_lot_details
 src/users.ts       accounts (username + password) and favorite places, each with its favorite lots; D1, schema in migrations/
 src/worker.ts      routes: /mcp, /api/*, static site from public/
 pipeline/          ahuzot.co.il + GIS, centralpark.co.il, greenparking.co.il, mall sites -> priced lots;
-                   city license registry (GIS 556) + OpenStreetMap -> unpriced lots; all into data/lots.json; hebcal -> data/holidays.json
+                   city license registry (GIS 556) + OpenStreetMap -> unpriced lots; all into data/lots.json; hebcal -> data/holidays.json; parking zones -> data/zones.json
 data/offers.json   hand-curated deals · data/places.json  landmarks
 public/pois.tsv    ~55k businesses for place search (npm run pois): Overture Maps, + Foursquare OS Places with HF_TOKEN
 public/            the site (MapLibre from CDN, no build step), llms.txt, openapi.json

@@ -6,6 +6,7 @@ Coverage: priced lots from Ahuzot HaHof (municipal, 88), Central Park, Green Par
 Open municipal lots the city lists as free come back with `price_ils: 0` and `price_basis: "municipal_data_unverified"`: say it is unverified and to check the sign.
 Central Park lots have a cheaper in-app price: `gate_price_ils` and `app_price_ils`; pass `apps=centralpark` to rank by it.
 Prices are estimates from the operator's published tariff; the sign at the gate prevails. Times are Asia/Jerusalem.
+Searches near a point also return `street`: blue-white curbside parking there (zone, area center/city, `price_ils` for the stay at the city's rates, `chance_pct` = a rough estimate of finding a spot from time of day and nearby lots' live occupancy, not live street data). Pass `zone` (the user's residential permit zone) for permit pricing.
 
 ## MCP
 
@@ -14,7 +15,7 @@ Prices are estimates from the operator's published tariff; the sign at the gate 
 ## REST
 
 - [OpenAPI spec](/openapi.json)
-- `GET /api/search?near=Dizengoff%20Center&start=2026-10-10T14:00&duration=180`: lots ranked by price. Optional: `lat`,`lng` instead of `near`; `weekday=sat&time=14:00` instead of `start`; `max_walk` (m, default 800); `resident=1`; `apps=pango,cello,centralpark`; `transit=1`; `ev=1`, `covered=1`, `accessible=1` (only lots known to have it; null = unknown); `height=2.1` (car height in m; drops only lots with a lower published limit); `sort=distance`; `limit`.
+- `GET /api/search?near=Dizengoff%20Center&start=2026-10-10T14:00&duration=180`: lots ranked by price. Optional: `lat`,`lng` instead of `near`; `weekday=sat&time=14:00` instead of `start`; `max_walk` (m, default 800); `resident=1`; `zone` (permit zone, 1-13); `apps=pango,cello,centralpark`; `transit=1`; `ev=1`, `covered=1`, `accessible=1` (only lots known to have it; null = unknown); `height=2.1` (car height in m; drops only lots with a lower published limit); `sort=distance`; `limit`.
 - `GET /api/lots/{id}?start=...&duration=...`: one lot with full tariff (original Hebrew text), hours, offers, live status and Waze/Google Maps links.
 - `GET /api/places?q=דיזנגוף 50`: place/address to coordinates (Hebrew works best for streets).
 

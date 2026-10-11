@@ -21,6 +21,7 @@
           { "name": "duration", "in": "query", "schema": { "type": "integer", "default": 120 }, "description": "Minutes" },
           { "name": "max_walk", "in": "query", "schema": { "type": "integer", "default": 800 }, "description": "Meters, straight line" },
           { "name": "resident", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = Tel Aviv resident" },
+          { "name": "zone", "in": "query", "schema": { "type": "integer", "enum": [1, 2, 4, 6, 7, 9, 10, 12, 13] }, "description": "The user's TLV residential parking permit zone (blue-white parking there is free)" },
           { "name": "apps", "in": "query", "schema": { "type": "string" }, "description": "Comma list: pango,cello,moovit,centralpark (centralpark = Central Park in-app price)" },
           { "name": "transit", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = will ride a TLV bus the same day" },
           { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["price", "distance"] } },
@@ -30,7 +31,7 @@
           { "name": "accessible", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = only lots known to be accessible / with disabled bays" },
           { "name": "height", "in": "query", "schema": { "type": "number" }, "description": "Car height in meters: drops lots with a lower published limit; lots with no published limit (height_m null) stay" }
         ],
-        "responses": { "200": { "description": "resolved_location, query, results[] (price_ils null = price on sign), caveats[]" } }
+        "responses": { "200": { "description": "resolved_location, query, street (blue-white curbside parking at the point: zone, price_ils, chance_pct estimate; null outside TLV zones), results[] (price_ils null = price on sign), caveats[]" } }
       }
     },
     "/api/lots/{id}": {
