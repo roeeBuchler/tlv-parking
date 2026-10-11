@@ -7,7 +7,7 @@ import { HebrewCalendar, flags } from "@hebcal/core";
 import { parseTariff, ALL_DAYS } from "./parse.ts";
 import { overrides } from "./overrides.ts";
 import { centralPark, green, single, text as clean } from "./operators.ts";
-import { registry, osm } from "./opendata.ts";
+import { registry, osm, zones, motoBays } from "./opendata.ts";
 import { gisQuery, geocode, UA } from "../src/places.ts";
 import type { Lot } from "../src/engine.ts";
 
@@ -70,6 +70,7 @@ for (const id of ids) {
     id: `ahuzot-${id}`, name, operator: "ahuzot", address, ...pos,
     spaces: +(html.match(/מקומות חנייה בחניון:\s*(\d+)/)?.[1] ?? 0) || undefined,
     serves: field("מתחם, איזור אותו משמש החניון"), hours_text: field("שעות פעילות החניון").replace(/^שעות פעילות החניון:\s*/, ""),
+    ...(/החניון מונגש לנכים/.test(html) && { accessible: true }),
     tariff_text, ...parsed, ...overrides[id],
     live_key: g?.code_achoza, source_url, verified_at: today,
   });
@@ -86,7 +87,10 @@ const fromOsm = await osm(lots, today);
 if (!fromOsm) console.warn("Overpass unreachable: keeping last week's OpenStreetMap lots");
 lots.push(...(fromOsm ?? old.filter((o) => o.operator === "osm")));
 
-// 6. checks: every entry time of a week (+ holiday/eve days) must hit a rule; prices must not jump > 50%
+// 6. blue-white parking zones for src/street.ts
+writeFileSync("data/zones.json", JSON.stringify(await zones(problems)) + "\n");
+
+// 7. checks: every entry time of a week (+ holiday/eve days) must hit a rule; prices must not jump > 50%
 const probe = ["2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07", "2026-10-08", "2026-10-09", "2026-10-10",
   ...Object.keys(holidays).filter((d) => d >= today).slice(0, 6)];
 for (const l of lots as Lot[]) for (const rules of [l.tariffs, l.resident_tariffs, l.app_tariffs]) {
@@ -111,6 +115,7 @@ for (const o of old) {
 }
 
 writeFileSync("data/lots.json", JSON.stringify(lots, null, 1) + "\n");
+writeFileSync("public/moto.json", JSON.stringify(await motoBays(problems)) + "\n");
 const count = (f: (l: Lot) => unknown) => Object.entries(Object.groupBy(lots as Lot[], (l) => l.operator)).map(([op, ls]) => `${op} ${ls!.filter(f).length}`).join(", ");
 console.log(`lots: ${count(() => true)}\npriced: ${count((l) => l.tariffs)}\nfree per sign: ${count((l) => l.sign?.free)}`);
 if (problems.length) {

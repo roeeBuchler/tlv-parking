@@ -33,7 +33,7 @@ export default {
       const common = () => ({
         start: resolveStart(p.get("start") ?? undefined, p.get("weekday") ?? undefined, p.get("time") ?? undefined),
         minutes: Math.min(Math.max(num("duration") ?? 120, 1), 7 * 1440),
-        crowd, resident: bool("resident"), apps: p.get("apps")?.split(",").filter(Boolean) ?? [], transit: bool("transit"), origin,
+        crowd, resident: bool("resident"), apps: p.get("apps")?.split(",").filter(Boolean) ?? [], transit: bool("transit"), zone: num("zone"), origin,
       });
       switch (true) {
         case url.pathname === "/api/search": {
@@ -44,7 +44,8 @@ export default {
             ({ lat, lng } = place.resolved);
           }
           const sort = p.get("sort") === "distance" ? "distance" : "price";
-          const r = await search({ ...common(), lat, lng, max_walk_m: num("max_walk") ?? (lat == null ? Infinity : 800), sort_by: sort, limit: num("limit") });
+          const r = await search({ ...common(), lat, lng, max_walk_m: num("max_walk") ?? (lat == null ? Infinity : 800), sort_by: sort, limit: num("limit"),
+            ev: bool("ev"), covered: bool("covered"), accessible: bool("accessible"), height_m: num("height") });
           return json({ resolved_location: place?.resolved ?? null, alternatives: place?.alternatives ?? [], ...r });
         }
         case url.pathname.startsWith("/api/lots/"): {

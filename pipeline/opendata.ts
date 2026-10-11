@@ -3,6 +3,7 @@
 // Both skip lots within a short walk of a lot already in the data.
 import { distanceM, type Lot } from "../src/engine.ts";
 import { gisQuery, GIS, UA } from "../src/places.ts";
+import { AREA } from "../src/street.ts";
 
 const near = (p: { lat: number; lng: number }, lots: Lot[], m: number) => lots.some((l) => distanceM(p, l) < m);
 const key = (s: string) => s.replace(/חניו(ן|ני)|parking|[^\p{L}\p{N}]/giu, "");
@@ -14,7 +15,7 @@ const SIGN = {
 };
 
 export async function registry(have: Lot[], today: string, problems: string[]): Promise<Lot[]> {
-  const rows = await gisQuery(556, { where: "1=1", outFields: "oid,name,address,num_vehicles", returnGeometry: "true", outSR: "4326" });
+  const rows = await gisQuery(556, { where: "1=1", outFields: "oid,name,address,num_vehicles,num_disabled", returnGeometry: "true", outSR: "4326" });
   if (rows.length < 200) problems.push(`registry: only ${rows.length} lots in GIS layer 556 (expected ~250)`);
   const lots: Lot[] = [];
   for (const r of rows) {
@@ -29,11 +30,18 @@ export async function registry(have: Lot[], today: string, problems: string[]): 
     if (named(name, p, have)) continue;
     lots.push({
       id: `registry-${r.oid}`, name, operator: "registry", address, ...p,
-      spaces: r.num_vehicles || undefined, tariffs: null, sign: { free: false, ...SIGN },
+      spaces: r.num_vehicles || undefined, ...(r.num_disabled > 0 && { accessible: true }), tariffs: null, sign: { free: false, ...SIGN },
       source_url: `${GIS}/556`, verified_at: today,
     });
   }
   return lots;
+}
+
+// Street motorcycle bays (GIS layer 951): not lots, so a separate file for the map's motorcycle layer.
+export async function motoBays(problems: string[]) {
+  const rows = await gisQuery(951, { where: "1=1", outFields: "ktovet,ms_mekomot", returnGeometry: "true", outSR: "4326" });
+  if (rows.length < 400) problems.push(`moto: only ${rows.length} bays in GIS layer 951 (expected ~525)`);
+  return rows.map((r) => ({ address: r.ktovet.replace(/\s+/g, " ").trim(), spaces: r.ms_mekomot || undefined, lat: +r.y.toFixed(6), lng: +r.x.toFixed(6) }));
 }
 
 const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter"];
@@ -65,4 +73,14 @@ export async function osm(have: Lot[], today: string): Promise<Lot[] | null> {
     });
   }
   return lots;
+}
+
+// Blue-white parking zones (GIS layer 544), simplified to ~10 m: [lng, lat] rings for the point-in-zone lookup in src/street.ts.
+export async function zones(problems: string[]) {
+  const rows = await gisQuery(544, { where: "1=1", outFields: "ms_ezor", returnGeometry: "true", outSR: "4326",
+    maxAllowableOffset: "0.0001", geometryPrecision: "5" }, 30_000);
+  const known = Object.keys(AREA).map(Number), got = rows.map((r) => r.ms_ezor);
+  if (got.length !== known.length || !known.every((z) => got.includes(z)))
+    problems.push(`zones: GIS layer 544 has zones ${got.sort((a, b) => a - b)}; update AREA in src/street.ts (expected ${known})`);
+  return rows.map((r) => ({ zone: r.ms_ezor as number, rings: r.rings as [number, number][][] })).sort((a, b) => a.zone - b.zone);
 }

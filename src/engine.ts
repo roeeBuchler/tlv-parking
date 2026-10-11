@@ -26,6 +26,8 @@ export type Lot = {
   open?: Window[]; // if set, the whole stay must be inside these
   no_entry?: Window[];
   payment?: string[];
+  // features: absent = unknown, never "no". covered is inferred from height_m (a structure) where no source says it.
+  ev_chargers?: number; height_m?: number; accessible?: boolean; covered?: boolean;
   live_key?: number; // TLV GIS layer 970 code_achoza
   source_url: string; verified_at: string;
 };
@@ -34,7 +36,7 @@ export type Offer = {
   days: Day[]; apps?: string[]; transit?: boolean; free_hours: number;
   source_url: string; verified_at: string;
 };
-export type Profile = { resident?: boolean; apps?: string[]; transit?: boolean };
+export type Profile = { resident?: boolean; apps?: string[]; transit?: boolean; zone?: number }; // zone: TLV residential parking permit zone
 
 const holidays = holidaysJson as Record<string, "holiday" | "holiday_eve">;
 export const MIN = 60_000, HOUR = 60 * MIN, DAY = 24 * HOUR;
