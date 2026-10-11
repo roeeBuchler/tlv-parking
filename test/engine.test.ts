@@ -68,7 +68,11 @@ test("Green: tiered per-minute, Shabbat and evening flats", () => {
   assert.equal(qq("green-541", `${SUN}T10:00`, 120).price_ils, 45); // 60 x 0.35 + 60 x 0.40
   assert.equal(qq("green-541", `${SUN}T10:00`, 300).price_ils, 87); // daily max
   assert.equal(qq("green-541", `${SAT}T14:00`, 120).price_ils, 30); // Shabbat flat
-  assert.equal(qq("green-1969", "2026-10-09T21:00", 120).price_ils, 15); // evening, Friday included
+  assert.equal(qq("green-1969", `${SUN}T21:00`, 120).price_ils, 20); // weekday evening flat from 19:00
+  assert.equal(qq("green-1969", "2026-10-09T21:00", 120).price_ils, 25); // Friday: the Fri/Sat flat, not the weekday evening rate
+  assert.equal(qq("green-1969", `${SUN}T10:00`, 90).price_ils, 18 + 2 * 6); // first hour + 2 quarters
+  assert.equal(qq("green-537", `${SUN}T21:00`, 600).price_ils, 50); // evening max
+  assert.equal(qq("green-541", `${SUN}T20:00`, 240).price_ils, 50); // 0.35/min, capped at 50 for the evening
   assert.equal(qq("green-2142", `${SUN}T10:00`, 90).price_ils, 25 + 2 * 7); // first hour + 2 quarters
 });
 
