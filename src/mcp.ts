@@ -2,7 +2,7 @@
 import { McpServer } from "@modelcontextprotocol/server";
 import * as z from "zod/v4";
 import { search, lotDetails, resolveStart, placeOut, CAVEATS } from "./search.ts";
-import { resolvePlace } from "./places.ts";
+import { resolvePlace, type LoadPois } from "./places.ts";
 
 const readOnly = { readOnlyHint: true, openWorldHint: false };
 const out = (data: unknown, summary: string) => ({
@@ -24,7 +24,7 @@ const when = {
   will_ride_public_transport: z.boolean().default(false).describe("User will ride a TLV bus the same day (unlocks park & ride deals)."),
 };
 
-export function createServer(origin: string) {
+export function createServer(origin: string, pois?: LoadPois) {
   const server = new McpServer({ name: "tlv-parking", version: "1.0.0" }, {
     instructions: "Tel Aviv parking lots with estimated prices for a specific time window. " + CAVEATS.join(" "),
   });
@@ -37,7 +37,7 @@ export function createServer(origin: string) {
       "Always tell the user which resolved_location was used, the assumed duration, and that the sign at the gate prevails. " +
       "Mention potential_offers (deals the user could unlock) when present.",
     inputSchema: z.object({
-      near: z.string().optional().describe("Place, business, landmark or street address (e.g. \"Dizengoff 50\", \"פארק המסילה\")."),
+      near: z.string().optional().describe("Place, business, landmark, street address or Google Maps link (e.g. \"Dizengoff 50\", \"פארק המסילה\")."),
       lat: z.number().optional(), lng: z.number().optional(),
       ...when,
       max_walk_m: z.number().int().min(100).max(5000).default(800).describe("Max straight-line distance in meters."),
@@ -49,7 +49,7 @@ export function createServer(origin: string) {
     let places = null;
     if (a.lat == null || a.lng == null) {
       if (!a.near) return fail("Give `near` or `lat`+`lng`.");
-      const p = placeOut(await resolvePlace(a.near));
+      const p = placeOut(await resolvePlace(a.near, pois));
       if (!p.resolved) return fail(`Couldn't find "${a.near}". Try a street name + number, or lat/lng.`);
       places = p;
     }

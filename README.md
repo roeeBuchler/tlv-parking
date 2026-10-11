@@ -5,12 +5,13 @@ A map of Tel Aviv parking lots, plus an MCP server, so an AI can answer *"cheape
 ```
 src/engine.ts      price engine: day types (Shabbat/holidays), quote(), shared by everything
 src/search.ts      ranking used by both the API and MCP; live status (TLV GIS, cached 120 s)
-src/places.ts      landmarks + OpenStreetMap (Nominatim) search
+src/places.ts      place search: Google Maps links, landmarks, local business index, OpenStreetMap
 src/mcp.ts         MCP tools: search_parking, get_lot_details
 src/worker.ts      routes: /mcp, /api/*, static site from public/
 pipeline/          ahuzot.co.il + GIS, centralpark.co.il, greenparking.co.il, mall sites -> priced lots;
                    city license registry (GIS 556) + OpenStreetMap -> unpriced lots; all into data/lots.json; hebcal -> data/holidays.json
 data/offers.json   hand-curated deals · data/places.json  landmarks
+public/pois.tsv    ~55k businesses for place search (npm run pois): Overture Maps, + Foursquare OS Places with HF_TOKEN
 public/            the site (MapLibre from CDN, no build step), llms.txt, openapi.json
 ```
 
@@ -27,6 +28,7 @@ npm run dev         # http://localhost:8787
 
 1. Create a free Cloudflare account and run `npx wrangler login`, then `npm run deploy`. The site goes live at `https://tlv-parking.<your-subdomain>.workers.dev`.
 2. For CI, add the repo secrets `CLOUDFLARE_API_TOKEN` (use the "Edit Cloudflare Workers" template) and `CLOUDFLARE_ACCOUNT_ID`. After that, every push to main deploys, and every Sunday a run refreshes the data, commits it and deploys.
+3. Optional, to add Foursquare's places to the index: on huggingface.co, sign in, accept the terms at `datasets/foursquare/fsq-os-places`, create a read token, and add it as the repo secret `HF_TOKEN` (locally: `HF_TOKEN=... npm run pois`).
 
 ## Connect an AI
 
@@ -39,4 +41,4 @@ npm run dev         # http://localhost:8787
 
 It prints what needs a human: a new tariff wording (extend `pipeline/parse.ts`), a lot whose hours changed or a new "per sign" lot (`pipeline/overrides.ts`), a changed Green Parking or mall price text, or a new Green lot (`pipeline/operators.ts`), or a price jump of more than 50%. Check the change on the operator's site, fix the code or accept the data, and push.
 
-Data: © Tel Aviv-Yafo Municipality open data (GIS), ahuzot.co.il, centralpark.co.il, greenparking.co.il, azrielimalls.co.il, dizengof-center.co.il, saronaparking.co.il; unpriced lots also © OpenStreetMap contributors (ODbL). Map: © OpenStreetMap contributors, OpenFreeMap.
+Data: © Tel Aviv-Yafo Municipality open data (GIS), ahuzot.co.il, centralpark.co.il, greenparking.co.il, azrielimalls.co.il, dizengof-center.co.il, saronaparking.co.il; unpriced lots also © OpenStreetMap contributors (ODbL). Place search: Overture Maps Foundation (CDLA-Permissive-2.0), Foursquare OS Places (Apache-2.0). Map: © OpenStreetMap contributors, OpenFreeMap.
