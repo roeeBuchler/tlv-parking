@@ -5,7 +5,7 @@ A map of Tel Aviv parking lots, plus an MCP server, so an AI can answer *"cheape
 ```
 src/engine.ts      price engine: day types (Shabbat/holidays), quote(), shared by everything
 src/search.ts      ranking used by both the API and MCP; live status (TLV GIS, cached 120 s)
-src/places.ts      landmarks + TLV GIS address geocoding
+src/places.ts      landmarks + OpenStreetMap (Nominatim) search
 src/mcp.ts         MCP tools: search_parking, get_lot_details
 src/worker.ts      routes: /mcp, /api/*, static site from public/
 pipeline/          ahuzot.co.il + GIS, centralpark.co.il, greenparking.co.il, mall sites -> priced lots;

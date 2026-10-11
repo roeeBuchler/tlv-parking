@@ -169,8 +169,8 @@ $("#search").addEventListener("submit", async (e) => {
   e.preventDefault();
   const q = $("#q").value.trim();
   if (!q) return;
-  const { candidates = [] } = await (await fetch(`/api/places?q=${encodeURIComponent(q)}`)).json();
-  if (!candidates.length) { $("#q").setCustomValidity("לא נמצא. נסו שם רחוב ומספר בית."); $("#q").reportValidity(); return; }
+  const { candidates = [], error } = await (await fetch(`/api/places?q=${encodeURIComponent(q)}`)).json().catch(() => ({ error: true }));
+  if (!candidates.length) { $("#q").setCustomValidity(error ? "שירות החיפוש לא זמין כרגע. נסו שוב בעוד רגע." : "לא נמצא. נסו שם מקום, או רחוב ומספר בית."); $("#q").reportValidity(); return; }
   state.alts = candidates.slice(1);
   goTo(candidates[0]);
 });

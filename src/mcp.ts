@@ -37,7 +37,7 @@ export function createServer(origin: string) {
       "Always tell the user which resolved_location was used, the assumed duration, and that the sign at the gate prevails. " +
       "Mention potential_offers (deals the user could unlock) when present.",
     inputSchema: z.object({
-      near: z.string().optional().describe("Place, landmark or street address in Tel Aviv-Yafo."),
+      near: z.string().optional().describe("Place, business, landmark or street address (e.g. \"Dizengoff 50\", \"פארק המסילה\")."),
       lat: z.number().optional(), lng: z.number().optional(),
       ...when,
       max_walk_m: z.number().int().min(100).max(5000).default(800).describe("Max straight-line distance in meters."),
@@ -50,7 +50,7 @@ export function createServer(origin: string) {
     if (a.lat == null || a.lng == null) {
       if (!a.near) return fail("Give `near` or `lat`+`lng`.");
       const p = placeOut(await resolvePlace(a.near));
-      if (!p.resolved) return fail(`Couldn't find "${a.near}" in Tel Aviv-Yafo. Try a Hebrew street name + number, or lat/lng.`);
+      if (!p.resolved) return fail(`Couldn't find "${a.near}". Try a street name + number, or lat/lng.`);
       places = p;
     }
     const at = places?.resolved ?? { lat: a.lat!, lng: a.lng! };
