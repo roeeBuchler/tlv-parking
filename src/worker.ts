@@ -3,6 +3,7 @@ import { createMcpHandler } from "@modelcontextprotocol/server";
 import { createServer } from "./mcp.ts";
 import { search, lotDetails, resolveStart, placeOut } from "./search.ts";
 import { resolvePlace } from "./places.ts";
+import { streetZones } from "./street.ts";
 import { handleUsers, type Env as UsersEnv } from "./users.ts";
 
 const json = (data: unknown, status = 200) => Response.json(data, {
@@ -46,6 +47,10 @@ export default {
         case url.pathname.startsWith("/api/lots/"): {
           const d = await lotDetails(decodeURIComponent(url.pathname.slice(10)), common());
           return d ? json(d) : json({ error: "No such lot" }, 404);
+        }
+        case url.pathname === "/api/street": { // zones along the street nearest lat/lng
+          const z = await streetZones({ lat: num("lat") ?? NaN, lng: num("lng") ?? NaN });
+          return z ? json(z) : json({ error: "No Tel Aviv blue-white parking zone here" }, 404);
         }
         case url.pathname === "/api/places":
           return json({ candidates: await resolvePlace(p.get("q") ?? "", pois) });

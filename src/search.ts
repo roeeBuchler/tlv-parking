@@ -3,7 +3,7 @@ import lotsJson from "../data/lots.json" with { type: "json" };
 import offersJson from "../data/offers.json" with { type: "json" };
 import { WEEK, quote, distanceM, parseLocal, fmtLocal, localNow, dayOf, DAY, HOUR, type Day, type Lot, type Offer, type Profile } from "./engine.ts";
 import { gisQuery, type Place } from "./places.ts";
-import { zoneAt, streetQuote, streetChance } from "./street.ts";
+import { zoneAt, streetQuote, streetChance, streetWho } from "./street.ts";
 
 export const lots = lotsJson as unknown as Lot[];
 export const offers = offersJson as unknown as Offer[];
@@ -20,6 +20,7 @@ export const CAVEATS = [
     `${n("azrieli") + n("dizengoff-center") + n("sarona")} mall lots (Azrieli, Dizengoff Center, Sarona) with prices, plus ` +
     `${n("registry") + n("osm")} more public lots with no published price (city license registry, OpenStreetMap): price_ils null.`,
   "street = blue-white curbside parking at the searched point (null outside Tel Aviv-Yafo's parking zones): its zone, price for the stay, " +
+    "who = that price for each kind of driver (own_zone permit, other_zone permit, visitor), " +
     "and chance_pct, a rough estimate of finding a spot (time of day plus live occupancy of nearby municipal lots), not live street data. Say it is an estimate.",
 ];
 
@@ -86,7 +87,7 @@ export async function search(s: SearchInput) {
     ? results.filter((r) => r.live && r.distance_m != null && r.distance_m <= 600).map((r) => r.live!.status) : [];
   return {
     query: { start: fmtLocal(s.start), end: fmtLocal(s.start + s.minutes * 60_000), duration_minutes: s.minutes, day_type: dayOf(s.start), ...profile },
-    street: zone ? { ...streetQuote(zone, s.start, s.minutes, profile), ...streetChance(zone, s.start, nearby) } : null,
+    street: zone ? { ...streetQuote(zone, s.start, s.minutes, profile), who: streetWho(zone, s.start, s.minutes), ...streetChance(zone, s.start, nearby) } : null,
     count: results.length,
     results: results.slice(0, s.limit ?? results.length),
     caveats: CAVEATS,

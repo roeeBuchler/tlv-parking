@@ -50,6 +50,17 @@
         "parameters": [{ "name": "q", "in": "query", "required": true, "schema": { "type": "string" } }],
         "responses": { "200": { "description": "candidates[]" } }
       }
+    },
+    "/api/street": {
+      "get": {
+        "operationId": "streetZones",
+        "summary": "The street nearest a point and the blue-white parking zones along it, by side and house number",
+        "parameters": [
+          { "name": "lat", "in": "query", "required": true, "schema": { "type": "number" } },
+          { "name": "lng", "in": "query", "required": true, "schema": { "type": "number" } }
+        ],
+        "responses": { "200": { "description": "{street, street_en, odd: [{zone, from, to}], even: [...]}" }, "404": { "description": "Not in a Tel Aviv-Yafo parking zone" } }
+      }
     }
   }
 }

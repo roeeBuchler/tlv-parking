@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { parseLocal } from "../src/engine.ts";
-import { zoneAt, streetQuote, streetChance, AREA } from "../src/street.ts";
+import { zoneAt, streetQuote, streetChance, streetWho, AREA } from "../src/street.ts";
 
 const p = (zone: number, when: string, mins: number, profile = {}) => streetQuote(zone, parseLocal(when), mins, profile).price_ils;
 const TUE = "2026-10-06", FRI = "2026-10-09", SAT = "2026-10-10";
@@ -41,4 +41,9 @@ test("chance estimate: bounded, lower when nearby lots are full", () => {
   assert.ok(quiet > none && none > busy, `${quiet} > ${none} > ${busy}`);
   for (const x of [quiet, none, busy]) assert.ok(x >= 5 && x <= 95);
   assert.ok(streetChance(zoneAt(JAFFA_CLOCK)!, at).chance_pct > none); // centre is harder
+});
+
+test("who: one lookup prices the stay for every kind of driver", () => {
+  const w = streetWho(zoneAt(HABIMA)!, parseLocal(`${TUE}T10:00`), 180);
+  assert.deepEqual(w, { own_zone: { price_ils: 0, rate_ils_per_hour: 0 }, other_zone: { price_ils: 8.68, rate_ils_per_hour: 8.68 }, visitor: { price_ils: 37.2, rate_ils_per_hour: 12.4 } });
 });

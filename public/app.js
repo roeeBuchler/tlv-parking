@@ -87,6 +87,7 @@ async function load() {
   state.results = r.results ?? [];
   state.street = r.street ?? null;
   drawPins();
+  if (state.street && state.center) loadZones(state.center);
   if (!list.hidden) showList();
   if (state.lot && !panel.hidden) openLot(state.lot, false);
 }
@@ -107,11 +108,36 @@ function showList() {
 }
 // blue-white parking at the searched point (src/street.ts): price for the stay and a rough chance of finding a spot
 const AREA = { center: "מרכז העיר", city: "רחבי העיר" };
+const HOURS = { center: "א׳–ה׳ 08:00–21:00", city: "א׳–ה׳ 08:00–19:00" };
+// the zones along the searched street, by side (GET /api/street); fetched after the search, once per place
+let zonesFor = null;
+async function loadZones(c) {
+  if (zonesFor === c) return;
+  zonesFor = c; state.zones = null;
+  const r = await fetch(`/api/street?lat=${c.lat}&lng=${c.lng}`).catch(() => null);
+  if (zonesFor !== c || !r?.ok) return;
+  state.zones = await r.json();
+  if (!list.hidden) showList();
+}
+const runs = (rs) => rs.map((r) => `אזור ${r.zone} (<bdi dir="ltr">${r.from === r.to ? r.from : `${r.from}–${r.to}`}</bdi>)`).join(", ");
+function zonesText(z) {
+  const all = [...new Set([...z.odd, ...z.even].map((r) => r.zone))];
+  return all.length === 1 ? `כל רחוב ${esc(z.street)} באזור ${all[0]}.`
+    : `רחוב ${esc(z.street)} עובר בכמה אזורים.<br>צד אי-זוגי: ${runs(z.odd)}.<br>צד זוגי: ${runs(z.even)}.`;
+}
+// who may park here and what this stay costs them, the user's own case marked
+const whoRows = (s) => [
+  ["own_zone", `תו חניה לאזור ${s.zone}`, "חינם, בכל שעה"],
+  ["other_zone", "תו חניה לאזור אחר (תושבי העיר)", `${ils(s.who.other_zone.price_ils)}: שעתיים ביום חינם, אחר כך ₪${s.who.other_zone.rate_ils_per_hour} לשעה`],
+  ["none", "בלי תו (אורחים)", `${ils(s.who.visitor.price_ils)}: ₪${s.who.visitor.rate_ils_per_hour} לשעה`],
+].map(([k, who, what]) => `<tr${k === s.permit ? ' class="mine"' : ""}><th scope="row">${who}${k === s.permit ? " (אתם)" : ""}</th><td>${what}</td></tr>`).join("");
 const streetRow = (s) => `<li class="street">
   <span class="plate bw" dir="ltr">${esc(ils(s.price_ils))}</span>
   <span><span class="row-name">חניה ברחוב, כחול-לבן</span><span class="row-sub">אזור ${esc(s.zone)}, ${AREA[s.area]}${s.permit === "own_zone" ? ", חינם עם התו שלך"
     : s.paid_minutes ? `, ₪${esc(s.rate_ils_per_hour)} לשעה` : ", ללא תשלום בשעות האלה"}</span></span>
   <span class="row-end"><span class="status ${s.chance_pct >= 50 ? "free" : s.chance_pct >= 25 ? "few" : "full"}">סיכוי ~${esc(s.chance_pct)}%</span>הערכה</span>
+  <table class="who"><caption>מי יכול לחנות כאן, ובכמה לחניה הזו</caption>${whoRows(s)}</table>
+  <p class="rules">בתשלום ${HOURS[s.area]}, ו׳ וערבי חג 08:00–17:00. בשבת ובחג חינם לכולם.${state.zones ? `<br>${zonesText(state.zones)}` : ""}</p>
   <details><summary>איך זה מחושב</summary>
     <p>הסיכוי למצוא מקום הוא הערכה לפי היום והשעה${s.live_lots ? `, ולפי התפוסה עכשיו ב-${esc(s.live_lots)} חניוני אחוזות החוף הקרובים` : ""}. זה לא נתון חי מהרחוב.</p>
     ${s.permit === "other_zone" ? `<p>בעלי תו מאזור אחר: שעתיים ביום חינם, ואחריהן 30% הנחה.${state.zone ? "" : " בחרו את אזור התו שלכם כדי לראות אם החניה כאן חינם."}</p>` : ""}
