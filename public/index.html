@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=account_circle,add,block,calendar_today,chevron_left,chevron_right,close,delete,directions,directions_bus,edit,format_list_bulleted,home,info,link,local_offer,local_parking,logout,map,place,schedule,search,smartphone,star,timer&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=account_circle,add,badge,block,calendar_today,chevron_left,chevron_right,close,delete,directions,directions_bus,edit,format_list_bulleted,home,info,link,local_offer,local_parking,logout,map,place,schedule,search,smartphone,star,timer&display=block">
 <style>
   /* Google Maps feel: floating white cards over a colourful map; Google's four colours carry meaning (price band, status, chip). */
   :root {
@@ -114,6 +114,12 @@
   .row-end { text-align: end; white-space: nowrap; }
   .status { display: block; font-weight: 500; }
   .status.free { color: var(--green-fg); } .status.few { color: var(--yellow-fg); } .status.full, .status.closed { color: var(--red-fg); }
+  /* blue-white street parking: the curb's stripes under the price */
+  #list .street { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 4px 12px; padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--blue-bg); }
+  #list .street details { grid-column: 1 / -1; margin: 0; font-size: 13px; }
+  #list .street details p { margin: 4px 0; }
+  .plate.bw { --c: var(--paper); --on: var(--blue-fg); border-color: var(--blue); padding-bottom: 3px;
+    background: linear-gradient(90deg, var(--blue) 50%, #fff 0) bottom / 12px 4px repeat-x, var(--paper); }
 
   /* lot details */
   #close { float: left; margin: -8px -12px 0 0; }
@@ -134,7 +140,7 @@
   .note { --b: var(--blue-bg); --f: var(--blue-fg); --i: "info"; display: flex; gap: 10px; align-items: flex-start; margin: 8px 0; padding: 10px 14px;
     border-radius: 12px; background: var(--b); color: var(--f); font-size: 14px; }
   .note::before { content: var(--i); flex: none; font: 20px/1 "Material Symbols Rounded"; font-feature-settings: "liga"; margin-top: 1px; }
-  .note[hidden] { display: none; }
+  .note[hidden], .chip[hidden] { display: none; }
   .note.green { --b: var(--green-bg); --f: var(--green-fg); --i: "local_offer"; }
   .note.yellow { --b: var(--yellow-bg); --f: var(--yellow-fg); --i: "local_offer"; }
   .note.red { --b: var(--red-bg); --f: var(--red-fg); --i: "block"; }
@@ -241,6 +247,10 @@
     </select></label>
     <span class="sep" aria-hidden="true"></span>
     <label class="chip tog res"><input type="checkbox" id="res"><span class="ms">home</span>תושב/ת ת״א</label>
+    <label class="chip res" id="zoneChip" hidden title="חניה בכחול-לבן חינם באזור התו שלך"><span class="ms">badge</span><select id="zone" aria-label="אזור תו החניה שלך">
+      <option value="">אזור התו?</option><option value="1">אזור 1</option><option value="2">אזור 2</option><option value="4">אזור 4</option><option value="6">אזור 6</option>
+      <option value="7">אזור 7</option><option value="9">אזור 9</option><option value="10">אזור 10</option><option value="12">אזור 12</option><option value="13">אזור 13</option>
+    </select></label>
     <label class="chip tog bus" title="פנגו או סלו + נסיעה באוטובוס בת״א באותו יום"><input type="checkbox" id="bus"><span class="ms">directions_bus</span>פנגו/סלו + אוטובוס</label>
     <label class="chip tog cpa" title="מחיר מוזל בחניוני סנטרל פארק למשלמים באפליקציה שלהם"><input type="checkbox" id="cp"><span class="ms">smartphone</span>אפליקציית סנטרל פארק</label>
   </div>
