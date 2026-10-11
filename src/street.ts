@@ -59,6 +59,9 @@ export function streetWho(zone: number, entry: number, minutes: number) {
   return { own_zone: { price_ils: 0, rate_ils_per_hour: 0 }, other_zone: q({ resident: true }), visitor: q({}) };
 }
 
+// GIS English names are upper case: "IBN GVIROL" -> "Ibn Gvirol", "HA'ARBA'A" -> "Ha'arba'a" (no capital after an apostrophe)
+export const titleCase = (s: string) => s.toLowerCase().replace(/(^|[\s-])\p{L}/gu, (c) => c.toUpperCase());
+
 // The street nearest to p and the zones along it, by side and house number (TLV GIS layer 527, addresses):
 // long streets cross zones, and on border streets each side can belong to a different zone.
 export async function streetZones(p: { lat: number; lng: number }) {
@@ -78,7 +81,7 @@ export async function streetZones(p: { lat: number; lng: number }) {
     }
     return runs;
   };
-  return { street: s.t_rechov as string, street_en: s.t_rechov_eng as string, odd: side(1), even: side(0) };
+  return { street: s.t_rechov as string, street_en: titleCase(s.t_rechov_eng ?? ""), odd: side(1), even: side(0) };
 }
 
 // ponytail: hand-set guesses by day type and hour, nudged by live occupancy of nearby municipal lots.
