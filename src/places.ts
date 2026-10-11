@@ -1,12 +1,14 @@
-// Place resolution: hand-picked landmarks first, then OpenStreetMap (Nominatim) for addresses, POIs and businesses.
+// Place resolution: a pasted Google Maps link, hand-picked landmarks, the local business index (Overture + Foursquare,
+// public/pois.tsv), then OpenStreetMap (Nominatim) for addresses and whatever the index lacks.
 // geocode() below (TLV GIS layer 527) is only for the data pipeline, which depends on the city's GIS anyway.
 import landmarks from "../data/places.json" with { type: "json" };
 
 export const GIS = "https://gisn.tel-aviv.gov.il/ArcGIS/rest/services/IView2/MapServer";
 export const UA = "tlv-parking-bot/1.0 (+https://github.com/roeeBuchler/tlv-parking)";
-export type Place = { label: string; lat: number; lng: number; source: "landmark" | "address" | "osm" };
+export type Place = { label: string; lat: number; lng: number; source: "landmark" | "address" | "osm" | "link" | "poi" };
+export type LoadPois = () => Promise<string>;
 
-const norm = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+export const norm = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 
 // one retry by default: the city's server sometimes hangs a connection
 export async function gisQuery(layer: number, params: Record<string, string>, timeoutMs = 8000, retries = 1): Promise<any[]> {
@@ -60,12 +62,45 @@ async function osmSearch(q: string): Promise<Place[]> {
   });
 }
 
-export async function resolvePlace(q: string): Promise<Place[]> {
+// google.com/maps/place/Nachmani/@32.06,34.77,18z/data=...!3d32.0651024!4d34.7776611 -> the pin (!3d!4d), else the viewport (@)
+export function fromMapsLink(q: string): Place | null {
+  if (!/^https?:\/\/(www\.)?google\.[a-z.]+\/maps/.test(q)) return null;
+  const m = q.match(/!3d(-?[\d.]+)!4d(-?[\d.]+)/) ?? q.match(/@(-?[\d.]+),(-?[\d.]+)/);
+  if (!m) return null;
+  const name = q.match(/\/maps\/place\/([^/@]+)/)?.[1];
+  return { label: name ? decodeURIComponent(name.replace(/\+/g, " ")) : `${m[1]}, ${m[2]}`, lat: +m[1], lng: +m[2], source: "link" };
+}
+
+// public/pois.tsv lines: "<normalized names, |-separated>\t<label>\t<lat>\t<lng>", best place first.
+// indexOf over the raw text, no JSON parse: a few ms per query (Workers free plan: 10 ms CPU)
+export function poiSearch(q: string, tsv: string, limit = 5): Place[] {
+  const n = norm(q);
+  if (n.length < 2) return [];
+  const hits: { score: number; line: string }[] = [];
+  for (let i = tsv.indexOf(n); i >= 0 && hits.length < 300;) {
+    const start = tsv.lastIndexOf("\n", i) + 1, tab = tsv.indexOf("\t", start), end = tsv.indexOf("\n", i) >>> 0; // no trailing newline: -1 -> 2^32-1, slices to the end and ends the loop
+    if (i < tab) { // matched the names column, not the label
+      const score = Math.min(...tsv.slice(start, tab).split("|").map((x) => x === n ? 0 : x.startsWith(n) ? 1 : ` ${x} `.includes(` ${n} `) ? 2 : 3));
+      hits.push({ score, line: tsv.slice(start, end) });
+    }
+    i = tsv.indexOf(n, end);
+  }
+  return hits.sort((a, b) => a.score - b.score).slice(0, limit).map(({ line }) => {
+    const [, label, lat, lng] = line.split("\t");
+    return { label, lat: +lat, lng: +lng, source: "poi" as const };
+  });
+}
+
+export async function resolvePlace(q: string, pois?: LoadPois): Promise<Place[]> {
+  const link = fromMapsLink(q.trim());
+  if (link) return [link];
   const n = norm(q);
   if (!n) return [];
   const hits = landmarks
     .filter((l) => [l.he, l.en, ...(l.aliases ?? [])].some((name) => { const x = norm(name); return x.includes(n) || n.includes(x); }))
     .map((l) => ({ label: `${l.he} (${l.en})`, lat: l.lat, lng: l.lng, source: "landmark" as const }));
   if (hits.length && !/\d/.test(q)) return hits;
-  return [...hits, ...(await osmSearch(q))];
+  const local = poiSearch(q, (await pois?.().catch(() => "")) ?? "");
+  const osm = await osmSearch(q).catch((e) => { if (local.length) return []; throw e; });
+  return /\d/.test(q) ? [...hits, ...osm, ...local] : [...hits, ...local, ...osm]; // addresses ("דיזנגוף 50") are OSM's job
 }
