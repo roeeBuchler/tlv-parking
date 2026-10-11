@@ -26,14 +26,6 @@ function jlmNow() {
   return Date.parse(`${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:00Z`);
 }
 const fmt = (ms) => new Date(ms).toISOString().slice(0, 16);
-function preset(k) {
-  const now = jlmNow(), today = now - (now % DAY);
-  if (k === "now") return "";
-  if (k === "tonight") return fmt(Math.max(today + 20 * HOUR, now));
-  let t = today + (k === "fri" ? 10 : 14) * HOUR;
-  while (new Date(t).getUTCDay() !== (k === "fri" ? 5 : 6) || t < now) t += DAY;
-  return fmt(t);
-}
 const whenText = (s) => { const d = new Date(Date.parse(s + ":00Z")); return `יום ${DAYS[d.getUTCDay()]} ${d.getUTCDate()}/${d.getUTCMonth() + 1}`; };
 const endOf = (s, mins) => fmt(Date.parse(s + ":00Z") + mins * 6e4).slice(11);
 
@@ -79,9 +71,12 @@ function drawPins() {
 }
 const select = (id) => document.querySelectorAll(".pin").forEach((p) => p.firstElementChild.classList.toggle("sel", p.dataset.id === id));
 
+let loads = 0;
 async function load() {
+  const n = ++loads; // arrow clicks fire fast: only the latest answer may draw
   const extra = state.center ? { lat: state.center.lat, lng: state.center.lng, max_walk: 100000 } : {};
   const r = await (await fetch(`/api/search?${qs(extra)}`)).json();
+  if (n !== loads) return;
   state.results = r.results ?? [];
   drawPins();
   if (!list.hidden) showList();
@@ -175,10 +170,27 @@ $("#search").addEventListener("submit", async (e) => {
   goTo(candidates[0]);
 });
 $("#q").addEventListener("input", () => $("#q").setCustomValidity(""));
-const presetBtns = document.querySelectorAll("[data-when]");
-const markWhen = (k) => presetBtns.forEach((b) => b.setAttribute("aria-pressed", b.dataset.when === k));
-presetBtns.forEach((b) => b.addEventListener("click", () => { state.when = preset(b.dataset.when); $("#when").value = state.when; markWhen(b.dataset.when); sync(); load(); }));
-$("#when").addEventListener("change", (e) => { state.when = e.target.value; markWhen(state.when ? null : "now"); sync(); load(); });
+// when: "" = now, else Jerusalem wall clock "YYYY-MM-DDTHH:MM"
+const STEP = 15 * 6e4;
+const dateFmt = new Intl.DateTimeFormat("he-IL", { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" });
+function showWhen() {
+  $("#mode").value = state.when ? "at" : "now";
+  $("#at").hidden = !state.when;
+  if (!state.when) return;
+  $("#time").value = state.when.slice(11);
+  $("#date").value = state.when.slice(0, 10);
+  $("#dateTxt").textContent = dateFmt.format(Date.parse(state.when + ":00Z"));
+}
+const setWhen = (v) => { state.when = v; showWhen(); sync(); load(); };
+$("#mode").addEventListener("change", (e) => setWhen(e.target.value === "now" ? "" : fmt(Math.ceil(jlmNow() / STEP) * STEP)));
+$("#time").addEventListener("change", (e) => e.target.value && setWhen(state.when.slice(0, 11) + e.target.value));
+$("#date").addEventListener("change", (e) => e.target.value && setWhen(e.target.value + state.when.slice(10)));
+// time arrows snap to the quarter hour (21:40 ▸ 21:45), date arrows keep the time
+document.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("click", () => {
+  const t = Date.parse(state.when + ":00Z"), d = +b.dataset.step;
+  setWhen(fmt(b.dataset.unit === "date" ? t + d * DAY : Math[d > 0 ? "floor" : "ceil"](t / STEP) * STEP + d * STEP));
+}));
+for (const k of ["time", "date"]) $(`#${k}Btn`).addEventListener("click", () => { try { $(`#${k}`).showPicker(); } catch { $(`#${k}`).focus(); } });
 $("#dur").addEventListener("change", (e) => { state.dur = e.target.value; sync(); load(); });
 $("#res").addEventListener("change", (e) => { state.res = e.target.checked; sync(); load(); });
 $("#bus").addEventListener("change", (e) => { state.bus = e.target.checked; sync(); load(); });
@@ -187,8 +199,7 @@ $("#listBtn").addEventListener("click", () => (list.hidden ? showList() : ((list
 new ResizeObserver(() => document.documentElement.style.setProperty("--bar-h", `${$("#bar").offsetHeight}px`)).observe($("#bar"));
 
 // --- init from URL (deep links from the MCP land here)
-$("#when").value = state.when;
-markWhen(state.when ? null : "now");
+showWhen();
 $("#dur").value = [...$("#dur").options].some((o) => o.value === state.dur) ? state.dur : ($("#dur").add(new Option(`${state.dur} דק׳`, state.dur)), state.dur);
 $("#res").checked = state.res;
 $("#bus").checked = state.bus;
