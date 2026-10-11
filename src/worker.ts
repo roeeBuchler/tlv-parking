@@ -1,17 +1,20 @@
-// One Worker: static site (./public, served before this runs), JSON API, and MCP at /mcp.
+// One Worker: static site (./public, served before this runs), JSON API, accounts + favorites, and MCP at /mcp.
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import { createServer } from "./mcp.ts";
 import { search, lotDetails, resolveStart, placeOut } from "./search.ts";
 import { resolvePlace } from "./places.ts";
+import { handleUsers, type Env } from "./users.ts";
 
 const json = (data: unknown, status = 200) => Response.json(data, {
   status, headers: { "access-control-allow-origin": "*", "cache-control": "no-store" },
 });
 
 export default {
-  async fetch(req: Request): Promise<Response> {
+  async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url), p = url.searchParams, origin = url.origin;
     if (url.pathname === "/mcp") return createMcpHandler(() => createServer(origin)).fetch(req);
+    const u = await handleUsers(req, env, url.pathname).catch((e) => json({ error: String(e?.message ?? e) }, 500));
+    if (u) return u;
 
     const num = (k: string) => (p.get(k) ? Number(p.get(k)) : undefined);
     const bool = (k: string) => ["1", "true"].includes(p.get(k) ?? "");

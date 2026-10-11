@@ -5,7 +5,7 @@
   "scripts": {
     "data": "node --experimental-strip-types pipeline/build.ts",
     "test": "node --experimental-strip-types --test test/*.test.ts",
-    "dev": "wrangler dev",
+    "dev": "wrangler d1 migrations apply tlv-parking --local && wrangler dev",
     "deploy": "wrangler deploy"
   },
   "engines": {

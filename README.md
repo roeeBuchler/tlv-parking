@@ -7,6 +7,7 @@ src/engine.ts      price engine: day types (Shabbat/holidays), quote(), shared b
 src/search.ts      ranking used by both the API and MCP; live status (TLV GIS, cached 120 s)
 src/places.ts      landmarks + OpenStreetMap (Nominatim) search
 src/mcp.ts         MCP tools: search_parking, get_lot_details
+src/users.ts       accounts (username + password) and favorite places, each with its favorite lots; D1, schema in migrations/
 src/worker.ts      routes: /mcp, /api/*, static site from public/
 pipeline/          ahuzot.co.il + GIS, centralpark.co.il, greenparking.co.il, mall sites -> priced lots;
                    city license registry (GIS 556) + OpenStreetMap -> unpriced lots; all into data/lots.json; hebcal -> data/holidays.json
@@ -25,7 +26,7 @@ npm run dev         # http://localhost:8787
 
 ## Deploy (one time)
 
-1. Create a free Cloudflare account and run `npx wrangler login`, then `npm run deploy`. The site goes live at `https://tlv-parking.<your-subdomain>.workers.dev`.
+1. Create a free Cloudflare account and run `npx wrangler login`. Run `npx wrangler d1 create tlv-parking` and paste the `database_id` it prints into `wrangler.jsonc`. Then run `npx wrangler d1 migrations apply tlv-parking --remote` and `npm run deploy`. The site goes live at `https://tlv-parking.<your-subdomain>.workers.dev`.
 2. For CI, add the repo secrets `CLOUDFLARE_API_TOKEN` (use the "Edit Cloudflare Workers" template) and `CLOUDFLARE_ACCOUNT_ID`. After that, every push to main deploys, and every Sunday a run refreshes the data, commits it and deploys.
 
 ## Connect an AI
