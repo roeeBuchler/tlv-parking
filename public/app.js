@@ -182,8 +182,7 @@ function myStretch(z) {
 // the one recommendation (src/search.ts bestPick): a lot, or "try the street first, else this lot"
 const lotLine = (l) => `${ils(l.price_ils)} · ${l.distance_m} ${L("מ׳ הליכה", "m walk")}`;
 function bestRow(b) {
-  const why = L({ far: "לפי מחיר והליכה, כשלא אכפת לך ללכת", normal: "לפי מחיר והליכה", near: "לפי מחיר והליכה, כשחשוב לך לחנות קרוב" }[b.walk],
-    { far: "By price and walk, for someone happy to walk", normal: "By price and walk", near: "By price and walk, for someone who wants to park close" }[b.walk]);
+  const why = L("לפי מחיר והליכה", "By price and walk");
   const head = `<span class="row-name"><span class="ms">recommend</span>${L("הכי משתלם לך", "Best for you")}</span>`;
   if (b.kind === "lot") return `<li class="best"><button data-id="${esc(b.lot.id)}">${head}<span class="row-sub"><b><bdi>${esc(b.lot.name)}</bdi></b> · ${lotLine(b.lot)}</span><span class="row-sub">${why}</span></button></li>`;
   return `<li class="best"><div>${head}<span class="row-sub"><b>${L("קודם לנסות ברחוב (כחול-לבן)", "Try the street first (blue-white)")}</b> · ${ils(state.street.price_ils)} · ${L("סיכוי", "chance")} ~${esc(state.street.chance_pct)}%</span>

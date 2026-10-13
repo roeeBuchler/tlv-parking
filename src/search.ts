@@ -91,15 +91,12 @@ export function bestPick(results: Cand[], street: { price_ils: number; chance_pc
       && !(liveNow && ["full", "closed"].includes(r.live?.status ?? "")))
     .map((r) => ({ id: r.id, name: r.name, price_ils: r.price_ils!, distance_m: r.distance_m!, cost_ils: r2(r.price_ils! + r.distance_m! * w) }))
     .sort((a, b) => a.cost_ils - b.cost_ils);
-  let street_cost_ils = null;
-  if (street) {
-    const p = street.chance_pct / 100, spot = street.price_ils + STREET_WALK_M * w;
-    street_cost_ils = r2(p * spot + (1 - p) * (CIRCLING_ILS + (lot?.cost_ils ?? spot)));
-  }
+  const p = (street?.chance_pct ?? 0) / 100, spot = (street?.price_ils ?? 0) + STREET_WALK_M * w;
+  const street_cost_ils = street ? r2(p * spot + (1 - p) * (CIRCLING_ILS + (lot?.cost_ils ?? spot))) : null;
   if (!lot && street_cost_ils == null) return null;
   // kind "street": try blue-white first; `lot` is where to go if there's no spot
   const kind = street_cost_ils != null && (!lot || street_cost_ils < lot.cost_ils) ? "street" : "lot";
-  return { kind, walk, lot: lot ?? null, street_cost_ils };
+  return { kind, lot: lot ?? null, street_cost_ils };
 }
 
 export type Features = { ev?: boolean; covered?: boolean; accessible?: boolean; height_m?: number };
