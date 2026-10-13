@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=accessible,account_circle,add,badge,block,calendar_today,check_circle,chevron_left,chevron_right,close,delete,directions,directions_bus,edit,ev_station,format_list_bulleted,garage,height,home,info,link,local_offer,local_parking,logout,map,place,schedule,search,smartphone,star,timer,tune,two_wheeler,warning&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=accessible,account_circle,add,badge,block,calendar_today,check_circle,chevron_left,chevron_right,close,delete,directions,directions_bus,directions_walk,edit,ev_station,format_list_bulleted,garage,height,home,info,link,local_offer,local_parking,logout,map,place,recommend,schedule,search,smartphone,star,timer,tune,two_wheeler,warning&display=block">
 <style>
   /* Google Maps feel: floating white cards over a colourful map; Google's four colours carry meaning (price band, status, chip). */
   :root {
@@ -126,6 +126,12 @@
   #list .street .row-sub { display: block; }
   #list .street .more { display: grid; gap: 12px; margin-top: 6px; padding: 12px 14px; background: var(--paper); border-radius: 12px; }
   #list .street .more p { margin: 0; }
+  #list .best { padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--green-bg); }
+  #list .best > button, #list .best > div { all: unset; box-sizing: border-box; display: grid; gap: 2px; width: 100%; }
+  #list .best > button { cursor: pointer; }
+  #list .best .row-name { display: flex; align-items: center; gap: 6px; color: var(--green-fg); }
+  #list .best b { color: var(--ink); font-weight: 500; }
+  #list .best .link { justify-self: start; font-size: 13px; }
   .sec h4 { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; font-size: 14px; font-weight: 600; color: var(--blue-fg); }
   .sec h4 .ms { font-size: 18px; }
   .sec .muted { margin-top: 4px; color: var(--muted); }
