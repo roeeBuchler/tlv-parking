@@ -5,6 +5,6 @@
   "compatibility_date": "2026-10-01",
   "assets": { "directory": "./public", "binding": "ASSETS", "not_found_handling": "none" },
   "observability": { "enabled": true },
-  // users + favorites. One time: `npx wrangler d1 create tlv-parking`, paste its database_id here
-  "d1_databases": [{ "binding": "DB", "database_name": "tlv-parking", "database_id": "00000000-0000-0000-0000-000000000000" }]
+  // users + favorites (D1 "tlv-parking", created 2026-10-14)
+  "d1_databases": [{ "binding": "DB", "database_name": "tlv-parking", "database_id": "c608be2d-35d3-4e6a-b379-be03dddfb43a" }]
 }
