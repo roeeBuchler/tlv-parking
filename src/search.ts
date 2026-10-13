@@ -28,6 +28,9 @@ export const CAVEATS = [
   "street = blue-white curbside parking at the searched point (null outside Tel Aviv-Yafo's parking zones): its zone, price for the stay, " +
     "who = that price for each kind of driver (own_zone permit, other_zone permit, visitor), " +
     "and chance_pct, a rough estimate of finding a spot (time of day plus live occupancy of nearby municipal lots), not live street data. Say it is an estimate.",
+  "best = the one recommendation: lowest price + walking cost (walk: far/normal/near = ₪1/3/8 per 100 m), among priced lots within 1 km open the whole stay. " +
+    "kind 'street' = try blue-white first (its cost counts the chance of no spot, circling, then paying best.lot); best.lot is then the fallback. " +
+    "cost_ils is a ranking score, not a price: quote price_ils to the user.",
 ];
 
 // start: "2026-10-10T14:00" (Jerusalem local) or with Z/offset; or weekday ("sat") + time ("14:00"); default now
@@ -73,11 +76,38 @@ export function liveFor(l: Lot, gis: Record<number, { status: string; updated: s
   return c && (!g || !OCCUPANCY.includes(g.status) || g.updated < c.updated) ? { ...c, source: "crowd" } : g || null;
 }
 
+// The one pick to show first: lowest cost = price + walking, where the user's `walk` setting says what 100 m is worth to them.
+// Blue-white is a gamble: with chance p you get a spot (street price + a short walk); otherwise you circle, then pay the best lot anyway.
+// ponytail: hand-set weights; learn them from what users actually pick once there are users
+export const WALK = { far: 1, normal: 3, near: 8 } as const; // ₪ per 100 m walked: happy to walk far / normal / wants it close
+export type Walk = keyof typeof WALK;
+const PICK_MAX_M = 1000, STREET_WALK_M = 150, CIRCLING_ILS = 15; // ~10 min of circling before giving up on the street
+type Cand = { id: string; name: string; price_ils: number | null; price_basis: string; open_whole_stay: boolean; distance_m: number | null; live: { status: string } | null };
+export function bestPick(results: Cand[], street: { price_ils: number; chance_pct: number } | null, walk: Walk = "normal", liveNow = false) {
+  const w = WALK[walk] / 100, r2 = (n: number) => Math.round(n * 100) / 100;
+  // only lots we can price for sure, open the whole stay, and (for a stay starting now) not full or closed
+  const [lot] = results
+    .filter((r) => r.price_basis === "tariff" && r.price_ils != null && r.open_whole_stay && r.distance_m != null && r.distance_m <= PICK_MAX_M
+      && !(liveNow && ["full", "closed"].includes(r.live?.status ?? "")))
+    .map((r) => ({ id: r.id, name: r.name, price_ils: r.price_ils!, distance_m: r.distance_m!, cost_ils: r2(r.price_ils! + r.distance_m! * w) }))
+    .sort((a, b) => a.cost_ils - b.cost_ils);
+  let street_cost_ils = null;
+  if (street) {
+    const p = street.chance_pct / 100, spot = street.price_ils + STREET_WALK_M * w;
+    street_cost_ils = r2(p * spot + (1 - p) * (CIRCLING_ILS + (lot?.cost_ils ?? spot)));
+  }
+  if (!lot && street_cost_ils == null) return null;
+  // kind "street": try blue-white first; `lot` is where to go if there's no spot
+  const kind = street_cost_ils != null && (!lot || street_cost_ils < lot.cost_ils) ? "street" : "lot";
+  return { kind, walk, lot: lot ?? null, street_cost_ils };
+}
+
 export type Features = { ev?: boolean; covered?: boolean; accessible?: boolean; height_m?: number };
 type SearchInput = Profile & Features & {
   crowd?: Crowd; lat?: number; lng?: number; start: number; minutes: number;
   max_walk_m?: number; sort_by?: "price" | "distance"; limit?: number; origin: string;
   sub?: Sub["type"]; // only lots selling this plan, ranked by its monthly price instead of the price of the stay
+  walk?: Walk;
 };
 
 // A wanted feature must be known; absent data is "unknown", not "no". Height is the reverse: only a known-too-low limit excludes.
@@ -107,12 +137,14 @@ export async function search(s: SearchInput) {
       : (a.price_ils ?? Infinity) - (b.price_ils ?? Infinity) || (a.distance_m ?? 0) - (b.distance_m ?? 0));
   const zone = here && zoneAt(here);
   // live lot status says something about the streets only for a stay that starts about now
-  const nearby = Math.abs(s.start - localNow()) < HOUR
-    ? results.filter((r) => r.live && r.distance_m != null && r.distance_m <= 600).map((r) => r.live!.status) : [];
+  const liveNow = Math.abs(s.start - localNow()) < HOUR;
+  const nearby = liveNow ? results.filter((r) => r.live && r.distance_m != null && r.distance_m <= 600).map((r) => r.live!.status) : [];
+  const street = zone ? { ...streetQuote(zone, s.start, s.minutes, profile), who: streetWho(zone, s.start, s.minutes), ...streetChance(zone, s.start, nearby) } : null;
   return {
     query: { start: fmtLocal(s.start), end: fmtLocal(s.start + s.minutes * 60_000), duration_minutes: s.minutes, day_type: dayOf(s.start), subscription: s.sub, ...profile,
       ...(s.ev && { ev: true }), ...(s.covered && { covered: true }), ...(s.accessible && { accessible: true }), ...(s.height_m != null && { height_m: s.height_m }) },
-    street: zone ? { ...streetQuote(zone, s.start, s.minutes, profile), who: streetWho(zone, s.start, s.minutes), ...streetChance(zone, s.start, nearby) } : null,
+    best: here && !s.sub ? bestPick(results, street, s.walk, liveNow) : null,
+    street,
     count: results.length,
     results: results.slice(0, s.limit ?? results.length),
     caveats: CAVEATS,

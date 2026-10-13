@@ -39,6 +39,7 @@ export function createServer(origin: string, pois?: LoadPois, db?: unknown) {
       "Give `near` (Hebrew or English place/address, e.g. 'Dizengoff Center', 'דיזנגוף 50') or lat/lng. " +
       "Always tell the user which resolved_location was used, the assumed duration, and that the sign at the gate prevails. " +
       "Mention potential_offers (deals the user could unlock) when present. " +
+      "Lead with `best`, the one recommendation for this user (a lot, or 'try the street first, else best.lot'), then the alternatives. " +
       "Also returns `street`: blue-white curbside parking at that point (zone, price for the stay, `who` = price for a permit for this zone / " +
       "another zone / a visitor, chance_pct of finding a spot: an estimate, say so), and `street.along`: the zones along the nearest street " +
       "by side and house number (long streets cross zones; on border streets each side is a different zone, and a permit is free only in its zone).",
@@ -49,6 +50,7 @@ export function createServer(origin: string, pois?: LoadPois, db?: unknown) {
       permit_zone: z.number().int().optional().describe("The user's Tel Aviv residential parking permit zone (1, 2, 4, 6, 7, 9, 10, 12 or 13): blue-white parking there is free."),
       max_walk_m: z.number().int().min(100).max(5000).default(800).describe("Max straight-line distance in meters."),
       sort_by: z.enum(["price", "distance"]).default("price"),
+      walk: z.enum(["far", "normal", "near"]).default("normal").describe("How far the user is happy to walk, for `best`: far = saving money matters more, near = park as close as possible."),
       subscription: z.enum(SUB_TYPES).optional().describe("For regular parkers, not one-off visits: only lots selling this monthly pass (night = evenings and nights, full = 24/7, weekdays = Sun-Thu, motorcycle, reserved), ranked by the pass price. Time and duration are ignored. Prices come from the operator or from city data that may be stale: tell the user to confirm with the lot."),
       limit: z.number().int().min(1).max(50).default(10),
       ev_charging: z.boolean().default(false).describe("Only lots known to have EV chargers (mostly Central Park lots)."),
@@ -73,7 +75,7 @@ export function createServer(origin: string, pois?: LoadPois, db?: unknown) {
     const r = await search({
       lat: at.lat, lng: at.lng, start, minutes: a.duration_minutes, max_walk_m: a.max_walk_m, sort_by: a.sort_by, limit: a.limit,
       resident: a.tlv_resident, apps: a.apps, transit: a.will_ride_public_transport, zone: a.permit_zone, origin, crowd: await crowdLive(db),
-      ev: a.ev_charging, covered: a.covered, accessible: a.accessible, height_m: a.vehicle_height_m, sub: a.subscription,
+      ev: a.ev_charging, covered: a.covered, accessible: a.accessible, height_m: a.vehicle_height_m, sub: a.subscription, walk: a.walk,
     });
     const street = r.street && { ...r.street, along: await along };
     const data = { resolved_location: places?.resolved ?? at, alternatives: places?.alternatives ?? [], ...r, street };
@@ -81,7 +83,9 @@ export function createServer(origin: string, pois?: LoadPois, db?: unknown) {
     const zones = street?.along && [...new Set([...street.along.odd, ...street.along.even].map((x) => x.zone))].sort((x, y) => x - y);
     const st = street && ` Street (blue-white, zone ${street.zone}): ₪${street.price_ils}, ~${street.chance_pct}% chance of a spot (estimate).` +
       (zones && zones.length > 1 ? ` ${street.along!.street_en} crosses zones ${zones.join(", ")}: see street.along.` : "");
-    return out(data, `${r.count} lots within ${a.max_walk_m}m, ${r.query.start}→${r.query.end} (${r.query.day_type}). Top: ${top || "none"}.${st ?? ""}`);
+    const b = r.best, bl = b?.lot && `${b.lot.name} ₪${b.lot.price_ils} ${b.lot.distance_m}m`;
+    const best = !b ? "" : b.kind === "street" ? ` Best: try the street first${bl ? `, else ${bl}` : ""}.` : ` Best: ${bl}.`;
+    return out(data, `${r.count} lots within ${a.max_walk_m}m, ${r.query.start}→${r.query.end} (${r.query.day_type}).${best} Top: ${top || "none"}.${st ?? ""}`);
   });
 
   server.registerTool("get_lot_details", {

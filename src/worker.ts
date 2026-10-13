@@ -2,7 +2,7 @@
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import { createServer } from "./mcp.ts";
 import { SUB_TYPES, type Sub } from "./engine.ts";
-import { search, lotDetails, resolveStart, placeOut } from "./search.ts";
+import { search, lotDetails, resolveStart, placeOut, WALK, type Walk } from "./search.ts";
 import { resolvePlace } from "./places.ts";
 import { streetZones } from "./street.ts";
 import { handleUsers, type Env as UsersEnv } from "./users.ts";
@@ -49,8 +49,10 @@ export default {
           const sub = p.get("sub") as Sub["type"] | null;
           if (sub && !SUB_TYPES.includes(sub)) return json({ error: `sub must be one of ${SUB_TYPES.join(", ")}` }, 400);
           const sort = p.get("sort") === "distance" ? "distance" : "price";
+          const walk = (p.get("walk") || "normal") as Walk;
+          if (!Object.hasOwn(WALK, walk)) return json({ error: `walk must be one of ${Object.keys(WALK).join(", ")}` }, 400);
           const r = await search({ ...common(), lat, lng, max_walk_m: num("max_walk") ?? (lat == null ? Infinity : 800), sort_by: sort, limit: num("limit"),
-            ev: bool("ev"), covered: bool("covered"), accessible: bool("accessible"), height_m: num("height"), sub: sub ?? undefined });
+            ev: bool("ev"), covered: bool("covered"), accessible: bool("accessible"), height_m: num("height"), sub: sub ?? undefined, walk });
           return json({ resolved_location: place?.resolved ?? null, alternatives: place?.alternatives ?? [], ...r });
         }
         case url.pathname.startsWith("/api/lots/"): {

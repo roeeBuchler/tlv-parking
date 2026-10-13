@@ -26,6 +26,7 @@
           { "name": "transit", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = will ride a TLV bus the same day" },
           { "name": "sub", "in": "query", "schema": { "type": "string", "enum": ["full", "night", "weekdays", "motorcycle", "reserved"] }, "description": "Monthly pass instead of a one-off stay: only lots selling it (night = evenings/nights, full = 24/7), ranked by the pass price (subscription.price_ils, ILS incl. VAT); time and duration are ignored. source 'city' prices may be out of date." },
           { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["price", "distance"] } },
+          { "name": "walk", "in": "query", "schema": { "type": "string", "enum": ["far", "normal", "near"], "default": "normal" }, "description": "How far the user is happy to walk; shapes `best`, the one recommendation (a lot, or blue-white first with `best.lot` as the fallback)" },
           { "name": "limit", "in": "query", "schema": { "type": "integer" } },
           { "name": "ev", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = only lots known to have EV chargers" },
           { "name": "covered", "in": "query", "schema": { "type": "integer", "enum": [0, 1] }, "description": "1 = only lots known to be covered (inferred from a published height limit)" },

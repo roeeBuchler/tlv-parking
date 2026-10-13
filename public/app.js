@@ -18,7 +18,7 @@ const P = new URL(location.href).searchParams;
 const SAVED = (() => { try { return JSON.parse(localStorage.settings ?? "{}"); } catch { return {}; } })();
 const mine = (k) => (P.has(k) ? P.get(k) : SAVED[k] ?? "");
 const state = { lot: P.get("lot"), when: P.get("when") ?? "", dur: P.get("dur") ?? "120", res: mine("res") === "1" || !!mine("zone"), bus: mine("bus") === "1", cp: mine("cp") === "1", zone: mine("zone"),
-  ev: P.get("ev") === "1", cov: P.get("cov") === "1", acc: mine("acc") === "1", h: mine("h"), moto: mine("moto") === "1", center: null, results: [], street: null, alts: [] };
+  ev: P.get("ev") === "1", cov: P.get("cov") === "1", acc: mine("acc") === "1", h: mine("h"), moto: mine("moto") === "1", walk: mine("walk"), center: null, results: [], street: null, best: null, alts: [] };
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`); // scraped text: never raw HTML
 const LIVE = { free: L("פנוי", "Free"), few: L("מעט מקומות", "Few spaces"), full: L("מלא", "Full"), closed: L("סגור", "Closed") }; // "open" / "unknown" carry no occupancy
@@ -67,6 +67,7 @@ function qs(extra = {}) {
   if (state.cov) o.covered = 1;
   if (state.acc) o.accessible = 1;
   if (state.h) o.height = state.h;
+  if (state.walk) o.walk = state.walk;
   return new URLSearchParams(o);
 }
 function sync() {
@@ -118,6 +119,7 @@ async function load() {
   // in pass mode the result's "price" is the pass, so plates, colours and the list need no second code path
   state.results = (r.results ?? []).map((x) => (x.subscription ? { ...x, price_ils: monthly(x.subscription), price_basis: "tariff", open_whole_stay: true } : x));
   state.street = r.street ?? null;
+  state.best = r.best ?? null;
   drawPins();
   if (state.street && state.center) loadZones(state.center);
   if (!list.hidden) showList();
@@ -130,7 +132,7 @@ function showList() {
     ? `<li class="head">${L(`חניונים עד 1 ק״מ מ${esc(state.center.label)}, מהזול ליקר.`, `Lots within 1 km of ${esc(state.center.label)}, cheapest first.`)}<br>${savedPlace(state.center)
       ? `<span class="save"><span class="ms">place</span>${L("שמור בנקודות הציון שלך", "Saved to your places")}</span>` : `<button class="save" id="savePlace"><span class="ms">add</span>${L("שמירה כנקודת ציון", "Save as a place")}</button>`}${state.alts.length ? `<br>${L("התכוונתם ל", "Did you mean ")}${state.alts.map((a, i) => `<a href="#" data-alt="${i}">${esc(a.label)}</a>`).join(L(" או ", " or "))}?` : ""}</li>`
     : `<li class="head">${L("כל החניונים, מהזול ליקר. חפשו כתובת כדי לראות מה קרוב אליה.", "All lots, cheapest first. Search an address to see what is near it.")}</li>`;
-  list.querySelector("ol").innerHTML = head + (state.center && state.street ? streetRow(state.street) : "") + (near.map((l) => `<li><button data-id="${esc(l.id)}" aria-label="${esc(`${l.name}, ${price(l)}`)}">
+  list.querySelector("ol").innerHTML = head + (state.center && state.best ? bestRow(state.best) : "") + (state.center && state.street ? streetRow(state.street) : "") + (near.map((l) => `<li><button data-id="${esc(l.id)}" aria-label="${esc(`${l.name}, ${price(l)}`)}">
     ${plateHtml(l)}
     <span><span class="row-name">${esc(l.name)}</span><span class="row-sub">${esc(OPERATOR[l.operator] ?? l.operator)}</span></span>
     <span class="row-end">${l.distance_m != null ? `${l.distance_m} ${L("מ׳", "m")}` : ""}${liveOf(l) ? `<span class="status ${liveOf(l)}">${LIVE[liveOf(l)]}</span>` : ""}</span>
@@ -176,6 +178,16 @@ function myStretch(z) {
   const side = (rs, he, en) => rs.filter((r) => r.zone === +state.zone).map((r) => `${L(he, en)} ${nums(r)}`);
   const parts = [...side(z.odd, "צד אי-זוגי", "odd side"), ...side(z.even, "צד זוגי", "even side")];
   return parts.length ? L(`חינם עבורך ברחוב הזה: ${parts.join(", ")}`, `Free for you on this street: ${parts.join(", ")}`) : "";
+}
+// the one recommendation (src/search.ts bestPick): a lot, or "try the street first, else this lot"
+const lotLine = (l) => `${ils(l.price_ils)} · ${l.distance_m} ${L("מ׳ הליכה", "m walk")}`;
+function bestRow(b) {
+  const why = L({ far: "לפי מחיר והליכה, כשלא אכפת לך ללכת", normal: "לפי מחיר והליכה", near: "לפי מחיר והליכה, כשחשוב לך לחנות קרוב" }[b.walk],
+    { far: "By price and walk, for someone happy to walk", normal: "By price and walk", near: "By price and walk, for someone who wants to park close" }[b.walk]);
+  const head = `<span class="row-name"><span class="ms">recommend</span>${L("הכי משתלם לך", "Best for you")}</span>`;
+  if (b.kind === "lot") return `<li class="best"><button data-id="${esc(b.lot.id)}">${head}<span class="row-sub"><b><bdi>${esc(b.lot.name)}</bdi></b> · ${lotLine(b.lot)}</span><span class="row-sub">${why}</span></button></li>`;
+  return `<li class="best"><div>${head}<span class="row-sub"><b>${L("קודם לנסות ברחוב (כחול-לבן)", "Try the street first (blue-white)")}</b> · ${ils(state.street.price_ils)} · ${L("סיכוי", "chance")} ~${esc(state.street.chance_pct)}%</span>
+    ${b.lot ? `<button class="link" data-id="${esc(b.lot.id)}">${L("אין מקום? ", "No spot? ")}<bdi>${esc(b.lot.name)}</bdi> · ${lotLine(b.lot)}</button>` : ""}<span class="row-sub">${why}</span></div></li>`;
 }
 const setUp = () => `<button class="link" data-settings>${state.res ? L("מה אזור התו שלך?", "What's your permit zone?") : L("יש לך תו חניה?", "Have a parking permit?")}</button>`;
 // one line: what this stay costs the user, per "my discounts"
@@ -521,10 +533,11 @@ panel.addEventListener("click", async (e) => {
   if (t("unpin")) { await api(`/api/favorites/${f("unpin").id}/lots/${encodeURIComponent(t("unpin").lotId)}`, "DELETE"); await loadMe(); showAccount(); }
 });
 // --- my settings: discounts and car, saved in this browser; prices, lots and the street card follow them
-const PREFS = ["res", "zone", "cp", "bus", "h", "acc", "moto"], ZONES = [1, 2, 4, 6, 7, 9, 10, 12, 13], HEIGHTS = ["1.8", "1.9", "2", "2.1", "2.2"];
+const PREFS = ["res", "zone", "cp", "bus", "h", "acc", "moto", "walk"], ZONES = [1, 2, 4, 6, 7, 9, 10, 12, 13], HEIGHTS = ["1.8", "1.9", "2", "2.1", "2.2"];
 function setLabel() {
   const parts = [state.zone ? `${L("אזור", "Zone")} ${state.zone}` : state.res && L("תושב/ת", "Resident"), state.cp && L("סנטרל פארק", "Central Park"),
-    state.bus && L("פנגו + אוטובוס", "Pango + bus"), state.h && L(`עד ${(+state.h).toFixed(1)} מ׳`, `≤ ${(+state.h).toFixed(1)} m`), state.acc && L("תג נכה", "Disabled badge"), state.moto && L("אופנוע", "Motorcycle")].filter(Boolean);
+    state.bus && L("פנגו + אוטובוס", "Pango + bus"), state.h && L(`עד ${(+state.h).toFixed(1)} מ׳`, `≤ ${(+state.h).toFixed(1)} m`), state.acc && L("תג נכה", "Disabled badge"), state.moto && L("אופנוע", "Motorcycle"),
+    state.walk === "far" && L("הולך/ת רחוק", "Walks far"), state.walk === "near" && L("חונה קרוב", "Parks close")].filter(Boolean);
   $("#setTxt").textContent = parts.length ? parts.join(" · ") : L("ההגדרות שלי", "My settings");
   $("#setBtn").classList.toggle("on", parts.length > 0);
 }
@@ -548,6 +561,10 @@ function showSettings() {
           <select name="h">${opt("", L("לא משנה", "Any"), state.h)}${HEIGHTS.map((h) => opt(h, L(`עד ${(+h).toFixed(1)} מ׳`, `up to ${(+h).toFixed(1)} m`), state.h)).join("")}</select></label>
         ${box("acc", "accessible", L("תג נכה", "Disabled parking badge"), L("רק חניונים מונגשים", "Only accessible lots"))}
         ${box("moto", "two_wheeler", L("אופנוע", "Motorcycle"), L("חניות אופנועים ברחוב על המפה", "Street motorcycle bays on the map"))}
+      </fieldset>
+      <fieldset><legend>${L("ההעדפות שלי", "My preferences")}</legend>
+        <label><span class="ms">directions_walk</span><span>${L("הליכה", "Walking")}<small>${L("משפיע על ההמלצה", "Shapes the recommendation")}</small></span>
+          <select name="walk">${opt("far", L("לא אכפת לי ללכת", "Happy to walk far"), state.walk)}${opt("", L("רגיל", "Normal"), state.walk)}${opt("near", L("כמה שיותר קרוב", "As close as possible"), state.walk)}</select></label>
       </fieldset>
     </form>`;
   panel.hidden = false; list.hidden = true; panel.dataset.view = "settings";
