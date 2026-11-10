@@ -137,6 +137,7 @@ const GREEN: Record<number, G | null> = {
     tariffs: [flat(WEEK, "18:00", "06:00", 25), step(WEEK, "06:00", "18:00", 20, 6, 50)] },
   2246: null, // "נווה צדק 2": same corner as 2353 (older listing, daily price only)
   1513: null, // בר כוכבא 4 is in Bnei Brak
+  2429: null, // "מכבי נתניה": שד' בנימין 21, Netanya
   2252: null, 2167: null, 2147: null, 2105: null, 1471: null, 1350: null, 1054: null, 418: null, 413: null, 406: null, 324: null, // other cities
 };
 
