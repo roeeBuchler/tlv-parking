@@ -110,6 +110,13 @@ function drawPins() {
 }
 const select = (id) => document.querySelectorAll(".pin").forEach((p) => p.firstElementChild.classList.toggle("sel", p.dataset.id === id));
 
+// prices refresh weekly; past 10 days the refresh is stuck, so say so instead of showing old prices as current
+function staleNote(day) {
+  const days = day ? Math.floor((Date.now() - Date.parse(day)) / 864e5) : 0, el = $("#stale");
+  el.hidden = days <= 10;
+  if (!el.hidden) el.innerHTML = `<span><span class="ms">warning</span>${L(`המחירים עודכנו לפני ${days} ימים וייתכן שאינם עדכניים`, `Prices were last updated ${days} days ago and may be out of date`)}</span>`;
+}
+
 let loads = 0;
 async function load() {
   const n = ++loads; // arrow clicks fire fast: only the latest answer may draw
@@ -120,6 +127,7 @@ async function load() {
   state.results = (r.results ?? []).map((x) => (x.subscription ? { ...x, price_ils: monthly(x.subscription), price_basis: "tariff", open_whole_stay: true } : x));
   state.street = r.street ?? null;
   state.best = r.best ?? null;
+  staleNote(r.data_verified);
   drawPins();
   if (state.street && state.center) loadZones(state.center);
   if (!list.hidden) showList();

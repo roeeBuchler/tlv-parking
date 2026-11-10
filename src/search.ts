@@ -6,6 +6,8 @@ import { gisQuery, type Place } from "./places.ts";
 import { zoneAt, streetQuote, streetChance, streetWho } from "./street.ts";
 
 export const lots = lotsJson as unknown as Lot[];
+// newest pipeline run: the site warns when this gets old (the weekly refresh once sat dead for 3 weeks unnoticed)
+export const DATA_VERIFIED = lots.reduce((m, l) => (l.verified_at > m ? l.verified_at : m), "");
 export const offers = offersJson as unknown as Offer[];
 // A weekly plan counts as 4.33 weeks, so plans of both periods rank on one scale.
 export const monthly = (s: Sub) => (s.period === "week" ? Math.round(s.price_ils * 4.33) : s.price_ils);
@@ -69,7 +71,12 @@ export async function live(origin?: string) {
     // The GIS blocks Cloudflare in production (HTTP 571). Fall back to the snapshot GitHub Actions ships as /live.json.
     if (origin) try {
       const r = await fetch(`${origin}/live.json`);
-      if (r.ok) { liveCache = { at: Date.now(), data: (await r.json() as { data: typeof liveCache.data }).data }; return liveCache.data; }
+      if (r.ok) {
+        // an old "free"/"full" is worse than none (it would show as "now" and sway the best pick): keep the last 3 h only
+        const since = fmtLocal(localNow() - 3 * HOUR), snap = (await r.json() as { data: Record<string, { status: string; updated: string }> }).data;
+        liveCache = { at: Date.now(), data: Object.fromEntries(Object.entries(snap).filter(([, v]) => v.updated >= since)) };
+        return liveCache.data;
+      }
     } catch { /* snapshot is a nice-to-have too */ }
     return liveCache?.data ?? {}; // live status is a nice-to-have; never fail a search over it
   }
@@ -151,6 +158,7 @@ export async function search(s: SearchInput) {
     street,
     count: results.length,
     results: results.slice(0, s.limit ?? results.length),
+    data_verified: DATA_VERIFIED,
     caveats: CAVEATS,
   };
 }

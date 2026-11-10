@@ -35,8 +35,12 @@
     text-transform: none; white-space: nowrap; direction: ltr; font-feature-settings: "liga"; -webkit-font-smoothing: antialiased; display: inline-block; }
 
   /* floating search + chips; the bar itself lets the map through */
-  #bar { position: fixed; inset: 0 0 auto; z-index: 3; display: flex; align-items: center; gap: 8px 12px; padding: 12px 12px 4px; pointer-events: none; }
+  #bar { position: fixed; inset: 0 0 auto; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 12px 12px 4px; pointer-events: none; }
   #bar > * { pointer-events: auto; }
+  /* old-data warning: its own row under the chips; only the pill takes clicks, the row lets the map through */
+  #bar > #stale { flex-basis: 100%; margin: 0; pointer-events: none; }
+  #stale span { pointer-events: auto; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 16px;
+    background: var(--yellow-bg); color: var(--yellow-fg); font-size: 13px; box-shadow: var(--shadow); }
   #search { flex: 0 1 400px; display: flex; align-items: center; gap: 2px; height: 48px; padding: 0 8px 0 4px;
     background: var(--paper); border-radius: 24px; box-shadow: var(--shadow); }
   #search:focus-within { box-shadow: 0 1px 3px rgba(60, 64, 67, .3), 0 4px 8px 3px rgba(60, 64, 67, .15); }
@@ -299,6 +303,7 @@
     <label class="chip tog" title="רק חניונים עם עמדות טעינה ידועות" data-en-title="Only lots known to have EV chargers"><input type="checkbox" id="ev"><span class="ms">ev_station</span><span data-en="EV charging">טעינה</span></label>
     <label class="chip tog" title="רק חניונים שידוע שהם מקורים (נגזר מהגבלת גובה)" data-en-title="Only lots known to be covered (inferred from a height limit)"><input type="checkbox" id="cov"><span class="ms">garage</span><span data-en="Covered">מקורה</span></label>
   </div>
+  <p id="stale" role="status" hidden></p>
 </header>
 <main id="map" aria-label="מפת חניונים" data-en-aria-label="Parking map"></main>
 <aside id="panel" hidden aria-live="polite"></aside>
