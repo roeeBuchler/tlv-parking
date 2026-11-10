@@ -42,8 +42,6 @@ const SUBNAME = L({ full: "מנוי 24/7", night: "מנוי לילה", weekdays:
   { full: "24/7 subscription", night: "Night subscription", weekdays: "Sun–Thu subscription", motorcycle: "Motorcycle subscription", reserved: "Reserved space" });
 const monthly = (s) => (s.period === "week" ? Math.round(s.price_ils * 4.33) : s.price_ils);
 const subTier = (n) => (n <= 300 ? "t1" : n <= 600 ? "t2" : n <= 1200 ? "t3" : "t4");
-const LEGEND = document.querySelector("#legend").innerHTML;
-const LEGEND_SUB = `<span class="cap">${L("מחיר מנוי לחודש, בש״ח", "Subscription price per month, ₪")}</span><span class="plate t1">${L("עד", "up to")} 300</span><span class="plate t2">${L("עד", "up to")} 600</span><span class="plate t3">${L("עד", "up to")} 1,200</span><span class="plate t4">1,200+</span>`;
 
 // Asia/Jerusalem wall clock as fake-UTC ms, same convention as the API
 const DAY = 864e5, HOUR = 36e5;
@@ -110,13 +108,6 @@ function drawPins() {
 }
 const select = (id) => document.querySelectorAll(".pin").forEach((p) => p.firstElementChild.classList.toggle("sel", p.dataset.id === id));
 
-// prices refresh weekly; past 10 days the refresh is stuck, so say so instead of showing old prices as current
-function staleNote(day) {
-  const days = day ? Math.floor((Date.now() - Date.parse(day)) / 864e5) : 0, el = $("#stale");
-  el.hidden = days <= 10;
-  if (!el.hidden) el.innerHTML = `<span><span class="ms">warning</span>${L(`המחירים עודכנו לפני ${days} ימים וייתכן שאינם עדכניים`, `Prices were last updated ${days} days ago and may be out of date`)}</span>`;
-}
-
 let loads = 0;
 async function load() {
   const n = ++loads; // arrow clicks fire fast: only the latest answer may draw
@@ -127,7 +118,6 @@ async function load() {
   state.results = (r.results ?? []).map((x) => (x.subscription ? { ...x, price_ils: monthly(x.subscription), price_basis: "tariff", open_whole_stay: true } : x));
   state.street = r.street ?? null;
   state.best = r.best ?? null;
-  staleNote(r.data_verified);
   drawPins();
   if (state.street && state.center) loadZones(state.center);
   if (!list.hidden) showList();
@@ -383,7 +373,6 @@ function showWhen() {
   $("#mode").value = state.when ? "at" : "now";
   $("#mode").closest(".chip").hidden = !!subOf(); // a pass has no entry time
   $("#at").hidden = !state.when || !!subOf();
-  $("#legend").innerHTML = subOf() ? LEGEND_SUB : LEGEND;
   if (!state.when) return;
   $("#time").value = state.when.slice(11);
   $("#date").value = state.when.slice(0, 10);

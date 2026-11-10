@@ -35,12 +35,8 @@
     text-transform: none; white-space: nowrap; direction: ltr; font-feature-settings: "liga"; -webkit-font-smoothing: antialiased; display: inline-block; }
 
   /* floating search + chips; the bar itself lets the map through */
-  #bar { position: fixed; inset: 0 0 auto; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 12px 12px 4px; pointer-events: none; }
+  #bar { position: fixed; inset: 0 0 auto; z-index: 3; display: flex; align-items: center; gap: 8px 12px; padding: 12px 12px 4px; pointer-events: none; }
   #bar > * { pointer-events: auto; }
-  /* old-data warning: its own row under the chips; only the pill takes clicks, the row lets the map through */
-  #bar > #stale { flex-basis: 100%; margin: 0; pointer-events: none; }
-  #stale span { pointer-events: auto; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 16px;
-    background: var(--yellow-bg); color: var(--yellow-fg); font-size: 13px; box-shadow: var(--shadow); }
   #search { flex: 0 1 400px; display: flex; align-items: center; gap: 2px; height: 48px; padding: 0 8px 0 4px;
     background: var(--paper); border-radius: 24px; box-shadow: var(--shadow); }
   #search:focus-within { box-shadow: 0 1px 3px rgba(60, 64, 67, .3), 0 4px 8px 3px rgba(60, 64, 67, .15); }
@@ -80,7 +76,7 @@
   #date { position: absolute; bottom: 0; width: 1px; height: 1px; padding: 0; opacity: 0; pointer-events: none; }
   .sep { flex: none; width: 1px; height: 20px; background: rgba(60, 64, 67, .25); }
 
-  /* price pill: map pins, list rows, legend; the board is its big sibling. Colour = price band, dashed = unverified, blue P = per the sign */
+  /* price pill: map pins and list rows; the board is its big sibling. Colour = price band, dashed = unverified, blue P = per the sign */
   .plate, .board { --c: var(--blue); --on: #fff; }
   .plate { position: relative; display: inline-grid; place-items: center; min-width: 40px; height: 28px; padding: 0 10px;
     border: 2px solid #fff; border-radius: 14px; background: var(--c); color: var(--on); font: 700 14px/1 var(--font); white-space: nowrap; box-shadow: var(--shadow); }
@@ -247,14 +243,6 @@
   #report summary { cursor: pointer; font-weight: 500; color: var(--blue-fg); }
   #report .attach .chip[data-kind=space] .ms { color: var(--green-fg); }
 
-  /* legend */
-  #legend { position: fixed; z-index: 1; bottom: 24px; left: 56px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
-    padding: 8px 12px; background: var(--paper); border-radius: 12px; box-shadow: var(--shadow); font-size: 13px; color: var(--muted); }
-  #legend .plate { height: 24px; min-width: 0; padding: 0 8px; font-size: 12px; box-shadow: none; }
-  #legend .plate.sign { width: 24px; padding: 0; border-radius: 6px; }
-  #legend .cap { margin-inline-end: 4px; }
-  @media (min-width: 701px) { html[dir=ltr] #legend { left: auto; right: 56px; } } /* map controls and legend sit opposite the side card */
-
   @media (max-width: 700px) {
     #bar { flex-wrap: wrap; padding: 8px 8px 0; }
     #search { flex: 1 1 100%; }
@@ -263,8 +251,6 @@
       box-shadow: 0 -2px 10px rgba(60, 64, 67, .2); }
     #panel::before, #list::before { content: ""; display: block; width: 32px; height: 4px; margin: -8px auto 12px; border-radius: 2px; background: var(--line); }
     #list::before { margin: 10px auto 0; }
-    #legend { bottom: auto; top: var(--bar-h, 104px); left: 8px; right: 8px; justify-content: center; padding: 6px 8px; gap: 4px; }
-    #legend .cap { display: none; }
   }
 </style>
 </head>
@@ -303,16 +289,10 @@
     <label class="chip tog" title="רק חניונים עם עמדות טעינה ידועות" data-en-title="Only lots known to have EV chargers"><input type="checkbox" id="ev"><span class="ms">ev_station</span><span data-en="EV charging">טעינה</span></label>
     <label class="chip tog" title="רק חניונים שידוע שהם מקורים (נגזר מהגבלת גובה)" data-en-title="Only lots known to be covered (inferred from a height limit)"><input type="checkbox" id="cov"><span class="ms">garage</span><span data-en="Covered">מקורה</span></label>
   </div>
-  <p id="stale" role="status" hidden></p>
 </header>
 <main id="map" aria-label="מפת חניונים" data-en-aria-label="Parking map"></main>
 <aside id="panel" hidden aria-live="polite"></aside>
 <section id="list" hidden aria-label="חניונים לפי מחיר" data-en-aria-label="Lots by price"><ol></ol></section>
-<div id="legend" aria-hidden="true">
-  <span class="cap" data-en="Price in ₪ for your time">מחיר בש״ח לזמן שבחרתם</span>
-  <span class="plate t1" data-en="up to 20">עד 20</span><span class="plate t2" data-en="up to 40">עד 40</span><span class="plate t3" data-en="up to 80">עד 80</span><span class="plate t4">80+</span>
-  <span class="plate t1 unv" data-en="Free?">חינם?</span><span class="plate sign">P</span><span data-en="per the sign">לפי השילוט</span>
-</div>
 <script type="module" src="app.js"></script>
 </body>
 </html>
