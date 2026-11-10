@@ -374,20 +374,80 @@ function showWhen() {
   $("#mode").closest(".chip").hidden = !!subOf(); // a pass has no entry time
   $("#at").hidden = !state.when || !!subOf();
   if (!state.when) return;
-  $("#time").value = state.when.slice(11);
-  $("#date").value = state.when.slice(0, 10);
+  $("#timeTxt").textContent = state.when.slice(11);
   $("#dateTxt").textContent = dateFmt.format(Date.parse(state.when + ":00Z"));
 }
 const setWhen = (v) => { state.when = v; showWhen(); sync(); load(); };
 $("#mode").addEventListener("change", (e) => setWhen(e.target.value === "now" ? "" : fmt(Math.ceil(jlmNow() / STEP) * STEP)));
-$("#time").addEventListener("change", (e) => e.target.value && setWhen(state.when.slice(0, 11) + e.target.value));
-$("#date").addEventListener("change", (e) => e.target.value && setWhen(e.target.value + state.when.slice(10)));
 // time arrows snap to the quarter hour (21:40 ▸ 21:45), date arrows keep the time
 document.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("click", () => {
   const t = Date.parse(state.when + ":00Z"), d = +b.dataset.step;
   setWhen(fmt(b.dataset.unit === "date" ? t + d * DAY : Math[d > 0 ? "floor" : "ceil"](t / STEP) * STEP + d * STEP));
 }));
-$("#dateBtn").addEventListener("click", () => { try { $("#date").showPicker(); } catch { $("#date").focus(); } });
+
+// Popups for the time and date chips, as in Google Maps' "leave at": a list of half-hour slots
+// (21:40 highlights 21:30) and a Sunday-first month calendar. Each opens under its chip, inside the screen.
+const place = (pop, chip) => {
+  const r = chip.getBoundingClientRect(), w = pop.offsetWidth;
+  pop.style.top = `${r.bottom + 6}px`;
+  pop.style.left = `${Math.min(Math.max(8, EN ? r.left : r.right - w), innerWidth - w - 8)}px`;
+};
+const SLOTS = Array.from({ length: 48 }, (_, i) => `${String(i >> 1).padStart(2, "0")}:${i % 2 ? "30" : "00"}`);
+const timePop = $("#timePop"), datePop = $("#datePop");
+timePop.addEventListener("beforetoggle", (e) => {
+  if (e.newState !== "open") return;
+  const cur = SLOTS.findLast((s) => s <= state.when.slice(11));
+  timePop.innerHTML = SLOTS.map((s) => `<button type="button" data-time="${s}"${s === cur ? ' aria-pressed="true"' : ""}>${s}</button>`).join("");
+});
+timePop.addEventListener("toggle", (e) => {
+  if (e.newState !== "open") return;
+  place(timePop, $("#timeBtn").closest(".chip"));
+  const sel = timePop.querySelector("[aria-pressed]");
+  timePop.scrollTop = sel.offsetTop - (timePop.clientHeight - sel.offsetHeight) / 2;
+  sel.focus({ preventScroll: true });
+});
+timePop.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-time]");
+  if (b) { timePop.hidePopover(); setWhen(state.when.slice(0, 11) + b.dataset.time); }
+});
+
+const monthFmt = new Intl.DateTimeFormat(L("he-IL", "en-GB"), { timeZone: "UTC", month: "long", year: "numeric" });
+const wdFmt = new Intl.DateTimeFormat(L("he-IL", "en-GB"), { timeZone: "UTC", weekday: "short" });
+const dayFmt = new Intl.DateTimeFormat(L("he-IL", "en-GB"), { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" });
+let calMonth = 0; // fake-UTC ms of the 1st of the month on show
+function drawCal() {
+  const first = new Date(calMonth), start = calMonth - first.getUTCDay() * DAY; // 6 weeks from the Sunday on or before the 1st
+  const sel = state.when.slice(0, 10), today = fmt(jlmNow()).slice(0, 10);
+  const days = Array.from({ length: 42 }, (_, i) => start + i * DAY);
+  datePop.innerHTML = `<div class="cal-head">
+    <button type="button" class="arr" data-month="-1" aria-label="${L("חודש קודם", "Previous month")}"><span class="ms">chevron_right</span></button>
+    <span>${monthFmt.format(calMonth)}</span>
+    <button type="button" class="arr" data-month="1" aria-label="${L("חודש הבא", "Next month")}"><span class="ms">chevron_left</span></button>
+  </div><div class="cal">${days.slice(0, 7).map((d) => `<span aria-hidden="true">${wdFmt.format(d)}</span>`).join("")}${days.map((d) => {
+    const iso = fmt(d).slice(0, 10), cls = [new Date(d).getUTCMonth() !== first.getUTCMonth() && "out", iso === today && "today"].filter(Boolean).join(" ");
+    return `<button type="button" data-day="${iso}"${cls ? ` class="${cls}"` : ""} aria-label="${dayFmt.format(d)}"${iso === sel ? ' aria-pressed="true"' : ""}>${new Date(d).getUTCDate()}</button>`;
+  }).join("")}</div>`;
+}
+datePop.addEventListener("beforetoggle", (e) => {
+  if (e.newState !== "open") return;
+  const t = new Date(Date.parse(state.when + ":00Z"));
+  calMonth = Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), 1);
+  drawCal();
+});
+datePop.addEventListener("toggle", (e) => {
+  if (e.newState !== "open") return;
+  place(datePop, $("#dateBtn").closest(".chip"));
+  datePop.querySelector("[aria-pressed]")?.focus();
+});
+datePop.addEventListener("click", (e) => {
+  const m = e.target.closest("[data-month]"), d = e.target.closest("[data-day]");
+  if (m) {
+    const t = new Date(calMonth);
+    calMonth = Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + +m.dataset.month, 1);
+    drawCal();
+    datePop.querySelector(`[data-month="${m.dataset.month}"]`).focus(); // the redraw replaced the button
+  } else if (d) { datePop.hidePopover(); setWhen(d.dataset.day + state.when.slice(10)); }
+});
 $("#dur").addEventListener("change", (e) => { state.dur = e.target.value; showWhen(); sync(); load(); });
 for (const k of ["ev", "cov"]) $("#" + k).addEventListener("change", (e) => { state[k] = e.target.checked; sync(); load(); });
 $("#listBtn").addEventListener("click", () => (list.hidden ? showList() : ((list.hidden = true), $("#listBtn").setAttribute("aria-pressed", "false"))));

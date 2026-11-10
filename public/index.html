@@ -72,8 +72,23 @@
   .step button:hover { background: var(--hover); }
   .step .arr .ms { color: var(--muted); }
   html[dir=ltr] .step .arr .ms { transform: scaleX(-1); } /* markup draws RTL: first button = previous = chevron_right */
-  #time::-webkit-calendar-picker-indicator { display: none; }
-  #date { position: absolute; bottom: 0; width: 1px; height: 1px; padding: 0; opacity: 0; pointer-events: none; }
+  /* the time and date chips open these, like Google Maps' "leave at": a half-hour list and a month calendar.
+     popover = top layer, so the scrolling chip row can't clip them, and click-outside / Esc close them for free */
+  .pop { inset: auto; margin: 0; padding: 8px; border: 0; border-radius: 8px; background: var(--paper); color: var(--ink); box-shadow: var(--shadow); }
+  .pop button { border: 0; background: none; color: inherit; cursor: pointer; }
+  .pop button:hover { background: var(--hover); }
+  .pop button[aria-pressed=true] { background: var(--blue-bg); color: var(--blue-fg); }
+  html[dir=ltr] .pop .arr .ms { transform: scaleX(-1); }
+  #timePop { max-height: 240px; overflow-y: auto; padding: 6px 0; }
+  #timePop button { display: block; width: 100%; padding: 6px 28px; }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; font-weight: 500; }
+  .cal-head button { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 16px; }
+  .cal { display: grid; grid-template-columns: repeat(7, 34px); gap: 2px; text-align: center; }
+  .cal span { padding: 4px 0; font-size: 11px; color: var(--muted); }
+  .cal button { height: 34px; border-radius: 17px; font-size: 13px; }
+  .cal .out { color: var(--muted); }
+  .cal .today { color: var(--blue-fg); font-weight: 700; }
+  .cal button[aria-pressed=true] { background: var(--blue); color: #fff; }
   .sep { flex: none; width: 1px; height: 20px; background: rgba(60, 64, 67, .25); }
 
   /* price pill: map pins and list rows; the board is its big sibling. Colour = price band, dashed = unverified, blue P = per the sign */
@@ -269,12 +284,12 @@
     <div id="at" hidden>
       <span class="chip step">
         <button type="button" class="arr" data-step="-1" data-unit="time" aria-label="רבע שעה קודם" data-en-aria-label="15 minutes earlier"><span class="ms">chevron_right</span></button>
-        <input id="time" type="time" aria-label="שעת כניסה" data-en-aria-label="Entry time">
+        <button type="button" id="timeBtn" popovertarget="timePop" aria-label="שעת כניסה" data-en-aria-label="Entry time"><span id="timeTxt"></span></button>
         <button type="button" class="arr" data-step="1" data-unit="time" aria-label="רבע שעה אחרי" data-en-aria-label="15 minutes later"><span class="ms">chevron_left</span></button>
       </span>
-      <span class="chip step" style="position: relative">
+      <span class="chip step">
         <button type="button" class="arr" data-step="-1" data-unit="date" aria-label="יום קודם" data-en-aria-label="Previous day"><span class="ms">chevron_right</span></button>
-        <button type="button" id="dateBtn" aria-label="בחירת תאריך" data-en-aria-label="Pick a date"><span class="ms">calendar_today</span><span id="dateTxt"></span></button><input id="date" type="date" tabindex="-1" aria-hidden="true">
+        <button type="button" id="dateBtn" popovertarget="datePop" aria-label="בחירת תאריך" data-en-aria-label="Pick a date"><span class="ms">calendar_today</span><span id="dateTxt"></span></button>
         <button type="button" class="arr" data-step="1" data-unit="date" aria-label="יום אחרי" data-en-aria-label="Next day"><span class="ms">chevron_left</span></button>
       </span>
     </div>
@@ -293,6 +308,8 @@
 <main id="map" aria-label="מפת חניונים" data-en-aria-label="Parking map"></main>
 <aside id="panel" hidden aria-live="polite"></aside>
 <section id="list" hidden aria-label="חניונים לפי מחיר" data-en-aria-label="Lots by price"><ol></ol></section>
+<div id="timePop" class="pop" popover aria-label="שעת כניסה" data-en-aria-label="Entry time"></div>
+<div id="datePop" class="pop" popover aria-label="תאריך כניסה" data-en-aria-label="Entry date"></div>
 <script type="module" src="app.js"></script>
 </body>
 </html>
