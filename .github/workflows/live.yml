@@ -1,0 +1,23 @@
+# Occupancy snapshot only. The city GIS blocks Cloudflare (HTTP 571) but serves Actions, so this
+# snapshots live lot status to public/live.json and deploys just that asset. No commit (would spam history);
+# the weekly deploy.yml keeps a committed baseline. The Worker falls back to this when its live read fails.
+# ponytail: every 30 min in daytime ~= 34 runs/day. Tighten the cron if you want fresher, loosen to save Actions minutes.
+name: live snapshot
+on:
+  schedule: [{ cron: "*/30 5-21 * * *" }] # every 30 min, ~07:00-23:00 Israel
+  workflow_dispatch:
+concurrency: live
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run live
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy

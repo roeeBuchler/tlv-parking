@@ -51,19 +51,26 @@ export function resolveStart(start?: string, weekday?: string, time?: string): n
 
 // Live occupancy from GIS layer 970.
 // ponytail: per-isolate memory cache (Cache API is a no-op on workers.dev); fine at this traffic
-const STATUS: Record<string, string> = { "פנוי": "free", "מעט": "few", "מלא": "full", "סגור": "closed", "פעיל": "open" };
+export const STATUS: Record<string, string> = { "פנוי": "free", "מעט": "few", "מלא": "full", "סגור": "closed", "פעיל": "open" };
+// GIS rows → { code_achoza: { status, updated } }. Shared with the pipeline's snapshot (pipeline/live.ts) so they can't drift.
+export const snapshot = (rows: any[]): Record<number, { status: string; updated: string }> =>
+  Object.fromEntries(rows.map((r) => [r.code_achoza, {
+    status: STATUS[r.status_chenyon] ?? "unknown",
+    updated: r.tr_status_chenyon ? fmtLocal(r.tr_status_chenyon) : "", // GIS stores local time as if UTC
+  }]));
 let liveCache: { at: number; data: Record<number, { status: string; updated: string }> } | undefined;
-export async function live() {
+export async function live(origin?: string) {
   if (liveCache && Date.now() - liveCache.at < 120_000) return liveCache.data;
   try {
     const rows = await gisQuery(970, { where: "1=1", outFields: "code_achoza,status_chenyon,tr_status_chenyon" }, 3000, 0); // optional data: never stall a search
-    const data = Object.fromEntries(rows.map((r) => [r.code_achoza, {
-      status: STATUS[r.status_chenyon] ?? "unknown",
-      updated: r.tr_status_chenyon ? fmtLocal(r.tr_status_chenyon) : "", // GIS stores local time as if UTC
-    }]));
-    liveCache = { at: Date.now(), data };
-    return data;
+    liveCache = { at: Date.now(), data: snapshot(rows) };
+    return liveCache.data;
   } catch {
+    // The GIS blocks Cloudflare in production (HTTP 571). Fall back to the snapshot GitHub Actions ships as /live.json.
+    if (origin) try {
+      const r = await fetch(`${origin}/live.json`);
+      if (r.ok) { liveCache = { at: Date.now(), data: (await r.json() as { data: typeof liveCache.data }).data }; return liveCache.data; }
+    } catch { /* snapshot is a nice-to-have too */ }
     return liveCache?.data ?? {}; // live status is a nice-to-have; never fail a search over it
   }
 }
@@ -112,7 +119,7 @@ export const hasFeatures = (l: Lot, f: Features) =>
   (!f.ev || !!l.ev_chargers) && (!f.covered || !!l.covered) && (!f.accessible || !!l.accessible) && (f.height_m == null || l.height_m == null || l.height_m >= f.height_m);
 
 export async function search(s: SearchInput) {
-  const status = await live();
+  const status = await live(s.origin);
   const here = s.lat != null && s.lng != null ? { lat: s.lat, lng: s.lng } : null;
   const profile = { resident: s.resident, apps: s.apps, transit: s.transit, zone: s.zone };
   const results = lots
@@ -151,7 +158,7 @@ export async function search(s: SearchInput) {
 export async function lotDetails(id: string, s: Omit<SearchInput, "lat" | "lng">) {
   const l = lots.find((l) => l.id === id);
   if (!l) return null;
-  const status = await live();
+  const status = await live(s.origin);
   return {
     ...l,
     quote: { start: fmtLocal(s.start), duration_minutes: s.minutes, ...quote(l, s.start, s.minutes, s, offers) },

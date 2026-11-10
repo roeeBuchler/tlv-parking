@@ -113,6 +113,8 @@ for (const o of old) {
 
 writeFileSync("data/lots.json", JSON.stringify(lots, null, 1) + "\n");
 writeFileSync("public/moto.json", JSON.stringify(await motoBays(problems)) + "\n");
+// seed the occupancy snapshot too; a transient GIS hiccup here must not sink the weekly data build (live.yml refreshes it often)
+try { await (await import("./live.ts")).snapshotLive(); } catch (e) { console.warn("live snapshot skipped:", e); }
 const count = (f: (l: Lot) => unknown) => Object.entries(Object.groupBy(lots as Lot[], (l) => l.operator)).map(([op, ls]) => `${op} ${ls!.filter(f).length}`).join(", ");
 console.log(`lots: ${count(() => true)}\npriced: ${count((l) => l.tariffs)}\nfree per sign: ${count((l) => l.sign?.free)}`);
 if (problems.length) {
