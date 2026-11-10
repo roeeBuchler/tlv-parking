@@ -69,7 +69,12 @@ export async function live(origin?: string) {
     // The GIS blocks Cloudflare in production (HTTP 571). Fall back to the snapshot GitHub Actions ships as /live.json.
     if (origin) try {
       const r = await fetch(`${origin}/live.json`);
-      if (r.ok) { liveCache = { at: Date.now(), data: (await r.json() as { data: typeof liveCache.data }).data }; return liveCache.data; }
+      if (r.ok) {
+        // an old "free"/"full" is worse than none (it would show as "now" and sway the best pick): keep the last 3 h only
+        const since = fmtLocal(localNow() - 3 * HOUR), snap = (await r.json() as { data: Record<string, { status: string; updated: string }> }).data;
+        liveCache = { at: Date.now(), data: Object.fromEntries(Object.entries(snap).filter(([, v]) => v.updated >= since)) };
+        return liveCache.data;
+      }
     } catch { /* snapshot is a nice-to-have too */ }
     return liveCache?.data ?? {}; // live status is a nice-to-have; never fail a search over it
   }

@@ -42,8 +42,6 @@ const SUBNAME = L({ full: "מנוי 24/7", night: "מנוי לילה", weekdays:
   { full: "24/7 subscription", night: "Night subscription", weekdays: "Sun–Thu subscription", motorcycle: "Motorcycle subscription", reserved: "Reserved space" });
 const monthly = (s) => (s.period === "week" ? Math.round(s.price_ils * 4.33) : s.price_ils);
 const subTier = (n) => (n <= 300 ? "t1" : n <= 600 ? "t2" : n <= 1200 ? "t3" : "t4");
-const LEGEND = document.querySelector("#legend").innerHTML;
-const LEGEND_SUB = `<span class="cap">${L("מחיר מנוי לחודש, בש״ח", "Subscription price per month, ₪")}</span><span class="plate t1">${L("עד", "up to")} 300</span><span class="plate t2">${L("עד", "up to")} 600</span><span class="plate t3">${L("עד", "up to")} 1,200</span><span class="plate t4">1,200+</span>`;
 
 // Asia/Jerusalem wall clock as fake-UTC ms, same convention as the API
 const DAY = 864e5, HOUR = 36e5;
@@ -375,7 +373,6 @@ function showWhen() {
   $("#mode").value = state.when ? "at" : "now";
   $("#mode").closest(".chip").hidden = !!subOf(); // a pass has no entry time
   $("#at").hidden = !state.when || !!subOf();
-  $("#legend").innerHTML = subOf() ? LEGEND_SUB : LEGEND;
   if (!state.when) return;
   $("#time").value = state.when.slice(11);
   $("#date").value = state.when.slice(0, 10);
